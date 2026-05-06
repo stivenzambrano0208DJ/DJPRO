@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Paleta de colores DJPRO */
+    --color-bg:          #0a0a0f;
+    --color-surface:     #12121a;
+    --color-surface-2:   #1c1c2e;
+    --color-accent:      #f97316;
+    --color-accent-glow: rgba(249, 115, 22, 0.18);
+    --color-purple:      #7c3aed;
+    --color-text:        #f1f5f9;
+    --color-muted:       #64748b;
+    --color-border:      #1e293b;
+    --color-success:     #22c55e;
+    --color-danger:      #ef4444;
+    --color-warning:     #eab308;
+
+    /* Gradientes */
+    --grad-dark: linear-gradient(180deg, rgba(10, 10, 15, 0) 0%, rgba(10, 10, 15, 1) 100%);
+    --grad-accent: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+/* Base Styles */
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Rajdhani', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, .font-bebas {
+    font-family: 'Bebas Neue', cursive;
+    letter-spacing: 0.05em;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-surface-2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+}
+
+/* Glassmorphism & UI Components */
+.bg-surface { background-color: var(--color-surface); }
+.bg-surface-2 { background-color: var(--color-surface-2); }
+.border-djpro { border-color: var(--color-border); }
+
+.dj-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: all 0.2s ease-in-out;
+}
+
+.dj-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 20px var(--color-accent-glow);
+    transform: translateY(-4px);
+}
+
+.btn-djpro-primary {
+    background: var(--grad-accent);
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-djpro-primary:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+.btn-djpro-secondary {
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+}
+
+.btn-djpro-secondary:hover {
+    background: rgba(249, 115, 22, 0.1);
+}
+
+/* Inputs */
+.input-djpro {
+    background-color: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+}
+
+.input-djpro:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+}
+
+/* Badges */
+.badge-genre {
+    background-color: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-event {
+    background-color: rgba(124, 58, 237, 0.15);
+    color: #a78bfa;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Layout */
+.sidebar-active {
+    background-color: rgba(249, 115, 22, 0.1);
+    color: var(--color-accent);
+    border-left: 4px solid var(--color-accent);
+}
+
