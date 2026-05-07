@@ -41,8 +41,8 @@
                     <span class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest mt-4">Foto de Perfil</span>
                 </div>
 
-                <!-- Ubicación -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Ubicación y Precio -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Departamento</label>
                         <select id="select-departamento" name="departamento" class="input-djpro w-full cursor-pointer outline-none">
@@ -54,6 +54,35 @@
                         <select id="select-ciudad" name="ciudad" class="input-djpro w-full cursor-pointer outline-none">
                             <option value="<?php echo $data['perfil']->ciudad; ?>"><?php echo $data['perfil']->ciudad ?: 'Seleccionar Ciudad'; ?></option>
                         </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Precio por Hora ($)</label>
+                        <input type="number" name="precio_hora" value="<?php echo $data['perfil']->precio_hora; ?>" placeholder="Ej: 100000" class="input-djpro w-full">
+                    </div>
+                </div>
+
+                <!-- Bot Auto-respuesta -->
+                <div class="bg-djpro-surface-2 p-8 rounded-3xl border border-djpro-border">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-djpro-accent/10 text-djpro-accent rounded-xl flex items-center justify-center text-2xl">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bebas text-white tracking-widest uppercase">Bot de Auto-respuesta</h3>
+                                <p class="text-[10px] text-djpro-muted font-bold uppercase tracking-widest">Responde automáticamente a tus clientes</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="bot_activo" class="sr-only peer" <?php echo ($data['perfil']->bot_activo == 1) ? 'checked' : ''; ?>>
+                            <div class="w-14 h-7 bg-djpro-surface border border-djpro-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-djpro-muted peer-checked:after:bg-djpro-accent after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-djpro-accent/20"></div>
+                        </label>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mensaje de Auto-respuesta</label>
+                        <textarea name="auto_respuesta" rows="3" placeholder="Ej: Hola! Gracias por escribirme. En un momento te responderé..." class="input-djpro w-full resize-none"><?php echo $data['perfil']->auto_respuesta; ?></textarea>
+                        <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Este mensaje se enviará automáticamente cuando un cliente te escriba por primera vez.</p>
                     </div>
                 </div>
 

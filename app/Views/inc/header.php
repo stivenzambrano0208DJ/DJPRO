@@ -88,7 +88,7 @@
                     <div class="flex items-center gap-4">
                         <a href="<?php echo URL_ROOT; ?>/chat" class="relative text-xl hover:text-djpro-accent transition-colors">
                             <i class="bi bi-chat-dots"></i>
-                            <span class="absolute -top-1 -right-1 w-2 h-2 bg-djpro-accent rounded-full"></span>
+                            <span id="msg-badge" class="absolute -top-1 -right-1 w-2 h-2 bg-djpro-accent rounded-full hidden"></span>
                         </a>
                         <a href="<?php echo URL_ROOT; ?>/<?php echo $_SESSION['usuario_rol'] == 'dj' ? 'djs/dashboard' : ($_SESSION['usuario_rol'] == 'admin' ? 'admin/dashboard' : 'clientes/dashboard'); ?>" 
                            class="flex items-center gap-2 bg-djpro-surface-2 border border-djpro-border px-4 py-2 rounded-xl hover:border-djpro-accent transition-all">
@@ -99,6 +99,43 @@
                             <i class="bi bi-box-arrow-right text-xl"></i>
                         </a>
                     </div>
+
+                    <!-- Script de Notificaciones -->
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const badge = document.getElementById('msg-badge');
+                            let lastMsgId = localStorage.getItem('djpro_last_msg_id') || 0;
+
+                            function checkMessages() {
+                                fetch('<?php echo URL_ROOT; ?>/chat/api_check_notifications')
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        // Actualizar el circulito naranja
+                                        if (data.count > 0) {
+                                            badge.classList.remove('hidden');
+                                        } else {
+                                            badge.classList.add('hidden');
+                                        }
+
+                                        // Notificación emergente (Toast)
+                                        if (data.latest && data.latest.id > lastMsgId) {
+                                            // Solo notificar si no estamos en la página de chat con ese usuario
+                                            if (!window.location.href.includes('/chat/index/' + data.latest.emisor_id)) {
+                                                djpro.toast(`Nuevo mensaje de ${data.latest.emisor}: "${data.latest.contenido.substring(0, 30)}..."`, 'warning');
+                                            }
+                                            
+                                            // Actualizar siempre el ID para no repetir la notificación
+                                            lastMsgId = data.latest.id;
+                                            localStorage.setItem('djpro_last_msg_id', lastMsgId);
+                                        }
+                                    });
+                            }
+
+                            // Verificar cada 10 segundos
+                            checkMessages();
+                            setInterval(checkMessages, 10000);
+                        });
+                    </script>
                 <?php else: ?>
                     <a href="<?php echo URL_ROOT; ?>/usuarios/login" class="text-djpro-text hover:text-djpro-accent transition-colors font-semibold">Iniciar sesión</a>
                     <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="bg-djpro-accent hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-orange-500/20">

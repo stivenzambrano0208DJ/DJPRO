@@ -20,17 +20,29 @@ const djpro = {
         const container = document.getElementById('toast-container');
         if (!container) return;
 
-        const toast = document.createElement('div');
-        toast.className = `toast-item ${type} transform translate-x-full transition-all duration-500 bg-djpro-surface border-l-4 p-4 rounded-xl shadow-2xl flex items-center gap-3 mb-3`;
-        
         let icon = 'bi-info-circle';
         let border = 'border-blue-500';
-        if (type === 'success') { icon = 'bi-check-circle-fill'; border = 'border-green-500'; }
-        if (type === 'error') { icon = 'bi-exclamation-triangle-fill'; border = 'border-red-500'; }
-        if (type === 'warning') { icon = 'bi-exclamation-circle-fill'; border = 'border-djpro-accent'; }
+        let iconColor = 'text-blue-500';
 
+        if (type === 'success') { 
+            icon = 'bi-check-circle-fill'; 
+            border = 'border-green-500';
+            iconColor = 'text-green-500';
+        } else if (type === 'error') { 
+            icon = 'bi-exclamation-triangle-fill'; 
+            border = 'border-red-500';
+            iconColor = 'text-red-500';
+        } else if (type === 'warning') { 
+            icon = 'bi-chat-right-text-fill'; 
+            border = 'border-djpro-accent';
+            iconColor = 'text-djpro-accent';
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-item ${type} transform translate-x-full transition-all duration-500 bg-djpro-surface border-l-4 ${border} p-4 rounded-xl shadow-2xl flex items-center gap-3 mb-3`;
+        
         toast.innerHTML = `
-            <i class="bi ${icon} text-xl ${type === 'success' ? 'text-green-500' : type === 'error' ? 'text-red-500' : 'text-djpro-accent'}"></i>
+            <i class="bi ${icon} text-xl ${iconColor}"></i>
             <span class="text-sm font-bold text-white uppercase tracking-widest">${message}</span>
         `;
 

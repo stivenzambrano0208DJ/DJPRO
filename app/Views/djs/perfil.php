@@ -32,11 +32,13 @@
                 <h1 class="text-4xl md:text-6xl font-bebas text-white tracking-wider mb-2 uppercase"><?php echo $data['perfil']->nombre; ?></h1>
                 <div class="flex flex-wrap justify-center md:justify-start items-center gap-4 text-djpro-muted font-semibold tracking-wide">
                     <span class="flex items-center gap-1"><i class="bi bi-geo-alt-fill text-djpro-accent"></i> <?php echo $data['perfil']->ciudad ?: 'Caquetá'; ?></span>
-                    <span class="flex items-center gap-1 text-yellow-500">
-                        <i class="bi bi-star-fill"></i>
-                        <span class="text-white"><?php echo number_format($data['perfil']->calificacion_promedio, 1); ?></span>
+                    <span class="text-white font-bold">
+                        <?php if(!empty($data['perfil']->precio_hora)): ?>
+                            $<?php echo number_format($data['perfil']->precio_hora, 0); ?> <span class="text-djpro-muted font-normal text-xs">/ hora</span>
+                        <?php else: ?>
+                            Presupuesto Abierto
+                        <?php endif; ?>
                     </span>
-                    <span class="text-white font-bold">$450.000 <span class="text-djpro-muted font-normal text-xs">/ evento</span></span>
                 </div>
             </div>
 
@@ -196,9 +198,21 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Horas de Servicio</label>
+                    <input type="number" name="horas" id="booking_horas" value="1" min="1" class="input-djpro w-full" oninput="calcularTotal()">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Total Estimado ($)</label>
+                    <input type="number" name="presupuesto_estimado" id="booking_estimado" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60" readonly>
+                </div>
+            </div>
+
             <div class="space-y-2">
-                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Presupuesto ($)</label>
-                <input type="number" name="precio_total" placeholder="Ej: 500.000" class="input-djpro w-full" required>
+                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mi Presupuesto para el Evento ($)</label>
+                <input type="number" name="precio_total" id="booking_total" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full" required>
+                <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Indica cuánto estás dispuesto a pagar por el servicio.</p>
             </div>
 
             <div class="space-y-2">
@@ -290,6 +304,21 @@
                 submitBtn.disabled = false;
             }
         });
+    }
+
+    // Cálculo dinámico de total
+    function calcularTotal() {
+        const precioHora = <?php echo $data['perfil']->precio_hora ?: 0; ?>;
+        const horas = document.getElementById('booking_horas').value;
+        const estimadoInput = document.getElementById('booking_estimado');
+        const totalInput = document.getElementById('booking_total');
+        
+        if (precioHora > 0) {
+            const total = Math.max(0, precioHora * horas);
+            estimadoInput.value = total;
+            // Opcional: Solo actualizar el presupuesto del cliente si no lo ha tocado o si es igual al anterior
+            // totalInput.value = total; 
+        }
     }
 
     // Auto-open modal if flag is present

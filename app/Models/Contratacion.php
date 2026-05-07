@@ -6,15 +6,25 @@ class Contratacion extends Core\Model {
     
     // Crear solicitud de contratación
     public function crear($datos) {
-        $this->db->query('INSERT INTO contrataciones (cliente_id, dj_id, fecha_evento, tipo_evento, precio_total, mensaje_cliente) 
-                          VALUES (:cliente_id, :dj_id, :fecha_evento, :tipo_evento, :precio_total, :mensaje_cliente)');
+        $this->db->query('INSERT INTO contrataciones (cliente_id, dj_id, fecha_evento, tipo_evento, precio_total, mensaje_cliente, horas, presupuesto_estimado) 
+                          VALUES (:cliente_id, :dj_id, :fecha_evento, :tipo_evento, :precio_total, :mensaje_cliente, :horas, :presupuesto_estimado)');
         $this->db->bind(':cliente_id', $datos['cliente_id']);
         $this->db->bind(':dj_id', $datos['dj_id']);
         $this->db->bind(':fecha_evento', $datos['fecha_evento']);
         $this->db->bind(':tipo_evento', $datos['tipo_evento']);
         $this->db->bind(':precio_total', $datos['precio_total']);
         $this->db->bind(':mensaje_cliente', $datos['mensaje_cliente']);
+        $this->db->bind(':horas', $datos['horas'] ?? 1);
+        $this->db->bind(':presupuesto_estimado', $datos['presupuesto_estimado'] ?? null);
 
+        return $this->db->execute();
+    }
+
+    // Enviar contra-oferta del DJ
+    public function enviarContraOferta($id, $monto) {
+        $this->db->query('UPDATE contrataciones SET contra_oferta = :monto WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':monto', $monto);
         return $this->db->execute();
     }
 

@@ -45,7 +45,26 @@ class Chat extends Core\Controller {
             ];
 
             if (!empty($datos['contenido'])) {
-                $this->mensajeModel->enviar($datos);
+                if ($this->mensajeModel->enviar($datos)) {
+                    // Lógica del Bot de Auto-respuesta
+                    $perfilDj = $this->usuarioModel->buscarDjPerfil($datos['receptor_id']);
+                    if ($perfilDj && $perfilDj->bot_activo && !empty($perfilDj->auto_respuesta)) {
+                        // Verificar si el DJ ya ha enviado mensajes antes en este chat
+                        $chat = $this->mensajeModel->obtenerChat($datos['emisor_id'], $datos['receptor_id']);
+                        $djMensajes = array_filter($chat, function($m) use ($datos) {
+                            return $m->emisor_id == $datos['receptor_id'];
+                        });
+
+                        if (count($djMensajes) == 0) {
+                            $botData = [
+                                'emisor_id' => $datos['receptor_id'],
+                                'receptor_id' => $datos['emisor_id'],
+                                'contenido' => $perfilDj->auto_respuesta
+                            ];
+                            $this->mensajeModel->enviar($botData);
+                        }
+                    }
+                }
             }
             header('Location: ' . URL_ROOT . '/chat/index/' . $datos['receptor_id']);
         }
@@ -76,12 +95,47 @@ class Chat extends Core\Controller {
 
             if (!empty($datos['contenido'])) {
                 if ($this->mensajeModel->enviar($datos)) {
+                    // Lógica del Bot de Auto-respuesta
+                    $perfilDj = $this->usuarioModel->buscarDjPerfil($datos['receptor_id']);
+                    if ($perfilDj && $perfilDj->bot_activo && !empty($perfilDj->auto_respuesta)) {
+                        $chat = $this->mensajeModel->obtenerChat($datos['emisor_id'], $datos['receptor_id']);
+                        $djMensajes = array_filter($chat, function($m) use ($datos) {
+                            return $m->emisor_id == $datos['receptor_id'];
+                        });
+
+                        if (count($djMensajes) == 0) {
+                            $botData = [
+                                'emisor_id' => $datos['receptor_id'],
+                                'receptor_id' => $datos['emisor_id'],
+                                'contenido' => $perfilDj->auto_respuesta
+                            ];
+                            $this->mensajeModel->enviar($botData);
+                        }
+                    }
                     echo json_encode(['status' => 'success']);
                 } else {
                     echo json_encode(['status' => 'error']);
                 }
             }
         }
+        exit;
+    }
+
+    public function api_check_notifications() {
+        header('Content-Type: application/json');
+        
+        $noLeidos = $this->mensajeModel->contarNoLeidos($_SESSION['usuario_id']);
+        $ultimo = $this->mensajeModel->obtenerUltimoNoLeido($_SESSION['usuario_id']);
+        
+        echo json_encode([
+            'count' => $noLeidos,
+            'latest' => $ultimo ? [
+                'id' => $ultimo->id,
+                'emisor_id' => $ultimo->emisor_id,
+                'emisor' => $ultimo->emisor_nombre,
+                'contenido' => $ultimo->contenido
+            ] : null
+        ]);
         exit;
     }
 }

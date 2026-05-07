@@ -68,7 +68,8 @@
                                              <span class="<?php echo $statusClass; ?> px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border"><?php echo $con->estado; ?></span>
                                          </td>
                                          <td class="px-8 py-6">
-                                             <div class="flex justify-cente                                                 <?php if(($con->estado == 'terminada' || $con->estado == 'completada') && empty($con->resena_id)): ?>
+                                             <div class="flex justify-center">
+                                                 <?php if(($con->estado == 'terminada' || $con->estado == 'completada') && empty($con->resena_id)): ?>
                                                      <button onclick="openReviewModal('<?php echo $con->id; ?>', '<?php echo $con->dj_id; ?>', '<?php echo $con->dj_nombre; ?>', '<?php echo $con->tipo_evento; ?>')" 
                                                               class="group flex items-center gap-2 px-5 py-2.5 bg-djpro-accent text-white text-[10px] font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 uppercase tracking-widest">
                                                           <i class="bi bi-star-fill text-[12px] group-hover:scale-125 transition-transform"></i>
@@ -89,7 +90,6 @@
                                                  <?php else: ?>
                                                      <span class="text-[9px] text-djpro-muted font-bold uppercase tracking-widest italic opacity-50">Evento Finalizado</span>
                                                  <?php endif; ?>
-f; ?>
                                              </div>
                                          </td>
                                      </tr>

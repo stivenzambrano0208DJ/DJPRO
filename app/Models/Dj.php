@@ -16,14 +16,14 @@ class Dj extends Core\Model {
 
     // Actualizar perfil
     public function actualizarPerfil($datos) {
-        $sql = 'UPDATE perfiles_dj SET biografia = :biografia, lugares_trabajo = :lugares_trabajo, ciudad = :ciudad, departamento = :departamento, generos = :generos, tipos_evento = :eventos';
+        $sql = 'UPDATE perfiles_dj SET biografia = :biografia, lugares_trabajo = :lugares_trabajo, ciudad = :ciudad, departamento = :departamento, generos = :generos, tipos_evento = :eventos, precio_hora = :precio_hora, auto_respuesta = :auto_respuesta, bot_activo = :bot_activo';
         
         if (!empty($datos['foto_perfil'])) {
             $sql .= ', foto_perfil = :foto_perfil';
         }
         
         $sql .= ' WHERE usuario_id = :usuario_id';
- 
+
         $this->db->query($sql);
         $this->db->bind(':biografia', $datos['biografia']);
         $this->db->bind(':lugares_trabajo', $datos['lugares_trabajo']);
@@ -31,6 +31,9 @@ class Dj extends Core\Model {
         $this->db->bind(':departamento', $datos['departamento']);
         $this->db->bind(':generos', $datos['generos']);
         $this->db->bind(':eventos', $datos['eventos']);
+        $this->db->bind(':precio_hora', $datos['precio_hora']);
+        $this->db->bind(':auto_respuesta', $datos['auto_respuesta']);
+        $this->db->bind(':bot_activo', $datos['bot_activo']);
         $this->db->bind(':usuario_id', $datos['usuario_id']);
         
         if (!empty($datos['foto_perfil'])) {

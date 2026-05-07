@@ -24,6 +24,8 @@ class Contrataciones extends Core\Controller {
                 'dj_id' => $_POST['dj_id'],
                 'fecha_evento' => $_POST['fecha_evento'],
                 'precio_total' => $_POST['precio_total'],
+                'presupuesto_estimado' => $_POST['presupuesto_estimado'] ?? null,
+                'horas' => $_POST['horas'] ?? 1,
                 'tipo_evento' => $_POST['evento'] ?? '',
                 'mensaje_cliente' => trim($_POST['mensaje_cliente'])
             ];
@@ -125,6 +127,30 @@ class Contrataciones extends Core\Controller {
                 \Libraries\EmailSender::enviarNotificacionCancelacionDj($dj->correo, $dj->nombre, $_SESSION['usuario_nombre'], $contratacion->fecha_evento);
             }
             header('Location: ' . URL_ROOT . '/clientes/dashboard');
+        }
+    }
+
+    // El DJ envía una contra-oferta
+    public function contra_oferta() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            
+            $id = $_POST['contratacion_id'];
+            $monto = $_POST['monto_contra_oferta'];
+            
+            $contratacion = $this->contratacionModel->obtenerPorId($id);
+            if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
+                header('Location: ' . URL_ROOT . '/djs/dashboard');
+                exit;
+            }
+
+            if ($this->contratacionModel->enviarContraOferta($id, $monto)) {
+                // Opcional: Cambiar estado o simplemente notificar
+                $_SESSION['flash_message'] = '✅ Contra-oferta enviada al cliente.';
+                header('Location: ' . URL_ROOT . '/djs/dashboard');
+            } else {
+                die('Algo salió mal');
+            }
         }
     }
 }

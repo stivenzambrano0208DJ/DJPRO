@@ -47,4 +47,23 @@ class Mensaje extends Core\Model {
         $this->db->bind(':contacto_id', $contacto_id);
         return $this->db->execute();
     }
+
+    // Contar total de mensajes no leídos para un usuario
+    public function contarNoLeidos($usuario_id) {
+        $this->db->query('SELECT COUNT(*) as total FROM mensajes WHERE receptor_id = :usuario_id AND leido = 0');
+        $this->db->bind(':usuario_id', $usuario_id);
+        $fila = $this->db->single();
+        return $fila ? $fila->total : 0;
+    }
+
+    // Obtener el último mensaje no leído con info del emisor
+    public function obtenerUltimoNoLeido($usuario_id) {
+        $this->db->query('SELECT m.*, u.nombre as emisor_nombre 
+                          FROM mensajes m 
+                          JOIN usuarios u ON m.emisor_id = u.id 
+                          WHERE m.receptor_id = :usuario_id AND m.leido = 0 
+                          ORDER BY m.id DESC LIMIT 1');
+        $this->db->bind(':usuario_id', $usuario_id);
+        return $this->db->single();
+    }
 }

@@ -124,6 +124,7 @@
                                 <tr class="bg-djpro-surface-2">
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Cliente</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Fecha</th>
+                                    <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Horas</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Precio</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Estado</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest text-center">Acciones</th>
@@ -144,7 +145,13 @@
                                             </div>
                                         </td>
                                         <td class="px-8 py-6 text-xs font-bold text-white"><?php echo date('d M, Y', strtotime($con->fecha_evento)); ?></td>
-                                        <td class="px-8 py-6 text-sm font-bold text-djpro-accent">$<?php echo number_format($con->precio_total, 0); ?></td>
+                                        <td class="px-8 py-6 text-xs font-bold text-white"><?php echo $con->horas; ?> h</td>
+                                        <td class="px-8 py-6 text-sm font-bold text-djpro-accent">
+                                            $<?php echo number_format($con->precio_total, 0); ?>
+                                            <?php if($con->contra_oferta): ?>
+                                                <div class="text-[9px] text-yellow-500 uppercase">Contra-oferta: $<?php echo number_format($con->contra_oferta, 0); ?></div>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="px-8 py-6">
                                             <?php 
                                                 $statusClass = 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20';
@@ -160,6 +167,9 @@
                                                     <a href="<?php echo URL_ROOT; ?>/contrataciones/responder/<?php echo $con->id; ?>/aceptada" class="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white transition-all flex items-center justify-center" title="Aceptar">
                                                         <i class="bi bi-check-lg"></i>
                                                     </a>
+                                                    <button onclick="openContraOfertaModal(<?php echo $con->id; ?>, <?php echo $con->precio_total; ?>)" class="w-8 h-8 rounded-lg bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500 hover:text-white transition-all flex items-center justify-center" title="Contra-oferta">
+                                                        <i class="bi bi-currency-dollar"></i>
+                                                    </button>
                                                     <a href="<?php echo URL_ROOT; ?>/contrataciones/responder/<?php echo $con->id; ?>/rechazada" class="w-8 h-8 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center" title="Rechazar">
                                                         <i class="bi bi-x-lg"></i>
                                                     </a>
@@ -262,12 +272,48 @@
     </div>
 </div>
 
+<!-- Modal Contra-oferta -->
+<div id="modalContraOferta" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
+    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden">
+        <div class="p-6 border-b border-djpro-border flex justify-between items-center bg-djpro-surface-2/50">
+            <h5 class="text-xl font-bebas text-white tracking-widest uppercase">Enviar Contra-oferta</h5>
+            <button onclick="closeContraOfertaModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form action="<?php echo URL_ROOT; ?>/contrataciones/contra_oferta" method="POST" class="p-6 space-y-6">
+            <input type="hidden" name="contratacion_id" id="contra_contratacion_id">
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Presupuesto del Cliente</label>
+                <input type="text" id="cliente_budget" class="input-djpro w-full opacity-50" readonly>
+            </div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Tu Contra-oferta ($)</label>
+                <input type="number" name="monto_contra_oferta" placeholder="Ej: 600000" class="input-djpro w-full" required>
+                <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Propón un nuevo precio total para este evento.</p>
+            </div>
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeContraOfertaModal()" class="flex-1 px-6 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all">CANCELAR</button>
+                <button type="submit" class="flex-1 btn-djpro-primary">ENVIAR</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function openModal() {
         document.getElementById('modalVideo').classList.remove('hidden');
     }
     function closeModal() {
         document.getElementById('modalVideo').classList.add('hidden');
+    }
+
+    function openContraOfertaModal(id, budget) {
+        document.getElementById('contra_contratacion_id').value = id;
+        document.getElementById('cliente_budget').value = '$' + new Intl.NumberFormat().format(budget);
+        document.getElementById('modalContraOferta').classList.remove('hidden');
+    }
+
+    function closeContraOfertaModal() {
+        document.getElementById('modalContraOferta').classList.add('hidden');
     }
 </script>
 

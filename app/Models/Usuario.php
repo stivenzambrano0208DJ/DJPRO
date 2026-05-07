@@ -40,6 +40,13 @@ class Usuario extends Core\Model {
         return $this->db->single();
     }
 
+    // Buscar perfil de DJ específico por ID de usuario
+    public function buscarDjPerfil($id) {
+        $this->db->query('SELECT u.*, p.* FROM usuarios u JOIN perfiles_dj p ON u.id = p.usuario_id WHERE u.id = :id');
+        $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
     // Login de usuario
     public function login($correo, $password) {
         $fila = $this->buscarUsuarioPorCorreo($correo);
@@ -70,7 +77,7 @@ class Usuario extends Core\Model {
 
     // Obtener todos los DJs con su perfil (con filtros opcionales)
     public function obtenerDjsConPerfil($filtros = [], $limite = null) {
-        $sql = 'SELECT usuarios.*, perfiles_dj.foto_perfil, perfiles_dj.biografia, perfiles_dj.ciudad, perfiles_dj.departamento, perfiles_dj.calificacion_promedio, perfiles_dj.generos, perfiles_dj.tipos_evento 
+        $sql = 'SELECT usuarios.*, perfiles_dj.foto_perfil, perfiles_dj.biografia, perfiles_dj.ciudad, perfiles_dj.departamento, perfiles_dj.calificacion_promedio, perfiles_dj.generos, perfiles_dj.tipos_evento, perfiles_dj.precio_hora 
                           FROM usuarios 
                           INNER JOIN perfiles_dj ON usuarios.id = perfiles_dj.usuario_id 
                           WHERE usuarios.rol = "dj"';

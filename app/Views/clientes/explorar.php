@@ -147,8 +147,32 @@
                                     <input type="date" name="fecha_evento" class="input-djpro w-full cursor-pointer" required min="<?php echo date('Y-m-d'); ?>">
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Presupuesto ($)</label>
-                                    <input type="number" name="precio_total" placeholder="Ej: 500.000" class="input-djpro w-full" required>
+                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Tipo de Evento</label>
+                                    <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Boda">Boda</option>
+                                        <option value="XV Años">XV Años</option>
+                                        <option value="Corporativo">Corporativo</option>
+                                        <option value="Discoteca / Bar">Discoteca / Bar</option>
+                                        <option value="Fiesta Privada">Fiesta Privada</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Horas de Servicio</label>
+                                <input type="number" name="horas" id="horas-<?php echo $dj->id; ?>" value="1" min="1" class="input-djpro w-full" oninput="calcularTotal('<?php echo $dj->id; ?>', <?php echo $dj->precio_hora ?: 0; ?>)">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Total Estimado ($)</label>
+                                    <input type="number" name="presupuesto_estimado" id="estimado-<?php echo $dj->id; ?>" value="<?php echo $dj->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60" readonly>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mi Presupuesto ($)</label>
+                                    <input type="number" name="precio_total" id="total-<?php echo $dj->id; ?>" value="<?php echo $dj->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full" required>
                                 </div>
                             </div>
 
@@ -178,6 +202,18 @@
     function closeModal(id) {
         document.getElementById(`modal-${id}`).classList.add('hidden');
         document.body.style.overflow = 'auto';
+    }
+
+    function calcularTotal(id, precioHora) {
+        const horas = document.getElementById(`horas-${id}`).value;
+        const estimadoInput = document.getElementById(`estimado-${id}`);
+        const totalInput = document.getElementById(`total-${id}`);
+        
+        if (precioHora > 0) {
+            const total = Math.max(0, precioHora * horas);
+            estimadoInput.value = total;
+            // totalInput.value = total;
+        }
     }
 </script>
 

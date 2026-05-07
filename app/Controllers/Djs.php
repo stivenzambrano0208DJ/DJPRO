@@ -106,6 +106,9 @@ class Djs extends Core\Controller {
                 'departamento' => trim($_POST['departamento']),
                 'generos' => isset($_POST['generos']) ? implode(',', $_POST['generos']) : '',
                 'eventos' => isset($_POST['eventos']) ? implode(',', $_POST['eventos']) : '',
+                'precio_hora' => $_POST['precio_hora'] ?? null,
+                'auto_respuesta' => trim($_POST['auto_respuesta'] ?? ''),
+                'bot_activo' => isset($_POST['bot_activo']) ? 1 : 0,
                 'foto_perfil' => '',
                 'success' => '',
                 'error' => ''
