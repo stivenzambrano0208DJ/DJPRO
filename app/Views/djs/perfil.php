@@ -29,7 +29,15 @@
             </div>
 
             <div class="flex-1 text-center md:text-left mb-2">
-                <h1 class="text-4xl md:text-6xl font-bebas text-white tracking-wider mb-2 uppercase"><?php echo $data['perfil']->nombre; ?></h1>
+                <h1 class="text-4xl md:text-6xl font-bebas text-white tracking-wider mb-1 uppercase flex items-center justify-center md:justify-start gap-4">
+                    <?php echo $data['perfil']->nombre; ?>
+                    <?php if($data['perfil']->verificado): ?>
+                        <i class="bi bi-patch-check-fill text-djpro-accent text-3xl md:text-4xl" title="DJ Verificado por DJPRO"></i>
+                    <?php endif; ?>
+                </h1>
+                <?php if(!empty($data['perfil']->username)): ?>
+                    <p class="text-djpro-accent font-bold text-sm tracking-widest mb-3 uppercase opacity-90">@<?php echo $data['perfil']->username; ?></p>
+                <?php endif; ?>
                 <div class="flex flex-wrap justify-center md:justify-start items-center gap-4 text-djpro-muted font-semibold tracking-wide">
                     <span class="flex items-center gap-1"><i class="bi bi-geo-alt-fill text-djpro-accent"></i> <?php echo $data['perfil']->ciudad ?: 'Caquetá'; ?></span>
                     <span class="text-white font-bold">
@@ -59,7 +67,7 @@
 </section>
 
 <!-- Content Sections -->
-<section class="py-12">
+<section class="py-12 pb-24">
     <div class="container mx-auto px-4">
         
         <!-- Badges de especialidad -->
@@ -176,47 +184,57 @@
             </div>
             <button onclick="closeBookingModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
-        <form id="bookingForm" action="<?php echo URL_ROOT; ?>/contrataciones/solicitar" method="POST" class="p-8 space-y-6">
+        <form id="bookingForm" action="<?php echo URL_ROOT; ?>/contrataciones/solicitar" method="POST" class="p-8 space-y-6 max-h-[75vh] overflow-y-auto">
+            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <input type="hidden" name="dj_id" value="<?php echo $data['perfil']->usuario_id; ?>">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Fecha del Evento</label>
+                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Fecha del Evento</label>
                     <input type="date" name="fecha_evento" class="input-djpro w-full cursor-pointer" required min="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Tipo de Evento</label>
-                    <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="Boda">Boda</option>
-                        <option value="XV Años">XV Años</option>
-                        <option value="Corporativo">Corporativo</option>
-                        <option value="Discoteca / Bar">Discoteca / Bar</option>
-                        <option value="Fiesta Privada">Fiesta Privada</option>
-                        <option value="Otro">Otro</option>
-                    </select>
+                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Inicio</label>
+                    <input type="time" name="hora_inicio" class="input-djpro w-full cursor-pointer" required>
                 </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Fin</label>
+                    <input type="time" name="hora_fin" class="input-djpro w-full cursor-pointer" required>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Tipo de Evento</label>
+                <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="Boda">Boda</option>
+                    <option value="XV Años">XV Años</option>
+                    <option value="Corporativo">Corporativo</option>
+                    <option value="Discoteca / Bar">Discoteca / Bar</option>
+                    <option value="Fiesta Privada">Fiesta Privada</option>
+                    <option value="Otro">Otro</option>
+                </select>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Horas de Servicio</label>
+                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Horas de Servicio</label>
                     <input type="number" name="horas" id="booking_horas" value="1" min="1" class="input-djpro w-full" oninput="calcularTotal()">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Total Estimado ($)</label>
+                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Total Estimado ($)</label>
                     <input type="number" name="presupuesto_estimado" id="booking_estimado" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60" readonly>
                 </div>
             </div>
 
             <div class="space-y-2">
-                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mi Presupuesto para el Evento ($)</label>
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Mi Presupuesto para el Evento ($)</label>
                 <input type="number" name="precio_total" id="booking_total" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full" required>
                 <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Indica cuánto estás dispuesto a pagar por el servicio.</p>
             </div>
 
             <div class="space-y-2">
-                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Detalles y Expectativas</label>
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Detalles y Expectativas</label>
                 <textarea name="mensaje_cliente" rows="4" placeholder="Háblale al DJ sobre tu evento..." class="input-djpro w-full resize-none"></textarea>
             </div>
 
@@ -290,11 +308,11 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    djpro.toast(result.message, 'success');
+                    Swal.fire({ title: '¡Solicitud Enviada!', text: result.message, icon: 'success', confirmButtonColor: '#f97316', background: '#12121a', color: '#fff' });
                     closeBookingModal();
                     bookingForm.reset();
                 } else {
-                    djpro.toast(result.error || 'Error al enviar solicitud', 'error');
+                    Swal.fire({ title: 'No disponible', text: result.error || 'Error al enviar solicitud', icon: 'warning', confirmButtonColor: '#f97316', background: '#12121a', color: '#fff' });
                 }
             } catch (error) {
                 console.error(error);
@@ -306,20 +324,48 @@
         });
     }
 
-    // Cálculo dinámico de total
+    // Cálculo dinámico de total y horas
     function calcularTotal() {
         const precioHora = <?php echo $data['perfil']->precio_hora ?: 0; ?>;
-        const horas = document.getElementById('booking_horas').value;
+        const horaInicio = document.querySelector('input[name="hora_inicio"]').value;
+        const horaFin = document.querySelector('input[name="hora_fin"]').value;
+        const horasInput = document.getElementById('booking_horas');
         const estimadoInput = document.getElementById('booking_estimado');
         const totalInput = document.getElementById('booking_total');
         
+        // Calcular horas si ambas están presentes
+        if (horaInicio && horaFin) {
+            const start = new Date(`2000-01-01T${horaInicio}:00`);
+            let end = new Date(`2000-01-01T${horaFin}:00`);
+            
+            // Si la hora de fin es menor a la de inicio, asumimos que es del día siguiente
+            if (end <= start) {
+                end = new Date(`2000-01-02T${horaFin}:00`);
+            }
+            
+            const diffMs = end - start;
+            const diffHrs = diffMs / (1000 * 60 * 60);
+            horasInput.value = Math.max(1, Math.round(diffHrs * 10) / 10); // Redondear a 1 decimal
+        }
+
+        const horas = horasInput.value;
         if (precioHora > 0) {
-            const total = Math.max(0, precioHora * horas);
+            const total = Math.max(0, Math.round(precioHora * horas));
             estimadoInput.value = total;
-            // Opcional: Solo actualizar el presupuesto del cliente si no lo ha tocado o si es igual al anterior
-            // totalInput.value = total; 
+            // Opcional: totalInput.value = total; 
         }
     }
+
+    // Agregar listeners a los campos de hora
+    document.addEventListener('DOMContentLoaded', function() {
+        const hi = document.querySelector('input[name="hora_inicio"]');
+        const hf = document.querySelector('input[name="hora_fin"]');
+        const hs = document.getElementById('booking_horas');
+
+        if (hi) hi.addEventListener('change', calcularTotal);
+        if (hf) hf.addEventListener('change', calcularTotal);
+        if (hs) hs.addEventListener('input', calcularTotal);
+    });
 
     // Auto-open modal if flag is present
     window.addEventListener('load', () => {

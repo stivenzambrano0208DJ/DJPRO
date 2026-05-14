@@ -30,10 +30,17 @@
             <?php endif; ?>
 
             <form action="<?php echo URL_ROOT; ?>/usuarios/registro" method="POST" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Nombre Completo</label>
-                    <input type="text" name="nombre" value="<?php echo $data['nombre']; ?>" placeholder="Ej: Steven Mix" class="input-djpro w-full" required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Nombre Completo</label>
+                        <input type="text" name="nombre" value="<?php echo $data['nombre']; ?>" placeholder="Ej: Steven Mix" class="input-djpro w-full" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Username (ID Público)</label>
+                        <input type="text" name="username" value="<?php echo $data['username']; ?>" placeholder="stiven_mix_2026" class="input-djpro w-full border-djpro-accent/30" required pattern="[a-zA-Z0-9_]+" title="Solo letras, números y guiones bajos (sin espacios ni emojis)">
+                    </div>
                 </div>
 
                 <div class="space-y-1">

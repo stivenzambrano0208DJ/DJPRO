@@ -4,8 +4,12 @@
         <!-- DJ Profile Mini -->
         <div class="flex flex-col items-center mb-10 pb-10 border-b border-djpro-border">
             <div class="relative mb-4 group">
-                <div class="w-20 h-20 rounded-full border-2 border-djpro-accent p-1 group-hover:shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all">
-                    <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['usuario_nombre']); ?>&background=12121a&color=f97316" alt="Profile" class="w-full h-full rounded-full object-cover">
+                <div class="w-20 h-20 rounded-full border-2 border-djpro-accent p-1 group-hover:shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all overflow-hidden">
+                    <?php if(isset($data['perfil']) && $data['perfil']->foto_perfil != 'default_dj.png'): ?>
+                        <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $data['perfil']->foto_perfil; ?>" alt="Profile" class="w-full h-full rounded-full object-cover">
+                    <?php else: ?>
+                        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['usuario_nombre']); ?>&background=12121a&color=f97316" alt="Profile" class="w-full h-full rounded-full object-cover">
+                    <?php endif; ?>
                 </div>
                 <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-djpro-surface rounded-full"></span>
             </div>
@@ -25,7 +29,7 @@
                 <span class="font-bold">Editar Perfil</span>
             </a>
 
-            <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-4 px-4 py-3 rounded-xl text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all">
+            <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'chat') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
                 <i class="bi bi-chat-dots-fill text-xl"></i>
                 <span class="font-bold">Mensajería</span>
             </a>

@@ -17,7 +17,8 @@ class Resenas extends Core\Controller {
 
     public function publicar() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
             $datos = [
                 'contratacion_id' => $_POST['contratacion_id'],
@@ -44,7 +45,9 @@ class Resenas extends Core\Controller {
                 }
                 header('Location: ' . URL_ROOT . '/clientes/dashboard');
             } else {
-                die('Algo salió mal');
+                $_SESSION['flash_message'] = 'No se pudo publicar la reseña.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/clientes/dashboard');
             }
         }
     }

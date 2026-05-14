@@ -1,26 +1,13 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 
 <div class="flex">
-    <!-- Sidebar Admin -->
-    <aside class="w-64 bg-djpro-surface border-r border-djpro-border h-[calc(100vh-80px)] hidden lg:block">
-        <div class="p-6">
-            <h2 class="text-xl font-bebas text-djpro-accent tracking-widest mb-10 uppercase">Admin Panel</h2>
-            <nav class="space-y-4">
-                <a href="<?php echo URL_ROOT; ?>/admin/dashboard" class="flex items-center gap-3 text-djpro-muted hover:text-white px-4 py-3 transition-all">
-                    <i class="bi bi-speedometer2"></i> Global KPI
-                </a>
-                <a href="<?php echo URL_ROOT; ?>/admin/usuarios" class="flex items-center gap-3 text-djpro-muted hover:text-white px-4 py-3 transition-all">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-                <a href="<?php echo URL_ROOT; ?>/admin/reservas" class="flex items-center gap-3 text-white font-bold px-4 py-3 bg-djpro-accent/10 border-l-4 border-djpro-accent rounded-r-xl">
-                    <i class="bi bi-calendar-check"></i> Reservas
-                </a>
-            </nav>
-        </div>
-    </aside>
+<?php 
+    $activePage = 'reservas';
+    require APPROOT . '/app/Views/inc/admin_sidebar.php'; 
+?>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-y-auto custom-scrollbar h-[calc(100vh-80px)]">
+    <div class="flex-1 p-8 overflow-y-auto custom-scrollbar h-[calc(100vh-80px)]">
         <div class="container mx-auto">
             <h1 class="text-4xl font-bebas text-white tracking-widest mb-10">CONTROL DE <span class="text-djpro-accent">RESERVAS</span></h1>
 
@@ -32,6 +19,7 @@
                             <th class="px-6 py-4 text-xs font-bold text-djpro-muted uppercase tracking-widest">DJ</th>
                             <th class="px-6 py-4 text-xs font-bold text-djpro-muted uppercase tracking-widest">Evento</th>
                             <th class="px-6 py-4 text-xs font-bold text-djpro-muted uppercase tracking-widest">Fecha</th>
+                            <th class="px-6 py-4 text-xs font-bold text-djpro-muted uppercase tracking-widest">Hora</th>
                             <th class="px-6 py-4 text-xs font-bold text-djpro-muted uppercase tracking-widest text-center">Estado</th>
                         </tr>
                     </thead>
@@ -42,6 +30,17 @@
                             <td class="px-6 py-4 text-djpro-accent font-semibold"><?php echo $reserva->dj_nombre; ?></td>
                             <td class="px-6 py-4 text-xs text-djpro-muted"><?php echo $reserva->tipo_evento; ?></td>
                             <td class="px-6 py-4 text-xs text-djpro-muted"><?php echo date('d M, Y', strtotime($reserva->fecha_evento)); ?></td>
+                            <td class="px-6 py-4">
+                                <?php if(!empty($reserva->hora_inicio)): ?>
+                                <span class="text-[9px] font-bold text-djpro-accent bg-djpro-accent/10 px-2 py-1 rounded-lg border border-djpro-accent/20">
+                                    <i class="bi bi-clock-fill"></i> 
+                                    <?php echo date('h:i A', strtotime($reserva->hora_inicio)); ?>
+                                    <?php echo !empty($reserva->hora_fin) ? ' — ' . date('h:i A', strtotime($reserva->hora_fin)) : ''; ?>
+                                </span>
+                                <?php else: ?>
+                                <span class="text-[10px] text-djpro-muted">—</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest 
                                     <?php 
@@ -58,7 +57,7 @@
                 </table>
             </div>
         </div>
-    </main>
+    </div>
 </div>
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>

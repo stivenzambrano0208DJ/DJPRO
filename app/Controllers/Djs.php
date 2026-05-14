@@ -5,11 +5,14 @@
 class Djs extends Core\Controller {
     private $djModel;
     private $contratacionModel;
+    private $usuarioModel;
+    private $resenaModel;
 
     public function __construct() {
         $this->djModel = $this->model('Dj');
         $this->contratacionModel = $this->model('Contratacion');
         $this->usuarioModel = $this->model('Usuario');
+        $this->resenaModel = $this->model('Resena');
 
         // Obtener el método actual de la URL
         $url = isset($_GET['url']) ? explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL)) : [];
@@ -56,10 +59,12 @@ class Djs extends Core\Controller {
             exit;
         }
         $videos = $this->djModel->obtenerVideos($id);
+        $resenas = $this->resenaModel->obtenerPorDj($id);
         
         $datos = [
             'perfil' => $perfil,
-            'videos' => $videos
+            'videos' => $videos,
+            'resenas' => $resenas
         ];
         $this->view('djs/perfil', $datos);
     }
@@ -86,20 +91,24 @@ class Djs extends Core\Controller {
     public function estadisticas() {
         $perfil = $this->djModel->obtenerPerfil($_SESSION['usuario_id']);
         $stats = $this->djModel->obtenerEstadisticas($_SESSION['usuario_id']);
+        $proyeccion = $this->djModel->obtenerProyeccionMensual($_SESSION['usuario_id']);
         
         $datos = [
             'perfil' => $perfil,
-            'stats' => $stats
+            'stats' => $stats,
+            'proyeccion' => $proyeccion
         ];
         $this->view('djs/estadisticas', $datos);
     }
 
     public function editar() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
             $datos = [
                 'usuario_id' => $_SESSION['usuario_id'],
+                'username' => trim($_POST['username'] ?? ''),
                 'biografia' => trim($_POST['biografia']),
                 'lugares_trabajo' => isset($_POST['lugares_trabajo']) ? implode(',', $_POST['lugares_trabajo']) : '',
                 'ciudad' => trim($_POST['ciudad']),
@@ -114,33 +123,59 @@ class Djs extends Core\Controller {
                 'error' => ''
             ];
 
+            // Validar username
+            if (!empty($datos['username'])) {
+                if (!preg_match('/^[a-zA-Z0-9_]+$/', $datos['username'])) {
+                    $datos['error'] = 'El nombre de usuario solo puede contener letras, números y guiones bajos (sin espacios ni emojis)';
+                } else {
+                    $usernameExistente = $this->usuarioModel->buscarPorUsername($datos['username']);
+                    if ($usernameExistente && $usernameExistente->id != $_SESSION['usuario_id']) {
+                        $datos['error'] = 'Este nombre de usuario ya está en uso por otro DJ.';
+                    }
+                }
+            }
+
             // Manejo de subida de archivos
             if (!empty($_FILES['foto_perfil']['name'])) {
                 $nombreArchivo = $_FILES['foto_perfil']['name'];
                 $tempArchivo = $_FILES['foto_perfil']['tmp_name'];
                 $errorArchivo = $_FILES['foto_perfil']['error'];
+                $tamanoArchivo = $_FILES['foto_perfil']['size'];
+                $tipoArchivo = $_FILES['foto_perfil']['type'];
 
                 if ($errorArchivo === 0) {
-                    $ext = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
-                    $extLower = strtolower($ext);
-                    $extPermitidas = ['jpg', 'jpeg', 'png'];
-
-                    if (in_array($extLower, $extPermitidas)) {
-                        $nuevoNombre = uniqid('dj_', true) . '.' . $extLower;
-                        $destino = APPROOT . '/public/assets/uploads/' . $nuevoNombre;
-
-                        if (move_uploaded_file($tempArchivo, $destino)) {
-                            $datos['foto_perfil'] = $nuevoNombre;
-                        } else {
-                            $datos['error'] = 'Error al subir la imagen';
-                        }
+                    // Validar Tamaño (Máximo 2MB)
+                    if ($tamanoArchivo > 2 * 1024 * 1024) {
+                        $datos['error'] = 'El archivo es demasiado grande (Máximo 2MB)';
                     } else {
-                        $datos['error'] = 'Solo se permiten archivos JPG, JPEG o PNG';
+                        $ext = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
+                        $extLower = strtolower($ext);
+                        $extPermitidas = ['jpg', 'jpeg', 'png'];
+                        $tiposMIME = ['image/jpeg', 'image/jpg', 'image/png'];
+
+                        if (in_array($extLower, $extPermitidas) && in_array($tipoArchivo, $tiposMIME)) {
+                            $nuevoNombre = uniqid('dj_', true) . '.' . $extLower;
+                            $destino = APPROOT . '/public/assets/uploads/' . $nuevoNombre;
+
+                            if (move_uploaded_file($tempArchivo, $destino)) {
+                                $datos['foto_perfil'] = $nuevoNombre;
+                            } else {
+                                $datos['error'] = 'Error al guardar la imagen en el servidor';
+                            }
+                        } else {
+                            $datos['error'] = 'Solo se permiten imágenes reales (JPG, JPEG o PNG)';
+                        }
                     }
                 }
             }
 
             if (empty($datos['error'])) {
+                // Actualizar Username en tabla Usuarios
+                if (!empty($datos['username'])) {
+                    $this->usuarioModel->actualizarUsername($_SESSION['usuario_id'], $datos['username']);
+                    $_SESSION['usuario_username'] = $datos['username'];
+                }
+
                 if ($this->djModel->actualizarPerfil($datos)) {
                     $datos['success'] = '¡Perfil actualizado correctamente!';
                 }
@@ -148,19 +183,24 @@ class Djs extends Core\Controller {
 
             // Recargar perfil y mostrar vista
             $perfil = $this->djModel->obtenerPerfil($_SESSION['usuario_id']);
+            $videos = $this->djModel->obtenerVideos($_SESSION['usuario_id']);
             $generos = $this->djModel->obtenerGeneros();
             $tiposEvento = $this->djModel->obtenerTiposEvento();
+            
             $datos['perfil'] = $perfil;
+            $datos['videos'] = $videos;
             $datos['generos_lista'] = $generos;
             $datos['tipos_evento_lista'] = $tiposEvento;
             $this->view('djs/editar', $datos);
 
         } else {
             $perfil = $this->djModel->obtenerPerfil($_SESSION['usuario_id']);
+            $videos = $this->djModel->obtenerVideos($_SESSION['usuario_id']);
             $generos = $this->djModel->obtenerGeneros();
             $tiposEvento = $this->djModel->obtenerTiposEvento();
             $datos = [
                 'perfil' => $perfil,
+                'videos' => $videos,
                 'generos_lista' => $generos,
                 'tipos_evento_lista' => $tiposEvento,
                 'success' => ''
@@ -171,7 +211,8 @@ class Djs extends Core\Controller {
 
     public function agregar_video() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
             $datos = [
                 'dj_id' => $_SESSION['usuario_id'],
@@ -180,16 +221,27 @@ class Djs extends Core\Controller {
             ];
 
             if ($this->djModel->agregarVideo($datos)) {
-                header('Location: ' . URL_ROOT . '/djs/panel');
+                $redirect = ($_POST['from'] == 'editar') ? '/djs/editar' : '/djs/panel';
+                header('Location: ' . URL_ROOT . $redirect);
             } else {
-                die('Algo salió mal');
+                $_SESSION['flash_message'] = 'No se pudo agregar el video.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/djs/dashboard');
             }
         }
     }
 
     public function eliminar_video($id) {
-        if ($this->djModel->eliminarVideo($id, $_SESSION['usuario_id'])) {
-            header('Location: ' . URL_ROOT . '/djs/panel');
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->validateCsrf();
+            if ($this->djModel->eliminarVideo($id, $_SESSION['usuario_id'])) {
+                $redirect = (isset($_POST['from']) && $_POST['from'] == 'editar') ? '/djs/editar' : '/djs/panel';
+                header('Location: ' . URL_ROOT . $redirect);
+            } else {
+                $_SESSION['flash_message'] = 'No se pudo eliminar el video.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/djs/dashboard');
+            }
         }
     }
 }

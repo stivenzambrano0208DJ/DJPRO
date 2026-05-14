@@ -4,6 +4,7 @@
  */
 class Contrataciones extends Core\Controller {
     private $contratacionModel;
+    private $usuarioModel;
 
     public function __construct() {
         if (!isset($_SESSION['usuario_id'])) {
@@ -17,18 +18,42 @@ class Contrataciones extends Core\Controller {
     // El cliente envía una solicitud
     public function solicitar() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
             $datos = [
                 'cliente_id' => $_SESSION['usuario_id'],
-                'dj_id' => $_POST['dj_id'],
-                'fecha_evento' => $_POST['fecha_evento'],
-                'precio_total' => $_POST['precio_total'],
-                'presupuesto_estimado' => $_POST['presupuesto_estimado'] ?? null,
-                'horas' => $_POST['horas'] ?? 1,
-                'tipo_evento' => $_POST['evento'] ?? '',
-                'mensaje_cliente' => trim($_POST['mensaje_cliente'])
+                'dj_id' => trim($_POST['dj_id']),
+                'fecha_evento' => trim($_POST['fecha_evento']),
+                'hora_inicio' => trim($_POST['hora_inicio']),
+                'hora_fin' => trim($_POST['hora_fin']),
+                'evento' => trim($_POST['evento']),
+                'horas' => trim($_POST['horas']),
+                'precio_total' => trim($_POST['precio_total']),
+                'mensaje_cliente' => trim($_POST['mensaje_cliente']),
+                'presupuesto_estimado' => $_POST['presupuesto_estimado'] ?? null
             ];
+
+            // Validar disponibilidad del DJ (con hora y duración)
+            if (!$this->contratacionModel->verificarDisponibilidad(
+                    $datos['dj_id'], 
+                    $datos['fecha_evento'], 
+                    $datos['hora_inicio'], 
+                    $datos['horas']
+                )) {
+                $mensaje = empty($datos['hora_inicio'])
+                    ? '⚠️ El DJ ya tiene un compromiso confirmado para esta fecha.'
+                    : '⚠️ El DJ ya tiene un evento en ese horario. Elige otra hora o fecha.';
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'error' => $mensaje]);
+                    exit;
+                }
+                $_SESSION['flash_message'] = $mensaje;
+                $_SESSION['flash_type'] = 'warning';
+                header('Location: ' . URL_ROOT . '/clientes/dashboard');
+                exit;
+            }
 
             $success = $this->contratacionModel->crear($datos);
 
@@ -54,7 +79,9 @@ class Contrataciones extends Core\Controller {
             if ($success) {
                 header('Location: ' . URL_ROOT . '/clientes/dashboard');
             } else {
-                die('Algo salió mal');
+                $_SESSION['flash_message'] = 'Hubo un error al procesar tu solicitud. Por favor intenta de nuevo.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/clientes/dashboard');
             }
         }
     }
@@ -84,13 +111,41 @@ class Contrataciones extends Core\Controller {
 
         $estadosPermitidos = ['aceptada', 'rechazada', 'cancelada', 'terminada', 'completada'];
         if (in_array($estado, $estadosPermitidos)) {
+            // BUG-001 FIX: Validar disponibilidad ANTES de cambiar el estado
+            if ($estado == 'aceptada') {
+                if (!$this->contratacionModel->verificarDisponibilidad(
+                        $contratacion->dj_id, 
+                        $contratacion->fecha_evento,
+                        $contratacion->hora_inicio,
+                        $contratacion->horas,
+                        $contratacion->id
+                    )) {
+                    $_SESSION['flash_message'] = '⚠️ No puedes aceptar esta reserva porque ya tienes otro evento en ese horario.';
+                    $_SESSION['flash_type'] = 'warning';
+                    header('Location: ' . URL_ROOT . '/djs/dashboard');
+                    exit;
+                }
+            }
+
             if ($this->contratacionModel->actualizarEstado($id, $estado)) {
-                // Notificaciones
+                // Notificaciones por email
                 if ($estado == 'aceptada') {
-                    $cliente = $this->usuarioModel->buscarPorId($contratacion->cliente_id);
-                    if ($cliente) {
-                        \Libraries\EmailSender::enviarNotificacionAceptacionCliente($cliente->correo, $cliente->nombre, $_SESSION['usuario_nombre'], $contratacion->fecha_evento);
-                    }
+                    // Obtener datos del cliente y DJ para el correo
+                    $solicitud = $this->contratacionModel->obtenerPorId($id);
+                    $dj = $this->usuarioModel->buscarPorId($solicitud->dj_id);
+                    $cliente = $this->usuarioModel->buscarPorId($solicitud->cliente_id);
+                    
+                    // Formatear hora correctamente para evitar ceros
+                    $hora_inicio_formateada = date('h:i A', strtotime($solicitud->hora_inicio));
+                    $hora_fin_formateada = date('h:i A', strtotime($solicitud->hora_fin));
+                    
+                    \Libraries\EmailSender::enviarConfirmacionCliente(
+                        $cliente->correo, 
+                        $cliente->nombre, 
+                        $dj->nombre, 
+                        $solicitud->fecha_evento, 
+                        $hora_inicio_formateada . ' - ' . $hora_fin_formateada
+                    );
                 }
                 
                 if ($estado == 'cancelada' || $estado == 'rechazada') {
@@ -120,12 +175,21 @@ class Contrataciones extends Core\Controller {
             exit;
         }
 
+        // BUG-004 FIX: Solo permitir cancelar si está pendiente o aceptada
+        if (!in_array($contratacion->estado, ['pendiente', 'aceptada'])) {
+            $_SESSION['flash_message'] = '⚠️ No se puede cancelar una reserva que ya fue ' . $contratacion->estado . '.';
+            $_SESSION['flash_type'] = 'warning';
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+            exit;
+        }
+
         if ($this->contratacionModel->actualizarEstado($id, 'cancelada')) {
             // Notificar al DJ
             $dj = $this->usuarioModel->buscarPorId($contratacion->dj_id);
             if ($dj) {
                 \Libraries\EmailSender::enviarNotificacionCancelacionDj($dj->correo, $dj->nombre, $_SESSION['usuario_nombre'], $contratacion->fecha_evento);
             }
+            $_SESSION['flash_message'] = '✅ Reserva cancelada correctamente.';
             header('Location: ' . URL_ROOT . '/clientes/dashboard');
         }
     }
@@ -133,7 +197,8 @@ class Contrataciones extends Core\Controller {
     // El DJ envía una contra-oferta
     public function contra_oferta() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             
             $id = $_POST['contratacion_id'];
             $monto = $_POST['monto_contra_oferta'];
@@ -144,13 +209,95 @@ class Contrataciones extends Core\Controller {
                 exit;
             }
 
-            if ($this->contratacionModel->enviarContraOferta($id, $monto)) {
+            if ($this->contratacionModel->enviarContraOferta($id, $monto, 'dj')) {
                 // Opcional: Cambiar estado o simplemente notificar
                 $_SESSION['flash_message'] = '✅ Contra-oferta enviada al cliente.';
                 header('Location: ' . URL_ROOT . '/djs/dashboard');
             } else {
-                die('Algo salió mal');
+                $_SESSION['flash_message'] = 'No se pudo enviar la contra-oferta.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/djs/dashboard');
             }
+        }
+    }
+
+    // El Cliente acepta la contra-oferta del DJ
+    public function aceptar_contra_oferta($id) {
+        $contratacion = $this->contratacionModel->obtenerPorId($id);
+        
+        if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+            exit;
+        }
+
+        // Validar disponibilidad horaria antes de aceptar
+        if (!$this->contratacionModel->verificarDisponibilidad(
+                $contratacion->dj_id, 
+                $contratacion->fecha_evento,
+                $contratacion->hora_inicio,
+                $contratacion->horas,
+                $contratacion->id  // excluir esta misma contratación
+            )) {
+            $_SESSION['flash_message'] = '⚠️ El DJ ya tiene un evento en ese horario. No se puede proceder.';
+            $_SESSION['flash_type'] = 'warning';
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+            exit;
+        }
+
+        // BUG-005 FIX: Usar aceptarContraOferta() para actualizar el precio
+        if ($this->contratacionModel->aceptarContraOferta($id, $contratacion->contra_oferta)) {
+            $_SESSION['flash_message'] = '🎉 ¡Reserva aceptada con el nuevo precio de $' . number_format($contratacion->contra_oferta, 0) . '!';
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+        }
+    }
+
+    // El Cliente rechaza la contra-oferta
+    public function rechazar_contra_oferta($id) {
+        $contratacion = $this->contratacionModel->obtenerPorId($id);
+        if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+            exit;
+        }
+
+        if ($this->contratacionModel->reiniciarContraOferta($id)) {
+            $_SESSION['flash_message'] = '❌ Has rechazado la propuesta de precio del DJ.';
+            header('Location: ' . URL_ROOT . '/clientes/dashboard');
+        }
+    }
+
+    // El Cliente envía una nueva contra-oferta al DJ
+    public function contra_oferta_cliente() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            
+            $id = $_POST['contratacion_id'];
+            $monto = $_POST['monto_contra_oferta'];
+            
+            $contratacion = $this->contratacionModel->obtenerPorId($id);
+            if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
+                header('Location: ' . URL_ROOT . '/clientes/dashboard');
+                exit;
+            }
+
+            if ($this->contratacionModel->enviarContraOferta($id, $monto, 'cliente')) {
+                $_SESSION['flash_message'] = '✅ Tu nueva propuesta ha sido enviada al DJ.';
+                header('Location: ' . URL_ROOT . '/clientes/dashboard');
+            }
+        }
+    }
+
+    // El DJ cancela su propia contra-oferta
+    public function cancelar_contra_oferta($id) {
+        $contratacion = $this->contratacionModel->obtenerPorId($id);
+        if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
+            exit;
+        }
+
+        if ($this->contratacionModel->cancelarContraOferta($id)) {
+            $_SESSION['flash_message'] = '❌ Contra-oferta cancelada.';
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
         }
     }
 }

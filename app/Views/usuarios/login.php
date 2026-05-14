@@ -31,6 +31,7 @@
 
             <form action="<?php echo URL_ROOT; ?>/usuarios/login" method="POST" class="space-y-6">
                 <input type="hidden" name="redirect" value="<?php echo $data['redirect']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Correo Electrónico</label>
                     <div class="relative">
@@ -42,7 +43,7 @@
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
                         <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest">Contraseña</label>
-                        <a href="#" class="text-[9px] font-bold text-djpro-accent uppercase tracking-widest hover:underline">¿Olvidaste?</a>
+                        <a href="<?php echo URL_ROOT; ?>/usuarios/recuperar" class="text-[9px] font-bold text-djpro-accent uppercase tracking-widest hover:underline">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="relative">
                         <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>

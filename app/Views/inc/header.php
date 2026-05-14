@@ -38,6 +38,7 @@
     
     <!-- Global JS -->
     <script src="<?php echo URL_ROOT; ?>/assets/js/main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         @layer utilities {
@@ -93,7 +94,11 @@
                         <a href="<?php echo URL_ROOT; ?>/<?php echo $_SESSION['usuario_rol'] == 'dj' ? 'djs/dashboard' : ($_SESSION['usuario_rol'] == 'admin' ? 'admin/dashboard' : 'clientes/dashboard'); ?>" 
                            class="flex items-center gap-2 bg-djpro-surface-2 border border-djpro-border px-4 py-2 rounded-xl hover:border-djpro-accent transition-all">
                             <span class="text-sm font-semibold"><?php echo $_SESSION['usuario_nombre']; ?></span>
-                            <i class="bi bi-person-circle text-djpro-accent"></i>
+                            <?php if($_SESSION['usuario_rol'] == 'dj' && isset($data['perfil']) && !empty($data['perfil']->foto_perfil) && $data['perfil']->foto_perfil != 'default_dj.png'): ?>
+                                <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $data['perfil']->foto_perfil; ?>" class="w-6 h-6 rounded-full object-cover">
+                            <?php else: ?>
+                                <i class="bi bi-person-circle text-djpro-accent text-xl"></i>
+                            <?php endif; ?>
                         </a>
                         <a href="<?php echo URL_ROOT; ?>/usuarios/logout" class="text-djpro-muted hover:text-red-400 transition-colors">
                             <i class="bi bi-box-arrow-right text-xl"></i>
@@ -181,15 +186,36 @@
         
         <!-- Flash Messages -->
         <?php if(isset($_SESSION['flash_message'])): ?>
-            <div class="container mx-auto px-4 mt-6">
-                <div class="bg-djpro-accent/10 border border-djpro-accent/20 text-djpro-accent p-4 rounded-2xl flex items-center gap-4 shadow-xl shadow-orange-500/5 reveal reveal-active">
-                    <div class="w-12 h-12 bg-djpro-accent rounded-xl flex items-center justify-center text-white text-2xl shadow-lg shadow-orange-500/20">
-                        <i class="bi bi-envelope-check"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-lg leading-none mb-1">¡Acción exitosa!</h4>
-                        <p class="text-djpro-text/80 text-sm"><?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?></p>
-                    </div>
-                </div>
-            </div>
+            <?php 
+                $flash_type = $_SESSION['flash_type'] ?? 'success';
+                $flash_title = '¡Acción exitosa!';
+                $flash_icon = 'success';
+                
+                if ($flash_type === 'error') {
+                    $flash_title = '¡Ups! Algo salió mal';
+                    $flash_icon = 'error';
+                } elseif ($flash_type === 'warning') {
+                    $flash_title = 'Aviso Importante';
+                    $flash_icon = 'warning';
+                } elseif ($flash_type === 'info') {
+                    $flash_title = 'Información';
+                    $flash_icon = 'info';
+                }
+            ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    Swal.fire({
+                        title: <?php echo json_encode($flash_title); ?>,
+                        text: <?php echo json_encode($_SESSION['flash_message']); ?>,
+                        icon: <?php echo json_encode($flash_icon); ?>,
+                        confirmButtonColor: '#f97316',
+                        background: '#12121a',
+                        color: '#fff'
+                    });
+                });
+            </script>
+            <?php 
+                unset($_SESSION['flash_message']); 
+                unset($_SESSION['flash_type']);
+            ?>
         <?php endif; ?>

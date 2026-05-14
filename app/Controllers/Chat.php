@@ -33,6 +33,12 @@ class Chat extends Core\Controller {
             'contacto_id' => $contacto_id
         ];
 
+        // Si es DJ, cargar su perfil para el sidebar
+        if($_SESSION['usuario_rol'] == 'dj') {
+            $djModel = $this->model('Dj');
+            $datos['perfil'] = $djModel->obtenerPerfil($_SESSION['usuario_id']);
+        }
+
         $this->view('chat/index', $datos);
     }
 
@@ -41,7 +47,7 @@ class Chat extends Core\Controller {
             $datos = [
                 'emisor_id' => $_SESSION['usuario_id'],
                 'receptor_id' => $_POST['receptor_id'],
-                'contenido' => trim($_POST['contenido'])
+                'contenido' => htmlspecialchars(trim($_POST['contenido']), ENT_QUOTES, 'UTF-8')
             ];
 
             if (!empty($datos['contenido'])) {
@@ -87,10 +93,11 @@ class Chat extends Core\Controller {
     public function api_send() {
         header('Content-Type: application/json');
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->validateCsrf();
             $datos = [
                 'emisor_id' => $_SESSION['usuario_id'],
                 'receptor_id' => $_POST['receptor_id'],
-                'contenido' => trim($_POST['contenido'])
+                'contenido' => htmlspecialchars(trim($_POST['contenido']), ENT_QUOTES, 'UTF-8')
             ];
 
             if (!empty($datos['contenido'])) {

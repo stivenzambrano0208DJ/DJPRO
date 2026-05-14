@@ -1,6 +1,13 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
+<?php 
+    if($_SESSION['usuario_rol'] == 'dj') {
+        require APPROOT . '/app/Views/inc/sidebar_dj.php';
+    } else if($_SESSION['usuario_rol'] == 'cliente') {
+        require APPROOT . '/app/Views/inc/sidebar_cliente.php';
+    }
+?>
 
-<section class="h-[calc(100vh-80px)] flex overflow-hidden">
+<section class="lg:ml-64 h-[calc(100vh-80px)] flex overflow-hidden">
     
     <!-- Sidebar de Conversaciones -->
     <div class="w-full md:w-80 lg:w-96 bg-djpro-surface border-r border-djpro-border flex flex-col">
@@ -148,6 +155,7 @@
             const formData = new FormData();
             formData.append('receptor_id', receptorId);
             formData.append('contenido', content);
+            formData.append('csrf_token', '<?php echo $_SESSION['csrf_token']; ?>');
 
             fetch('<?php echo URL_ROOT; ?>/chat/api_send', {
                 method: 'POST',
@@ -171,17 +179,25 @@
             .then(data => {
                 const currentUserId = '<?php echo $_SESSION['usuario_id']; ?>';
                 let html = '';
+
+                // Función para escapar HTML y prevenir XSS
+                const escapeHTML = (str) => {
+                    const p = document.createElement('p');
+                    p.textContent = str;
+                    return p.innerHTML;
+                };
                 
                 data.mensajes.forEach(msg => {
                     const isMe = msg.emisor_id == currentUserId;
                     const date = new Date(msg.fecha_envio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const sanitizedContent = escapeHTML(msg.contenido);
                     
                     if (isMe) {
                         html += `
                             <div class="flex justify-end ml-auto max-w-[80%]">
                                 <div class="flex flex-col gap-1 items-end">
                                     <div class="bg-djpro-accent p-4 rounded-2xl rounded-tr-none text-white text-sm leading-relaxed shadow-lg shadow-orange-500/20">
-                                        ${msg.contenido}
+                                        ${sanitizedContent}
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-[9px] text-djpro-muted font-bold uppercase">${date}</span>
@@ -195,7 +211,7 @@
                             <div class="flex justify-start max-w-[80%]">
                                 <div class="flex flex-col gap-1">
                                     <div class="bg-djpro-surface-2 p-4 rounded-2xl rounded-tl-none border border-djpro-border text-djpro-text text-sm leading-relaxed">
-                                        ${msg.contenido}
+                                        ${sanitizedContent}
                                     </div>
                                     <span class="text-[9px] text-djpro-muted font-bold uppercase ml-1">${date}</span>
                                 </div>
@@ -217,10 +233,5 @@
         setInterval(fetchMessages, 3000);
     }
 </script>
-
-<?php require APPROOT . '/app/Views/inc/footer.php'; ?>
-
-
-</section>
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>

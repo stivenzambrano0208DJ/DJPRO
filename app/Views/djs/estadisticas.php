@@ -142,13 +142,28 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Chart Servicios
         const ctxServicios = document.getElementById('chartServicios').getContext('2d');
+        
+        <?php 
+            $labels = [];
+            $counts = [];
+            foreach($data['proyeccion'] as $p) {
+                $labels[] = $p->mes;
+                $counts[] = $p->total;
+            }
+            // Si no hay datos, mostrar ceros para los últimos meses
+            if (empty($labels)) {
+                $labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+                $counts = [0, 0, 0, 0, 0, 0];
+            }
+        ?>
+
         new Chart(ctxServicios, {
             type: 'line',
             data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                labels: <?php echo json_encode($labels); ?>,
                 datasets: [{
                     label: 'Servicios',
-                    data: [2, 5, 3, 8, 4, <?php echo $data['stats']['finalizados'] ?? 0; ?>],
+                    data: <?php echo json_encode($counts); ?>,
                     borderColor: '#f97316',
                     backgroundColor: 'rgba(249, 115, 22, 0.1)',
                     borderWidth: 3,

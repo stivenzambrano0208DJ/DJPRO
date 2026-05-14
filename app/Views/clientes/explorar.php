@@ -139,45 +139,55 @@
                             <button onclick="closeModal('<?php echo $dj->id; ?>')" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
                         </div>
                         <form action="<?php echo URL_ROOT; ?>/contrataciones/solicitar" method="POST" class="p-8 space-y-6">
+                            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                             <input type="hidden" name="dj_id" value="<?php echo $dj->id; ?>">
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Fecha del Evento</label>
+                                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Fecha</label>
                                     <input type="date" name="fecha_evento" class="input-djpro w-full cursor-pointer" required min="<?php echo date('Y-m-d'); ?>">
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Tipo de Evento</label>
-                                    <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="Boda">Boda</option>
-                                        <option value="XV Años">XV Años</option>
-                                        <option value="Corporativo">Corporativo</option>
-                                        <option value="Discoteca / Bar">Discoteca / Bar</option>
-                                        <option value="Fiesta Privada">Fiesta Privada</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
+                                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Inicio</label>
+                                    <input type="time" name="hora_inicio" id="inicio-<?php echo $dj->id; ?>" class="input-djpro w-full cursor-pointer" required onchange="calcularTotal('<?php echo $dj->id; ?>', <?php echo $dj->precio_hora ?: 0; ?>)">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Fin</label>
+                                    <input type="time" name="hora_fin" id="fin-<?php echo $dj->id; ?>" class="input-djpro w-full cursor-pointer" required onchange="calcularTotal('<?php echo $dj->id; ?>', <?php echo $dj->precio_hora ?: 0; ?>)">
                                 </div>
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Horas de Servicio</label>
+                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Tipo de Evento</label>
+                                <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Boda">Boda</option>
+                                    <option value="XV Años">XV Años</option>
+                                    <option value="Corporativo">Corporativo</option>
+                                    <option value="Discoteca / Bar">Discoteca / Bar</option>
+                                    <option value="Fiesta Privada">Fiesta Privada</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Horas de Servicio</label>
                                 <input type="number" name="horas" id="horas-<?php echo $dj->id; ?>" value="1" min="1" class="input-djpro w-full" oninput="calcularTotal('<?php echo $dj->id; ?>', <?php echo $dj->precio_hora ?: 0; ?>)">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Total Estimado ($)</label>
+                                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Total Estimado ($)</label>
                                     <input type="number" name="presupuesto_estimado" id="estimado-<?php echo $dj->id; ?>" value="<?php echo $dj->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60" readonly>
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mi Presupuesto ($)</label>
+                                    <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Mi Presupuesto ($)</label>
                                     <input type="number" name="precio_total" id="total-<?php echo $dj->id; ?>" value="<?php echo $dj->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full" required>
                                 </div>
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Detalles del Evento</label>
+                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Detalles del Evento</label>
                                 <textarea name="mensaje_cliente" rows="4" placeholder="Cuéntale al DJ sobre el tipo de evento, duración y expectativas..." class="input-djpro w-full resize-none"></textarea>
                             </div>
 
@@ -205,12 +215,30 @@
     }
 
     function calcularTotal(id, precioHora) {
-        const horas = document.getElementById(`horas-${id}`).value;
+        const horaInicio = document.getElementById(`inicio-${id}`).value;
+        const horaFin = document.getElementById(`fin-${id}`).value;
+        const horasInput = document.getElementById(`horas-${id}`);
         const estimadoInput = document.getElementById(`estimado-${id}`);
         const totalInput = document.getElementById(`total-${id}`);
         
+        // Calcular horas si ambas están presentes
+        if (horaInicio && horaFin) {
+            const start = new Date(`2000-01-01T${horaInicio}:00`);
+            let end = new Date(`2000-01-01T${horaFin}:00`);
+            
+            // Si la hora de fin es menor a la de inicio, asumimos que es del día siguiente
+            if (end <= start) {
+                end = new Date(`2000-01-02T${horaFin}:00`);
+            }
+            
+            const diffMs = end - start;
+            const diffHrs = diffMs / (1000 * 60 * 60);
+            horasInput.value = Math.max(1, Math.round(diffHrs * 10) / 10);
+        }
+
+        const horas = horasInput.value;
         if (precioHora > 0) {
-            const total = Math.max(0, precioHora * horas);
+            const total = Math.max(0, Math.round(precioHora * horas));
             estimadoInput.value = total;
             // totalInput.value = total;
         }

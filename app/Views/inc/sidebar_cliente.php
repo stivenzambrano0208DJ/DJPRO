@@ -34,7 +34,7 @@
                 <span class="font-bold">Eventos</span>
             </a>
             
-            <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-4 px-4 py-3 rounded-xl text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all">
+            <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'chat') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
                 <i class="bi bi-chat-dots-fill text-xl"></i>
                 <span class="font-bold">Mensajes</span>
             </a>

@@ -4,15 +4,30 @@
 <div class="lg:ml-64 p-8">
     <div class="container mx-auto">
         <!-- Alerta de Perfil Incompleto -->
-        <?php if(empty($data['perfil']->biografia) || $data['perfil']->foto_perfil == 'default_dj.png' || empty($data['videos'])): ?>
+        <?php 
+            $missing = [];
+            if(empty($data['perfil']->biografia)) $missing[] = 'biografía';
+            if($data['perfil']->foto_perfil == 'default_dj.png') $missing[] = 'foto';
+            if(empty($data['videos'])) $missing[] = 'videos';
+            if(empty($data['perfil']->precio_hora)) $missing[] = 'precio';
+            if(empty($data['perfil']->ciudad)) $missing[] = 'ubicación';
+            if(empty($data['perfil']->generos)) $missing[] = 'géneros';
+            if(empty($data['perfil']->tipos_evento)) $missing[] = 'eventos';
+
+            $perfilIncompleto = !empty($missing);
+        ?>
+        <?php if($perfilIncompleto): ?>
         <div class="mb-10 bg-djpro-accent/10 border border-djpro-accent/20 p-6 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-6">
                 <div class="w-16 h-16 bg-djpro-accent/20 rounded-2xl flex items-center justify-center text-djpro-accent shrink-0">
                     <i class="bi bi-exclamation-triangle-fill text-3xl"></i>
                 </div>
                 <div>
-                    <h4 class="text-xl font-bebas text-white tracking-widest">¡TU PERFIL ESTÁ INCOMPLETO!</h4>
-                    <p class="text-djpro-muted text-sm font-medium">Sube una foto, videos y una biografía para aparecer en los primeros resultados de búsqueda.</p>
+                    <h4 class="text-xl font-bebas text-white tracking-widest uppercase">¡TU PERFIL ESTÁ INCOMPLETO!</h4>
+                    <p class="text-djpro-muted text-sm font-medium">
+                        Te falta: <span class="text-djpro-accent font-bold"><?php echo implode(', ', $missing); ?></span>. 
+                        Completa esto para destacar en la plataforma.
+                    </p>
                 </div>
             </div>
             <a href="<?php echo URL_ROOT; ?>/djs/editar" class="btn-djpro-primary px-8 py-3 whitespace-nowrap">COMPLETAR AHORA</a>
@@ -124,6 +139,7 @@
                                 <tr class="bg-djpro-surface-2">
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Cliente</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Fecha</th>
+                                    <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Hora</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Horas</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Precio</th>
                                     <th class="px-8 py-4 text-[10px] font-bold text-djpro-muted uppercase tracking-widest">Estado</th>
@@ -144,12 +160,31 @@
                                                 <span class="font-bold text-white text-sm"><?php echo $con->cliente_nombre; ?></span>
                                             </div>
                                         </td>
-                                        <td class="px-8 py-6 text-xs font-bold text-white"><?php echo date('d M, Y', strtotime($con->fecha_evento)); ?></td>
+                                        <td class="px-8 py-6 text-xs font-bold text-white whitespace-nowrap">
+                                            <?php echo date('d M, Y', strtotime($con->fecha_evento)); ?>
+                                        </td>
+                                        <td class="px-8 py-6">
+                                            <?php if(!empty($con->hora_inicio)): ?>
+                                            <span class="text-[10px] font-bold text-djpro-accent bg-djpro-accent/10 px-2 py-1 rounded-lg border border-djpro-accent/20 flex items-center gap-1 w-fit">
+                                                <i class="bi bi-clock-fill"></i>
+                                                <?php echo date('h:i A', strtotime($con->hora_inicio)); ?>
+                                            </span>
+                                            <?php else: ?>
+                                            <span class="text-[10px] text-djpro-muted">—</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="px-8 py-6 text-xs font-bold text-white"><?php echo $con->horas; ?> h</td>
                                         <td class="px-8 py-6 text-sm font-bold text-djpro-accent">
                                             $<?php echo number_format($con->precio_total, 0); ?>
                                             <?php if($con->contra_oferta): ?>
-                                                <div class="text-[9px] text-yellow-500 uppercase">Contra-oferta: $<?php echo number_format($con->contra_oferta, 0); ?></div>
+                                                <div class="text-[9px] text-yellow-500 uppercase flex items-center gap-2">
+                                                    Contra-oferta: $<?php echo number_format($con->contra_oferta, 0); ?>
+                                                    <?php if($con->quien_contraoferto == 'dj'): ?>
+                                                        <a href="<?php echo URL_ROOT; ?>/contrataciones/cancelar_contra_oferta/<?php echo $con->id; ?>" class="text-red-400 hover:text-red-500 transition-colors" title="Retirar mi oferta">
+                                                            <i class="bi bi-x-circle-fill"></i>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
                                             <?php endif; ?>
                                         </td>
                                         <td class="px-8 py-6">
@@ -235,7 +270,13 @@
                                 </div>
                                 <div class="absolute bottom-0 left-0 right-0 bg-djpro-surface/90 p-2 backdrop-blur-md border-t border-djpro-border flex justify-between items-center">
                                     <span class="text-[10px] font-bold text-white truncate w-4/5 uppercase tracking-widest"><?php echo $video->titulo; ?></span>
-                                    <a href="<?php echo URL_ROOT; ?>/djs/eliminar_video/<?php echo $video->id; ?>" class="text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('¿Eliminar video?')"><i class="bi bi-trash"></i></a>
+                                    <form id="delete-video-form-<?php echo $video->id; ?>" action="<?php echo URL_ROOT; ?>/djs/eliminar_video/<?php echo $video->id; ?>" method="POST" class="inline">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                                        <input type="hidden" name="from" value="panel">
+                                        <button type="button" onclick="confirmDeleteForm('delete-video-form-<?php echo $video->id; ?>', '¿Quieres eliminar este video de tu portafolio?')" class="text-red-400 hover:text-red-500 transition-colors">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -255,6 +296,7 @@
             <button onclick="closeModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
         <form action="<?php echo URL_ROOT; ?>/djs/agregar_video" method="POST" class="p-6 space-y-6">
+            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Título del Video</label>
                 <input type="text" name="titulo" placeholder="Ej: Festival Electrónica 2024" class="input-djpro w-full" required>
@@ -280,6 +322,7 @@
             <button onclick="closeContraOfertaModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
         <form action="<?php echo URL_ROOT; ?>/contrataciones/contra_oferta" method="POST" class="p-6 space-y-6">
+            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <input type="hidden" name="contratacion_id" id="contra_contratacion_id">
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Presupuesto del Cliente</label>

@@ -1,29 +1,13 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 
 <div class="flex">
-    <!-- Sidebar Admin (Simplified for this view) -->
-    <aside class="w-64 bg-djpro-surface border-r border-djpro-border h-[calc(100vh-80px)] hidden lg:block">
-        <div class="p-6">
-            <h2 class="text-xl font-bebas text-djpro-accent tracking-widest mb-10 uppercase">Admin Panel</h2>
-            <nav class="space-y-4">
-                <a href="<?php echo URL_ROOT; ?>/admin/dashboard" class="flex items-center gap-3 text-white font-bold px-4 py-3 bg-djpro-accent/10 border-l-4 border-djpro-accent rounded-r-xl">
-                    <i class="bi bi-speedometer2"></i> Global KPI
-                </a>
-                <a href="<?php echo URL_ROOT; ?>/admin/usuarios" class="flex items-center gap-3 text-djpro-muted hover:text-white px-4 py-3 transition-all">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-                <a href="<?php echo URL_ROOT; ?>/admin/reservas" class="flex items-center gap-3 text-djpro-muted hover:text-white px-4 py-3 transition-all">
-                    <i class="bi bi-calendar-check"></i> Reservas
-                </a>
-                <a href="<?php echo URL_ROOT; ?>/admin/dashboard" class="flex items-center gap-3 text-djpro-muted hover:text-white px-4 py-3 transition-all">
-                    <i class="bi bi-shield-lock"></i> Seguridad
-                </a>
-            </nav>
-        </div>
-    </aside>
+<?php 
+    $activePage = 'dashboard';
+    require APPROOT . '/app/Views/inc/admin_sidebar.php'; 
+?>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-y-auto custom-scrollbar h-[calc(100vh-80px)]">
+    <!-- Main Content Area -->
+    <div class="flex-1 p-8 overflow-y-auto custom-scrollbar h-[calc(100vh-80px)]">
         <div class="container mx-auto">
             
             <div class="flex justify-between items-center mb-10">
@@ -44,6 +28,10 @@
                 <div class="bg-djpro-surface p-6 rounded-2xl border border-djpro-border">
                     <span class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest block mb-1">Total Reservas</span>
                     <h3 id="admin-total-eventos" class="text-4xl font-bebas text-white"><?php echo $data['total_eventos']; ?></h3>
+                </div>
+                <div class="bg-djpro-surface p-6 rounded-2xl border border-djpro-border">
+                    <span class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest block mb-1">Volumen de Negocio</span>
+                    <h3 class="text-4xl font-bebas text-white">$<?php echo number_format($data['volumen_negocio'], 0); ?></h3>
                 </div>
                 <div class="bg-djpro-surface p-6 rounded-2xl border border-djpro-border">
                     <span class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest block mb-1">Live Status</span>
@@ -112,19 +100,28 @@
                     </div>
                 </div>
 
-                <!-- Reservas Globales (Placeholder dinámico) -->
+                <!-- Reservas Globales -->
                 <div class="bg-djpro-surface rounded-2xl border border-djpro-border overflow-hidden">
                     <div class="p-6 border-b border-djpro-border bg-djpro-surface-2 flex justify-between items-center">
-                        <h4 class="text-lg font-bebas text-white tracking-widest uppercase">Estado Reservas</h4>
+                        <h4 class="text-lg font-bebas text-white tracking-widest uppercase">Distribución de Eventos</h4>
                     </div>
-                    <div class="p-12 text-center">
-                        <i class="bi bi-activity text-4xl text-djpro-muted mb-4 block"></i>
-                        <p class="text-[10px] text-djpro-muted font-bold uppercase tracking-widest">Monitoreo de transacciones activo</p>
+                    <div class="p-8 space-y-6">
+                        <?php foreach($data['metricas_estado'] as $metrica): ?>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-white uppercase tracking-widest"><?php echo $metrica->estado; ?></span>
+                                <span class="text-xs font-bold text-djpro-accent"><?php echo $metrica->cantidad; ?></span>
+                            </div>
+                            <div class="w-full h-1.5 bg-djpro-surface-2 rounded-full overflow-hidden">
+                                <div class="h-full bg-djpro-accent" style="width: <?php echo ($metrica->cantidad / max(1, $data['total_eventos'])) * 100; ?>%"></div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </div>
 
 <script>
