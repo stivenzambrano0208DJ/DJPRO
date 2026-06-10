@@ -12,7 +12,7 @@
             
             <div class="flex justify-between items-center mb-10">
                 <h1 class="text-4xl font-bebas text-white tracking-widest">CONTROL <span class="text-djpro-accent">GLOBAL</span></h1>
-                <button class="btn-djpro-primary px-6 py-2.5 text-sm">REGISTRAR DJ MANUAL</button>
+                <button onclick="document.getElementById('modalRegistrarDj').classList.remove('hidden')" class="btn-djpro-primary px-6 py-2.5 text-sm flex items-center gap-2"><i class="bi bi-person-plus-fill"></i> REGISTRAR DJ MANUAL</button>
             </div>
 
             <!-- Stats -->
@@ -121,6 +121,40 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal Registrar DJ -->
+<div id="modalRegistrarDj" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
+    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden">
+        <div class="p-6 border-b border-djpro-border bg-djpro-surface-2/50 flex justify-between items-center">
+            <div>
+                <h5 class="text-xl font-bebas text-white tracking-widest uppercase">Registrar <span class="text-djpro-accent">DJ Manual</span></h5>
+                <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-widest mt-0.5">El DJ podrá iniciar sesión inmediatamente</p>
+            </div>
+            <button onclick="document.getElementById('modalRegistrarDj').classList.add('hidden')" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form action="<?php echo URL_ROOT; ?>/admin/registrar_dj" method="POST" class="p-6 space-y-5">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Nombre Artístico</label>
+                <input type="text" name="nombre" placeholder="Ej: DJ Stiven" class="input-djpro w-full border-djpro-accent/30" required>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Correo Electrónico</label>
+                <input type="email" name="correo" placeholder="dj@ejemplo.com" class="input-djpro w-full border-djpro-accent/30" required>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Contraseña Temporal</label>
+                <input type="text" name="password" placeholder="Mínimo 6 caracteres" class="input-djpro w-full border-djpro-accent/30" required minlength="6">
+                <p class="text-[9px] text-djpro-muted font-bold ml-1">El DJ debe cambiarla al iniciar sesión por primera vez.</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modalRegistrarDj').classList.add('hidden')" class="flex-1 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all text-sm">CANCELAR</button>
+                <button type="submit" class="flex-1 btn-djpro-primary py-3 text-sm">CREAR DJ</button>
+            </div>
+        </form>
     </div>
 </div>
 

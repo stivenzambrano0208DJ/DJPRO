@@ -22,6 +22,7 @@ class EmailSender {
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
+            $mail->Timeout    = 5; // Timeout rápido de 5 segundos para no bloquear la aplicación
 
             /* 
             $mail->SMTPOptions = array(

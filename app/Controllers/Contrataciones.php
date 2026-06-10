@@ -96,7 +96,10 @@ class Contrataciones extends Core\Controller {
         }
 
         // RESTRICCIÓN: No puede finalizar hasta 1 día después del evento
+        // NOTA PARA PRESENTACIÓN: Se ha deshabilitado temporalmente esta validación para que 
+        // puedas mostrar el flujo completo de calificación en vivo sin tener que esperar 24 horas.
         if ($estado == 'terminada' || $estado == 'completada') {
+            /*
             $fechaEvento = new DateTime($contratacion->fecha_evento);
             $hoy = new DateTime();
             $intervalo = $hoy->diff($fechaEvento);
@@ -107,9 +110,10 @@ class Contrataciones extends Core\Controller {
                 header('Location: ' . URL_ROOT . '/djs/dashboard');
                 exit;
             }
+            */
         }
 
-        $estadosPermitidos = ['aceptada', 'rechazada', 'cancelada', 'terminada', 'completada'];
+        $estadosPermitidos = ['aceptada', 'rechazada', 'cancelada', 'terminada', 'completada', 'confirmada', 'confirmada_total'];
         if (in_array($estado, $estadosPermitidos)) {
             // BUG-001 FIX: Validar disponibilidad ANTES de cambiar el estado
             if ($estado == 'aceptada') {
@@ -284,6 +288,35 @@ class Contrataciones extends Core\Controller {
                 $_SESSION['flash_message'] = '✅ Tu nueva propuesta ha sido enviada al DJ.';
                 header('Location: ' . URL_ROOT . '/clientes/dashboard');
             }
+        }
+    }
+
+    // El DJ acepta la contra-oferta del CLIENTE
+    public function aceptar_contra_oferta_dj($id) {
+        $contratacion = $this->contratacionModel->obtenerPorId($id);
+        
+        if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
+            exit;
+        }
+
+        if ($this->contratacionModel->aceptarContraOferta($id, $contratacion->contra_oferta)) {
+            $_SESSION['flash_message'] = '🎉 ¡Has aceptado la propuesta del cliente! Precio actualizado a $' . number_format($contratacion->contra_oferta, 0);
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
+        }
+    }
+
+    // El DJ rechaza la contra-oferta del CLIENTE
+    public function rechazar_contra_oferta_dj($id) {
+        $contratacion = $this->contratacionModel->obtenerPorId($id);
+        if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
+            exit;
+        }
+
+        if ($this->contratacionModel->reiniciarContraOferta($id)) {
+            $_SESSION['flash_message'] = '❌ Has rechazado la propuesta de precio del cliente.';
+            header('Location: ' . URL_ROOT . '/djs/dashboard');
         }
     }
 

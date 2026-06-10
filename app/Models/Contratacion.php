@@ -108,9 +108,10 @@ class Contratacion extends Core\Model {
 
     // Obtener contrataciones de un DJ
     public function obtenerPorDj($dj_id) {
-        $this->db->query('SELECT c.*, u.nombre as cliente_nombre 
+        $this->db->query('SELECT c.*, u.nombre as cliente_nombre, p.foto_perfil as cliente_foto 
                           FROM contrataciones c 
                           INNER JOIN usuarios u ON c.cliente_id = u.id 
+                          LEFT JOIN perfiles_dj p ON u.id = p.usuario_id
                           WHERE c.dj_id = :dj_id 
                           ORDER BY c.fecha_creacion DESC');
         $this->db->bind(':dj_id', $dj_id);
@@ -119,9 +120,10 @@ class Contratacion extends Core\Model {
 
     // Obtener contrataciones de un Cliente
     public function obtenerPorCliente($cliente_id) {
-        $this->db->query('SELECT c.*, u.nombre as dj_nombre 
+        $this->db->query('SELECT c.*, u.nombre as dj_nombre, p.foto_perfil as dj_foto
                           FROM contrataciones c 
                           INNER JOIN usuarios u ON c.dj_id = u.id 
+                          LEFT JOIN perfiles_dj p ON u.id = p.usuario_id
                           WHERE c.cliente_id = :cliente_id 
                           ORDER BY c.fecha_creacion DESC');
         $this->db->bind(':cliente_id', $cliente_id);

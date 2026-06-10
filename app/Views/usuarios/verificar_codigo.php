@@ -33,7 +33,7 @@
                         <div class="flex justify-between gap-2 md:gap-4">
                             <?php for($i=0; $i<6; $i++): ?>
                                 <input type="text" name="codigo[]" maxlength="1" 
-                                    class="code-input w-12 h-16 md:w-14 md:h-20 bg-djpro-surface-2 border-2 border-djpro-border rounded-xl text-center text-2xl font-bold text-white focus:border-djpro-accent focus:outline-none transition-all shadow-lg"
+                                    class="code-input w-12 h-16 md:w-14 md:h-20 bg-djpro-surface-2 border-2 border-djpro-accent/30 rounded-xl text-center text-2xl font-bold text-white focus:border-djpro-accent focus:outline-none transition-all shadow-lg"
                                     required autocomplete="off">
                             <?php endfor; ?>
                         </div>

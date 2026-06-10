@@ -1,7 +1,7 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 
 <section class="min-h-[calc(100vh-80px)] flex items-center justify-center p-4">
-    <div class="max-w-5xl w-full bg-djpro-surface rounded-3xl border border-djpro-border overflow-hidden shadow-2xl flex flex-col md:row h-full md:h-[700px] md:flex-row">
+    <div class="max-w-5xl w-full bg-djpro-surface rounded-3xl border border-djpro-border overflow-hidden shadow-2xl flex flex-col md:row h-full md:min-h-[700px] md:flex-row">
         
         <!-- Lado Visual -->
         <div class="hidden md:flex w-1/2 relative bg-gradient-to-br from-djpro-purple/20 to-djpro-accent/20 items-center justify-center p-12 order-last md:order-none">
@@ -33,34 +33,34 @@
                 <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Nombre Completo</label>
-                        <input type="text" name="nombre" value="<?php echo $data['nombre']; ?>" placeholder="Ej: Steven Mix" class="input-djpro w-full" required>
+                    <div id="nombre-container" class="space-y-1 <?php echo $data['rol'] != 'dj' ? 'md:col-span-2' : ''; ?>">
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Nombre Completo</label>
+                        <input type="text" name="nombre" value="<?php echo $data['nombre']; ?>" maxlength="30" placeholder="Ej: Steven Mix" class="input-djpro w-full border-djpro-accent/30" required>
                     </div>
-                    <div class="space-y-1">
+                    <div id="username-container" class="space-y-1 <?php echo $data['rol'] != 'dj' ? 'hidden' : ''; ?>">
                         <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Username (ID Público)</label>
-                        <input type="text" name="username" value="<?php echo $data['username']; ?>" placeholder="stiven_mix_2026" class="input-djpro w-full border-djpro-accent/30" required pattern="[a-zA-Z0-9_]+" title="Solo letras, números y guiones bajos (sin espacios ni emojis)">
+                        <input type="text" name="username" id="username-input" value="<?php echo $data['username'] ?? ''; ?>" maxlength="30" placeholder="stiven_mix_2026" class="input-djpro w-full border-djpro-accent/30" <?php echo $data['rol'] == 'dj' ? 'required' : ''; ?> pattern="[a-zA-Z0-9_]+" title="Solo letras, números y guiones bajos (sin espacios ni emojis)">
                     </div>
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Correo Electrónico</label>
-                    <input type="email" name="correo" value="<?php echo $data['correo']; ?>" placeholder="tu@ejemplo.com" class="input-djpro w-full" required>
+                    <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Correo Electrónico</label>
+                    <input type="email" name="correo" value="<?php echo $data['correo']; ?>" maxlength="100" placeholder="tu@ejemplo.com" class="input-djpro w-full border-djpro-accent/30" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Contraseña</label>
-                        <input type="password" name="password" placeholder="••••••••" class="input-djpro w-full" required>
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Contraseña</label>
+                        <input type="password" name="password" placeholder="••••••••" class="input-djpro w-full border-djpro-accent/30" required maxlength="30">
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Confirmar</label>
-                        <input type="password" name="confirm_password" placeholder="••••••••" class="input-djpro w-full" required>
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Confirmar</label>
+                        <input type="password" name="confirm_password" placeholder="••••••••" class="input-djpro w-full border-djpro-accent/30" required maxlength="30">
                     </div>
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">¿Qué perfil buscas?</label>
+                    <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">¿Qué perfil buscas?</label>
                     <div class="flex gap-4">
                         <label class="flex-1 cursor-pointer group">
                             <input type="radio" name="rol" value="cliente" class="hidden peer" <?php echo $data['rol'] == 'cliente' ? 'checked' : ''; ?>>
@@ -93,5 +93,37 @@
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rolRadios = document.querySelectorAll('input[name="rol"]');
+        const usernameContainer = document.getElementById('username-container');
+        const usernameInput = document.getElementById('username-input');
+        const nombreContainer = document.getElementById('nombre-container');
+
+        function toggleUsername() {
+            const selectedRadio = document.querySelector('input[name="rol"]:checked');
+            if (!selectedRadio) return;
+            
+            const selectedRol = selectedRadio.value;
+            if (selectedRol === 'dj') {
+                usernameContainer.classList.remove('hidden');
+                usernameInput.setAttribute('required', 'required');
+                nombreContainer.classList.remove('md:col-span-2');
+            } else {
+                usernameContainer.classList.add('hidden');
+                usernameInput.removeAttribute('required');
+                nombreContainer.classList.add('md:col-span-2');
+            }
+        }
+
+        rolRadios.forEach(radio => {
+            radio.addEventListener('change', toggleUsername);
+        });
+
+        // Initialize on load
+        toggleUsername();
+    });
+</script>
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>

@@ -27,7 +27,7 @@
                             <div class="relative">
                                 <i class="bi bi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
                                 <input type="email" name="correo" required placeholder="tu@email.com" 
-                                    class="input-djpro w-full pl-12 py-4 text-sm">
+                                    class="input-djpro w-full pl-12 py-4 text-sm border-djpro-accent/30" maxlength="100">
                             </div>
                         </div>
 

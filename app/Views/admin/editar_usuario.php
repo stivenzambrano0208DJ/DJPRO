@@ -20,20 +20,20 @@
                     <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                     
                     <div>
-                        <label class="block text-[10px] font-bold text-djpro-muted uppercase tracking-widest mb-2">Nombre Completo</label>
-                        <input type="text" name="nombre" value="<?php echo $data['usuario']->nombre; ?>" required
-                               class="w-full bg-djpro-bg border border-djpro-border rounded-xl px-4 py-3 text-white focus:border-djpro-accent outline-none transition-all">
+                        <label class="block text-[10px] font-bold text-djpro-accent uppercase tracking-widest mb-2 ml-1">Nombre Completo</label>
+                        <input type="text" name="nombre" maxlength="30" value="<?php echo $data['usuario']->nombre; ?>" required
+                               class="input-djpro w-full border-djpro-accent/30 outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-bold text-djpro-muted uppercase tracking-widest mb-2">Correo Electrónico</label>
-                        <input type="email" name="correo" value="<?php echo $data['usuario']->correo; ?>" required
-                               class="w-full bg-djpro-bg border border-djpro-border rounded-xl px-4 py-3 text-white focus:border-djpro-accent outline-none transition-all">
+                        <label class="block text-[10px] font-bold text-djpro-accent uppercase tracking-widest mb-2 ml-1">Correo Electrónico</label>
+                        <input type="email" name="correo" maxlength="30" value="<?php echo $data['usuario']->correo; ?>" required
+                               class="input-djpro w-full border-djpro-accent/30 outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-bold text-djpro-muted uppercase tracking-widest mb-2">Rol del Usuario</label>
-                        <select name="rol" class="w-full bg-djpro-bg border border-djpro-border rounded-xl px-4 py-3 text-white focus:border-djpro-accent outline-none transition-all">
+                        <label class="block text-[10px] font-bold text-djpro-accent uppercase tracking-widest mb-2 ml-1">Rol del Usuario</label>
+                        <select name="rol" class="input-djpro w-full border-djpro-accent/30 outline-none cursor-pointer">
                             <option value="cliente" <?php echo $data['usuario']->rol == 'cliente' ? 'selected' : ''; ?>>Cliente</option>
                             <option value="dj" <?php echo $data['usuario']->rol == 'dj' ? 'selected' : ''; ?>>DJ</option>
                             <option value="admin" <?php echo $data['usuario']->rol == 'admin' ? 'selected' : ''; ?>>Administrador</option>

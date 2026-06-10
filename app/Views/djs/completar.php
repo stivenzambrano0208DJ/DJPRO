@@ -68,7 +68,7 @@
                     <div class="mt-10 space-y-6">
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Nombre Artístico</label>
-                            <input type="text" placeholder="Ej: DJ STEVEN MIX" class="input-djpro w-full">
+                            <input type="text" placeholder="Ej: DJ STEVEN MIX" class="input-djpro w-full" maxlength="30">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Sobre Mí (Biografía)</label>
@@ -90,7 +90,7 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Ciudad / Municipio</label>
-                            <input type="text" placeholder="Ej: Florencia" class="input-djpro w-full">
+                            <input type="text" placeholder="Ej: Florencia" class="input-djpro w-full" maxlength="30">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Precio Base</label>
@@ -152,7 +152,7 @@
                         <div class="flex gap-4">
                             <div class="flex-1 relative">
                                 <i class="bi bi-youtube absolute left-4 top-1/2 -translate-y-1/2 text-red-500"></i>
-                                <input type="url" placeholder="Pega el link de YouTube aquí..." class="input-djpro w-full pl-12">
+                                <input type="url" placeholder="Pega el link de YouTube aquí..." class="input-djpro w-full pl-12" maxlength="30">
                             </div>
                             <button type="button" class="bg-djpro-surface-2 border border-djpro-border text-white px-6 py-3 rounded-xl hover:border-djpro-accent transition-all font-bold">AGREGAR</button>
                         </div>

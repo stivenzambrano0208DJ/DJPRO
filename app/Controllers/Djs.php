@@ -48,6 +48,10 @@ class Djs extends Core\Controller {
             'tipos_evento' => $tiposEvento,
             'filtros' => $filtros // Para persistir en la vista
         ];
+
+        if (isset($_SESSION['usuario_id']) && $_SESSION['usuario_rol'] == 'dj') {
+            $datos['perfil'] = $this->djModel->obtenerPerfil($_SESSION['usuario_id']);
+        }
         
         $this->view('clientes/explorar', $datos);
     }
@@ -92,11 +96,30 @@ class Djs extends Core\Controller {
         $perfil = $this->djModel->obtenerPerfil($_SESSION['usuario_id']);
         $stats = $this->djModel->obtenerEstadisticas($_SESSION['usuario_id']);
         $proyeccion = $this->djModel->obtenerProyeccionMensual($_SESSION['usuario_id']);
+        $contrataciones = $this->contratacionModel->obtenerPorDj($_SESSION['usuario_id']);
+
+        // Calcular métricas adicionales desde las contrataciones
+        $pendientes  = 0;
+        $canceladas  = 0;
+        $ticket_sum  = 0;
+        $ticket_count = 0;
+        foreach ($contrataciones as $c) {
+            if ($c->estado === 'pendiente') $pendientes++;
+            if (in_array($c->estado, ['cancelada', 'rechazada'])) $canceladas++;
+            if (in_array($c->estado, ['terminada', 'completada'])) {
+                $ticket_sum += $c->precio_total;
+                $ticket_count++;
+            }
+        }
+        $ticket_promedio = $ticket_count > 0 ? $ticket_sum / $ticket_count : 0;
         
         $datos = [
-            'perfil' => $perfil,
-            'stats' => $stats,
-            'proyeccion' => $proyeccion
+            'perfil'          => $perfil,
+            'stats'           => $stats,
+            'proyeccion'      => $proyeccion,
+            'pendientes'      => $pendientes,
+            'canceladas'      => $canceladas,
+            'ticket_promedio' => $ticket_promedio,
         ];
         $this->view('djs/estadisticas', $datos);
     }
@@ -109,13 +132,13 @@ class Djs extends Core\Controller {
             $datos = [
                 'usuario_id' => $_SESSION['usuario_id'],
                 'username' => trim($_POST['username'] ?? ''),
-                'biografia' => trim($_POST['biografia']),
-                'lugares_trabajo' => isset($_POST['lugares_trabajo']) ? implode(',', $_POST['lugares_trabajo']) : '',
-                'ciudad' => trim($_POST['ciudad']),
-                'departamento' => trim($_POST['departamento']),
-                'generos' => isset($_POST['generos']) ? implode(',', $_POST['generos']) : '',
-                'eventos' => isset($_POST['eventos']) ? implode(',', $_POST['eventos']) : '',
-                'precio_hora' => $_POST['precio_hora'] ?? null,
+                'biografia' => trim($_POST['biografia'] ?? ''),
+                'lugares_trabajo' => !empty($_POST['lugares_trabajo']) ? (is_array($_POST['lugares_trabajo']) ? implode(',', $_POST['lugares_trabajo']) : $_POST['lugares_trabajo']) : '',
+                'ciudad' => trim($_POST['ciudad'] ?? ''),
+                'departamento' => trim($_POST['departamento'] ?? ''),
+                'generos' => !empty($_POST['generos']) ? (is_array($_POST['generos']) ? implode(',', $_POST['generos']) : $_POST['generos']) : '',
+                'eventos' => !empty($_POST['eventos']) ? (is_array($_POST['eventos']) ? implode(',', $_POST['eventos']) : $_POST['eventos']) : '',
+                'precio_hora' => !empty($_POST['precio_hora']) ? $_POST['precio_hora'] : null,
                 'auto_respuesta' => trim($_POST['auto_respuesta'] ?? ''),
                 'bot_activo' => isset($_POST['bot_activo']) ? 1 : 0,
                 'foto_perfil' => '',
@@ -160,12 +183,23 @@ class Djs extends Core\Controller {
                             if (move_uploaded_file($tempArchivo, $destino)) {
                                 $datos['foto_perfil'] = $nuevoNombre;
                             } else {
-                                $datos['error'] = 'Error al guardar la imagen en el servidor';
+                                $datos['error'] = 'Error al guardar la imagen en el servidor. Verifica los permisos.';
                             }
                         } else {
                             $datos['error'] = 'Solo se permiten imágenes reales (JPG, JPEG o PNG)';
                         }
                     }
+                } else {
+                    $uploadErrors = [
+                        UPLOAD_ERR_INI_SIZE => 'La imagen excede el límite de peso permitido por el servidor.',
+                        UPLOAD_ERR_FORM_SIZE => 'La imagen excede el límite de peso del formulario.',
+                        UPLOAD_ERR_PARTIAL => 'La imagen se subió parcialmente.',
+                        UPLOAD_ERR_NO_FILE => 'No se subió ninguna imagen.',
+                        UPLOAD_ERR_NO_TMP_DIR => 'Falta la carpeta temporal en el servidor.',
+                        UPLOAD_ERR_CANT_WRITE => 'Error al escribir la imagen en el disco.',
+                        UPLOAD_ERR_EXTENSION => 'Una extensión de PHP detuvo la subida de la imagen.'
+                    ];
+                    $datos['error'] = $uploadErrors[$errorArchivo] ?? 'Error desconocido al subir la imagen.';
                 }
             }
 
@@ -220,7 +254,16 @@ class Djs extends Core\Controller {
                 'url_video' => trim($_POST['url_video'])
             ];
 
-            if ($this->djModel->agregarVideo($datos)) {
+            $success = $this->djModel->agregarVideo($datos);
+
+            // Manejar peticiones AJAX
+            if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => $success]);
+                exit;
+            }
+
+            if ($success) {
                 $redirect = ($_POST['from'] == 'editar') ? '/djs/editar' : '/djs/panel';
                 header('Location: ' . URL_ROOT . $redirect);
             } else {
@@ -234,7 +277,16 @@ class Djs extends Core\Controller {
     public function eliminar_video($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $this->validateCsrf();
-            if ($this->djModel->eliminarVideo($id, $_SESSION['usuario_id'])) {
+            $success = $this->djModel->eliminarVideo($id, $_SESSION['usuario_id']);
+
+            // Manejar peticiones AJAX
+            if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => $success]);
+                exit;
+            }
+
+            if ($success) {
                 $redirect = (isset($_POST['from']) && $_POST['from'] == 'editar') ? '/djs/editar' : '/djs/panel';
                 header('Location: ' . URL_ROOT . $redirect);
             } else {

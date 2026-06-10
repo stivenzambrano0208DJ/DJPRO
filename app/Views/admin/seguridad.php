@@ -50,7 +50,7 @@
                                 <label class="text-[9px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Username Público</label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-djpro-accent font-bold">@</span>
-                                    <input type="text" name="username" value="<?php echo $dj->username; ?>" 
+                                    <input type="text" name="username" maxlength="30" value="<?php echo $dj->username; ?>" 
                                            class="w-full bg-djpro-bg border border-djpro-border rounded-xl pl-8 pr-4 py-3 text-xs text-white focus:border-djpro-accent outline-none transition-all" required>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                             <!-- Email -->
                             <div class="space-y-1.5">
                                 <label class="text-[9px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Correo Electrónico</label>
-                                <input type="email" name="correo" value="<?php echo $dj->correo; ?>" 
+                                <input type="email" name="correo" maxlength="30" value="<?php echo $dj->correo; ?>" 
                                        class="w-full bg-djpro-bg border border-djpro-border rounded-xl px-4 py-3 text-xs text-white focus:border-djpro-accent outline-none transition-all" required>
                             </div>
 

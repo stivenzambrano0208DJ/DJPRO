@@ -1,5 +1,5 @@
 <!-- Sidebar DJ -->
-<aside id="sidebar" class="fixed left-0 top-20 bottom-0 w-64 bg-djpro-surface border-r border-djpro-border z-40 transition-all duration-300 transform lg:translate-x-0 -translate-x-full">
+<aside id="sidebar" class="fixed left-0 top-20 bottom-0 w-64 bg-djpro-surface border-r border-djpro-border z-40 transition-all duration-300 transform lg:translate-x-0 -translate-x-full overflow-y-auto scrollbar-thin scrollbar-thumb-djpro-accent">
     <div class="p-6">
         <!-- DJ Profile Mini -->
         <div class="flex flex-col items-center mb-10 pb-10 border-b border-djpro-border">
@@ -22,6 +22,16 @@
             <a href="<?php echo URL_ROOT; ?>/djs/dashboard" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'djs/dashboard') !== false || strpos($_GET['url'] ?? '', 'djs/panel') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
                 <i class="bi bi-grid-1x2-fill text-xl"></i>
                 <span class="font-bold">Panel Control</span>
+            </a>
+
+            <a href="<?php echo URL_ROOT; ?>/clientes/dashboard" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'clientes/dashboard') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
+                <i class="bi bi-calendar2-check-fill text-xl"></i>
+                <span class="font-bold">Mis Reservas</span>
+            </a>
+
+            <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'djs/explorar') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
+                <i class="bi bi-search text-xl"></i>
+                <span class="font-bold">Explorar DJs</span>
             </a>
             
             <a href="<?php echo URL_ROOT; ?>/djs/editar" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'], 'djs/editar') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">

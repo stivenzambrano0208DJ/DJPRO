@@ -52,7 +52,7 @@
 
             <!-- Acciones -->
             <div class="flex gap-3 w-full md:w-auto">
-                <?php if(!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] == 'cliente'): ?>
+                <?php if(!isset($_SESSION['usuario_id']) || $_SESSION['usuario_id'] != $data['perfil']->usuario_id): ?>
                 <button onclick="openBookingModal()" class="flex-1 md:flex-none btn-djpro-primary px-8 py-4 flex items-center justify-center gap-2">
                     <i class="bi bi-calendar-check text-xl"></i>
                     CONTRATAR
@@ -155,21 +155,60 @@
 
         <!-- Tab Content: Reseñas (Hidden) -->
         <div id="content-reviews" class="hidden">
-            <div class="flex flex-col md:row md:flex-row gap-12">
-                <div class="w-full md:w-1/3">
-                    <div class="bg-djpro-surface p-8 rounded-2xl border border-djpro-border text-center">
-                        <h3 class="text-6xl font-bebas text-white"><?php echo number_format($data['perfil']->calificacion_promedio, 1); ?></h3>
-                        <div class="flex justify-center text-yellow-500 text-xl mb-2">
-                            <i class="bi bi-star-fill"></i>
+            <div class="flex flex-col md:flex-row gap-10">
+                <!-- Puntuación general -->
+                <div class="w-full md:w-64 flex-shrink-0">
+                    <div class="bg-djpro-surface p-8 rounded-2xl border border-djpro-border text-center sticky top-4">
+                        <h3 class="text-7xl font-bebas text-white"><?php echo number_format($data['perfil']->calificacion_promedio, 1); ?></h3>
+                        <div class="flex justify-center gap-1 text-yellow-500 text-xl mb-2">
+                            <?php for($i=1; $i<=5; $i++): ?>
+                                <i class="bi <?php echo $i <= round($data['perfil']->calificacion_promedio) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                            <?php endfor; ?>
                         </div>
-                        <span class="text-djpro-muted font-bold tracking-widest uppercase text-[10px]">Puntuación General</span>
+                        <span class="text-djpro-muted font-bold tracking-widest uppercase text-[10px] block">Puntuación General</span>
+                        <span class="text-[10px] text-djpro-accent font-bold mt-1 block"><?php echo count($data['resenas']); ?> reseña(s)</span>
                     </div>
                 </div>
-                <div class="flex-1 text-center py-12 border-2 border-dashed border-djpro-border rounded-3xl">
-                    <p class="text-djpro-muted uppercase font-bold tracking-widest">No hay reseñas disponibles todavía.</p>
+
+                <!-- Lista de reseñas -->
+                <div class="flex-1 space-y-4">
+                    <?php if(empty($data['resenas'])): ?>
+                        <div class="py-16 text-center border-2 border-dashed border-djpro-border rounded-3xl">
+                            <i class="bi bi-chat-square-heart text-4xl text-djpro-muted mb-3 block"></i>
+                            <p class="text-djpro-muted uppercase font-bold tracking-widest text-sm">Este DJ aún no tiene reseñas.</p>
+                            <p class="text-djpro-muted text-xs mt-1">¡Sé el primero en calificarlo después de tu evento!</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach($data['resenas'] as $res): ?>
+                        <div class="bg-djpro-surface border border-djpro-border rounded-2xl p-6 hover:border-djpro-accent/30 transition-all">
+                            <div class="flex items-start justify-between gap-4 mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-[11px] font-bold text-djpro-accent">
+                                        <?php echo strtoupper(substr($res->cliente_nombre, 0, 2)); ?>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-white uppercase tracking-wider"><?php echo $res->cliente_nombre; ?></span>
+                                        <span class="text-[9px] text-djpro-muted font-bold uppercase tracking-widest"><?php echo date('d M, Y', strtotime($res->fecha_creacion)); ?></span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-0.5 text-yellow-500 flex-shrink-0">
+                                    <?php for($i=1; $i<=5; $i++): ?>
+                                        <i class="bi <?php echo $i <= $res->puntuacion ? 'bi-star-fill' : 'bi-star'; ?> text-sm"></i>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <?php if(!empty($res->comentario)): ?>
+                                <p class="text-djpro-muted text-sm leading-relaxed italic">"<?php echo htmlspecialchars($res->comentario); ?>"</p>
+                            <?php else: ?>
+                                <p class="text-djpro-muted text-xs italic opacity-60">Sin comentario adicional.</p>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
+
 
     </div>
 </section>
@@ -188,24 +227,29 @@
             <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <input type="hidden" name="dj_id" value="<?php echo $data['perfil']->usuario_id; ?>">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Fecha del Evento</label>
-                    <input type="date" name="fecha_evento" class="input-djpro w-full cursor-pointer" required min="<?php echo date('Y-m-d'); ?>">
+                    <input type="date" name="fecha_evento" class="input-djpro w-full cursor-pointer border-djpro-accent/30" required min="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Inicio</label>
-                    <input type="time" name="hora_inicio" class="input-djpro w-full cursor-pointer" required>
+                    <input type="time" name="hora_inicio" class="input-djpro w-full cursor-pointer border-djpro-accent/30" required>
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Hora Fin</label>
-                    <input type="time" name="hora_fin" class="input-djpro w-full cursor-pointer" required>
+                    <input type="time" name="hora_fin" class="input-djpro w-full cursor-pointer border-djpro-accent/30" required>
                 </div>
+            </div>
+
+            <div id="time-error-msg" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-widest rounded-xl px-4 py-3 flex items-center gap-2">
+                <i class="bi bi-clock-history"></i>
+                <span>No puedes agendar en una hora que ya pasó hoy. Elige una hora futura.</span>
             </div>
 
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Tipo de Evento</label>
-                <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none" required>
+                <select name="evento" class="input-djpro w-full cursor-pointer outline-none appearance-none border-djpro-accent/30" required>
                     <option value="">Seleccionar...</option>
                     <option value="Boda">Boda</option>
                     <option value="XV Años">XV Años</option>
@@ -216,31 +260,31 @@
                 </select>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Horas de Servicio</label>
-                    <input type="number" name="horas" id="booking_horas" value="1" min="1" class="input-djpro w-full" oninput="calcularTotal()">
+                    <input type="number" name="horas" id="booking_horas" value="1" min="1" step="0.5" class="input-djpro w-full border-djpro-accent/30" oninput="calcularTotal()">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Total Estimado ($)</label>
-                    <input type="number" name="presupuesto_estimado" id="booking_estimado" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60" readonly>
+                    <input type="number" name="presupuesto_estimado" id="booking_estimado" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" class="input-djpro w-full opacity-60 border-djpro-accent/30" readonly>
                 </div>
             </div>
 
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Mi Presupuesto para el Evento ($)</label>
-                <input type="number" name="precio_total" id="booking_total" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full" required>
+                <input type="number" name="precio_total" id="booking_total" value="<?php echo $data['perfil']->precio_hora ?: ''; ?>" placeholder="Ej: 500.000" class="input-djpro w-full border-djpro-accent/30" required>
                 <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Indica cuánto estás dispuesto a pagar por el servicio.</p>
             </div>
 
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Detalles y Expectativas</label>
-                <textarea name="mensaje_cliente" rows="4" placeholder="Háblale al DJ sobre tu evento..." class="input-djpro w-full resize-none"></textarea>
+                <textarea name="mensaje_cliente" rows="4" placeholder="Háblale al DJ sobre tu evento..." class="input-djpro w-full resize-none border-djpro-accent/30"></textarea>
             </div>
 
-            <div class="flex gap-4 pt-4">
-                <button type="button" onclick="closeBookingModal()" class="flex-1 px-8 py-4 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all">CANCELAR</button>
-                <button type="submit" class="flex-1 btn-djpro-primary py-4">ENVIAR SOLICITUD</button>
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <button type="button" onclick="closeBookingModal()" class="w-full sm:flex-1 px-8 py-4 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all order-2 sm:order-1">CANCELAR</button>
+                <button type="submit" class="w-full sm:flex-1 btn-djpro-primary py-4 order-1 sm:order-2 shadow-lg shadow-orange-500/20">ENVIAR SOLICITUD</button>
             </div>
         </form>
     </div>
@@ -293,6 +337,8 @@
             
             submitBtn.innerText = 'ENVIANDO...';
             submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.cursor = 'not-allowed';
 
             const formData = new FormData(bookingForm);
             
@@ -316,7 +362,7 @@
                 }
             } catch (error) {
                 console.error(error);
-                djpro.toast('Error de conexión. Intente nuevamente.', 'error');
+                Toast.fire({icon: 'error', title: 'Error de conexión. Intente nuevamente.'});
             } finally {
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
@@ -345,7 +391,7 @@
             
             const diffMs = end - start;
             const diffHrs = diffMs / (1000 * 60 * 60);
-            horasInput.value = Math.max(1, Math.round(diffHrs * 10) / 10); // Redondear a 1 decimal
+            horasInput.value = Math.max(1, Math.round(diffHrs * 2) / 2); // Redondear a 0.5 más cercano
         }
 
         const horas = horasInput.value;
@@ -361,10 +407,51 @@
         const hi = document.querySelector('input[name="hora_inicio"]');
         const hf = document.querySelector('input[name="hora_fin"]');
         const hs = document.getElementById('booking_horas');
+        const fechaInput = document.querySelector('input[name="fecha_evento"]');
+        const timeErrorMsg = document.getElementById('time-error-msg');
+        const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
 
-        if (hi) hi.addEventListener('change', calcularTotal);
+        function validarHoraPasada() {
+            if (!hi || !fechaInput) return true;
+            const hoy = new Date();
+            const fechaSeleccionada = fechaInput.value;
+            const todayStr = hoy.toISOString().split('T')[0];
+
+            if (fechaSeleccionada === todayStr && hi.value) {
+                const [h, m] = hi.value.split(':').map(Number);
+                const horaSeleccionada = new Date();
+                horaSeleccionada.setHours(h, m, 0, 0);
+
+                if (horaSeleccionada <= hoy) {
+                    timeErrorMsg.classList.remove('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.5';
+                    submitBtn.style.cursor = 'not-allowed';
+                    return false;
+                }
+            }
+            timeErrorMsg.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '';
+            submitBtn.style.cursor = '';
+            return true;
+        }
+
+        if (hi) hi.addEventListener('change', () => { validarHoraPasada(); calcularTotal(); });
         if (hf) hf.addEventListener('change', calcularTotal);
         if (hs) hs.addEventListener('input', calcularTotal);
+        if (fechaInput) fechaInput.addEventListener('change', validarHoraPasada);
+
+        // Bloquear submit si la hora es pasada
+        const form = document.getElementById('bookingForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validarHoraPasada()) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+        }
     });
 
     // Auto-open modal if flag is present

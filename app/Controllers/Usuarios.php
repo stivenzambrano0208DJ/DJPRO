@@ -26,7 +26,7 @@ class Usuarios extends Core\Controller {
 
             $datos = [
                 'nombre' => trim($_POST['nombre']),
-                'username' => trim($_POST['username'] ?? ''),
+                'username' => !empty(trim($_POST['username'] ?? '')) ? trim($_POST['username']) : null,
                 'correo' => trim($_POST['correo']),
                 'password' => trim($_POST['password']),
                 'rol' => trim($_POST['rol']),
@@ -37,6 +37,8 @@ class Usuarios extends Core\Controller {
             // Validaciones simples
             if (empty($datos['nombre']) || empty($datos['correo']) || empty($datos['password'])) {
                 $datos['error'] = 'Por favor llene todos los campos';
+            } elseif ($datos['rol'] == 'dj' && empty($datos['username'])) {
+                $datos['error'] = 'El nombre de usuario es obligatorio para DJs';
             } elseif (strlen($datos['password']) < 8) {
                 $datos['error'] = 'La contraseña debe tener al menos 8 caracteres para mayor seguridad';
             } elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
@@ -90,6 +92,7 @@ class Usuarios extends Core\Controller {
             // Mostrar vista
             $datos = [
                 'nombre' => '',
+                'username' => '',
                 'correo' => '',
                 'password' => '',
                 'confirm_password' => '',

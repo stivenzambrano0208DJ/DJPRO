@@ -1,72 +1,58 @@
     </main>
     
     <?php 
-        // BUG-006 FIX: Detectar si estamos en un dashboard real (con sidebar activo) para ajustar el margen del footer
-        // No aplicamos el margen en páginas públicas como perfil o explorar, incluso si hay sesión iniciada.
-        $current_url = $_GET['url'] ?? '';
-        $is_dashboard = (isset($_SESSION['usuario_rol']) && 
-                        ($_SESSION['usuario_rol'] == 'dj' || $_SESSION['usuario_rol'] == 'admin' || $_SESSION['usuario_rol'] == 'cliente') &&
-                        !strpos($current_url, 'perfil') && 
-                        !strpos($current_url, 'explorar'));
+        // Detectar si el sidebar está presente (usuario logueado)
+        // Si el usuario está logueado, casi todas las páginas muestran sidebar (excepto auth que no llegan aquí)
+        $has_sidebar = isset($_SESSION['usuario_id']);
     ?>
 
     <!-- Footer -->
-    <footer class="bg-djpro-surface border-t border-djpro-border pt-16 pb-8 mt-20 <?php echo $is_dashboard ? 'lg:ml-64' : ''; ?> transition-all duration-300">
+    <footer class="bg-djpro-surface border-t border-djpro-border pt-16 pb-8 mt-20 <?php echo $has_sidebar ? 'lg:ml-64' : ''; ?> transition-all duration-300 relative">
+        <!-- Accent Line -->
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-djpro-accent to-transparent opacity-50"></div>
+        
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- Brand -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12 mb-16">
+                <!-- Brand Section -->
                 <div class="col-span-1">
-                    <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-2 mb-6">
-                        <div class="w-10 h-10 bg-djpro-accent rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                            <i class="bi bi-headphones text-white text-xl"></i>
+                    <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-3 mb-6 group">
+                        <div class="w-12 h-12 bg-djpro-accent rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.3)] group-hover:scale-110 transition-transform duration-500">
+                            <i class="bi bi-headphones text-white text-2xl"></i>
                         </div>
-                        <span class="text-3xl font-bebas text-djpro-accent tracking-wider">DJPRO</span>
+                        <span class="text-3xl font-bebas text-djpro-accent tracking-widest">DJPRO</span>
                     </a>
-                    <p class="text-djpro-muted text-sm leading-relaxed">
-                        La plataforma líder en el Caquetá para conectar con los mejores DJs y elevar tus eventos al siguiente nivel. Siente el ritmo, vive la experiencia.
+                    <p class="text-djpro-muted text-sm leading-relaxed max-w-xs">
+                        La plataforma definitiva en el Caquetá para conectar con el mejor talento musical. Elevamos tus eventos a una experiencia sensorial única.
                     </p>
                 </div>
 
-                <!-- Links -->
-                <div>
-                    <h4 class="text-white font-bebas text-lg mb-6 uppercase tracking-widest">Plataforma</h4>
+                <!-- Navigation Links -->
+                <div class="lg:pl-8">
+                    <h4 class="text-white font-bebas text-xl mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-djpro-accent rounded-full"></span>
+                        Explorar
+                    </h4>
                     <ul class="space-y-4">
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Explorar DJs</a></li>
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Géneros Populares</a></li>
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?evento=" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Próximos Eventos</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Todos los DJs</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Electrónica" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Electrónica</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Urbano" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Urbano / Reggaetón</a></li>
                     </ul>
                 </div>
 
-                <div>
-                    <h4 class="text-white font-bebas text-lg mb-6 uppercase tracking-widest">Soporte</h4>
-                    <ul class="space-y-4">
-                        <li><a href="#" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Términos de Servicio</a></li>
-                        <li><a href="#" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Privacidad</a></li>
-                        <li><a href="#" class="text-djpro-muted hover:text-djpro-accent transition-colors text-sm font-medium">Preguntas Frecuentes</a></li>
-                    </ul>
-                </div>
-
-                <!-- Social -->
-                <div>
-                    <h4 class="text-white font-bebas text-lg mb-6 uppercase tracking-widest">Síguenos</h4>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-12 h-12 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-text hover:border-djpro-accent hover:text-djpro-accent hover:scale-110 transition-all">
-                            <i class="bi bi-instagram text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-text hover:border-djpro-accent hover:text-djpro-accent hover:scale-110 transition-all">
-                            <i class="bi bi-facebook text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-text hover:border-djpro-accent hover:text-djpro-accent hover:scale-110 transition-all">
-                            <i class="bi bi-youtube text-xl"></i>
-                        </a>
-                    </div>
-                </div>
             </div>
 
-            <div class="border-t border-djpro-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-djpro-muted text-[10px] font-bold uppercase tracking-widest">&copy; <?php echo date('Y'); ?> DJPRO Caquetá. Handcrafted for the rhythm.</p>
-                <div class="flex gap-6">
-                    <span class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest">Florencia, Caquetá</span>
+            <!-- Bottom Line -->
+            <div class="border-t border-djpro-border pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-8">
+                    <p class="text-djpro-muted text-[9px] font-bold uppercase tracking-[0.2em]">&copy; <?php echo date('Y'); ?> DJPRO PLATFORM. ALL RIGHTS RESERVED.</p>
+                    <div class="h-4 w-[1px] bg-djpro-border hidden md:block"></div>
+                    <span class="text-[9px] font-bold text-djpro-muted uppercase tracking-[0.2em]">Coded with ❤️ in Caquetá</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-2 text-[9px] font-bold text-djpro-accent uppercase tracking-[0.2em]">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Sistemas Operativos
+                    </span>
                 </div>
             </div>
         </div>
@@ -164,6 +150,53 @@
                 mobileMenu.classList.add('translate-x-full');
             });
         }
+
+        // =========================================================
+        // PROTECCION GLOBAL ANTI-DOBLE-ENVIO
+        // Se aplica a TODOS los formularios POST del sitio
+        // excepto los de busqueda (GET) y los marcados con data-no-protect
+        // =========================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form[method="POST"]:not([data-no-protect])').forEach(function (form) {
+                // Excluir formularios que ya tienen su propio manejo AJAX (booking en perfil.php)
+                if (form.id === 'bookingForm' || form.id === 'formAgregarVideo') return;
+
+                form.addEventListener('submit', function (e) {
+                    // Si ya está en proceso, bloquear
+                    if (form.dataset.submitting === 'true') {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    const btn = form.querySelector('button[type="submit"]');
+                    if (!btn) return;
+
+                    // Marcar como en proceso
+                    form.dataset.submitting = 'true';
+
+                    // Guardar texto original y mostrar cargando
+                    const originalHTML = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><svg style="animation:spin 1s linear infinite;width:16px;height:16px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> PROCESANDO...</span>';
+                    btn.style.opacity = '0.75';
+                    btn.style.cursor = 'not-allowed';
+
+                    // Salvaguarda: si el servidor tarda mucho o hay error, reactivar el botón tras 15s
+                    setTimeout(function () {
+                        if (form.dataset.submitting === 'true') {
+                            form.dataset.submitting = 'false';
+                            btn.disabled = false;
+                            btn.innerHTML = originalHTML;
+                            btn.style.opacity = '';
+                            btn.style.cursor = '';
+                        }
+                    }, 15000);
+                });
+            });
+        });
     </script>
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 </body>
 </html>

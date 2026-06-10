@@ -34,7 +34,7 @@
                             <div class="relative">
                                 <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
                                 <input type="password" name="password" required placeholder="Mínimo 8 caracteres" 
-                                    class="input-djpro w-full pl-12 py-4 text-sm">
+                                    class="input-djpro w-full pl-12 py-4 text-sm border-djpro-accent/30" maxlength="30">
                             </div>
                         </div>
 
@@ -43,7 +43,7 @@
                             <div class="relative">
                                 <i class="bi bi-lock-fill absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
                                 <input type="password" name="confirm_password" required placeholder="Repite tu contraseña" 
-                                    class="input-djpro w-full pl-12 py-4 text-sm">
+                                    class="input-djpro w-full pl-12 py-4 text-sm border-djpro-accent/30" maxlength="30">
                             </div>
                         </div>
 

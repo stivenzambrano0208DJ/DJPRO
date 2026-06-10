@@ -41,7 +41,7 @@
                         <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Email</label>
                         <div class="relative">
                             <i class="bi bi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
-                            <input type="email" placeholder="ejemplo@djpro.com" class="input-djpro w-full pl-12">
+                            <input type="email" placeholder="ejemplo@djpro.com" class="input-djpro w-full pl-12" maxlength="30">
                         </div>
                     </div>
                     <div class="space-y-2">
@@ -51,7 +51,7 @@
                         </div>
                         <div class="relative">
                             <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
-                            <input type="password" placeholder="••••••••" class="input-djpro w-full pl-12">
+                            <input type="password" placeholder="••••••••" class="input-djpro w-full pl-12" maxlength="30">
                         </div>
                     </div>
                 </div>
@@ -102,19 +102,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Nombre</label>
-                        <input type="text" placeholder="Juan Pérez" class="input-djpro w-full">
+                        <input type="text" placeholder="Juan Pérez" class="input-djpro w-full" maxlength="30">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Email</label>
-                        <input type="email" placeholder="juan@ejemplo.com" class="input-djpro w-full">
+                        <input type="email" placeholder="juan@ejemplo.com" class="input-djpro w-full" maxlength="30">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Contraseña</label>
-                        <input type="password" placeholder="••••••••" class="input-djpro w-full">
+                        <input type="password" placeholder="••••••••" class="input-djpro w-full" maxlength="30">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-djpro-text uppercase tracking-widest ml-1">Confirmar</label>
-                        <input type="password" placeholder="••••••••" class="input-djpro w-full">
+                        <input type="password" placeholder="••••••••" class="input-djpro w-full" maxlength="30">
                     </div>
                 </div>
 

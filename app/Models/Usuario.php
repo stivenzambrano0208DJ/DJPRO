@@ -8,7 +8,7 @@ class Usuario extends Core\Model {
     public function registrar($datos) {
         $this->db->query('INSERT INTO usuarios (nombre, username, correo, password, rol) VALUES (:nombre, :username, :correo, :password, :rol)');
         $this->db->bind(':nombre', $datos['nombre']);
-        $this->db->bind(':username', $datos['username'] ?? null);
+        $this->db->bind(':username', !empty($datos['username']) ? $datos['username'] : null);
         $this->db->bind(':correo', $datos['correo']);
         $this->db->bind(':password', $datos['password']);
         $this->db->bind(':rol', $datos['rol']);
@@ -170,7 +170,7 @@ class Usuario extends Core\Model {
         $this->db->query('UPDATE usuarios SET nombre = :nombre, username = :username, correo = :correo, rol = :rol WHERE id = :id');
         $this->db->bind(':id', $datos['id']);
         $this->db->bind(':nombre', $datos['nombre']);
-        $this->db->bind(':username', $datos['username']);
+        $this->db->bind(':username', !empty($datos['username']) ? $datos['username'] : null);
         $this->db->bind(':correo', $datos['correo']);
         $this->db->bind(':rol', $datos['rol']);
         return $this->db->execute();
@@ -199,7 +199,7 @@ class Usuario extends Core\Model {
         $sql .= ' WHERE id = :id';
 
         $this->db->query($sql);
-        $this->db->bind(':username', $datos['username']);
+        $this->db->bind(':username', !empty($datos['username']) ? $datos['username'] : null);
         $this->db->bind(':correo', $datos['correo']);
         $this->db->bind(':id', $datos['id']);
         if (isset($datos['password'])) {

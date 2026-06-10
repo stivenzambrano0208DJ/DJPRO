@@ -1,5 +1,11 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
-<?php require APPROOT . '/app/Views/inc/sidebar_cliente.php'; ?>
+<?php 
+if(isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] == 'dj') {
+    require APPROOT . '/app/Views/inc/sidebar_dj.php';
+} else {
+    require APPROOT . '/app/Views/inc/sidebar_cliente.php';
+}
+?>
 
 <div class="lg:ml-64 p-8">
     <div class="container mx-auto">
@@ -9,7 +15,7 @@
                 <h1 class="text-4xl font-bebas text-white tracking-wider">MI <span class="text-djpro-accent">CENTRO DE EVENTOS</span></h1>
                 <p class="text-djpro-muted tracking-wide font-medium">Gestiona tus reservas y descubre nuevos talentos.</p>
             </div>
-            <a href="<?php echo URL_ROOT; ?>/clientes/explorar" class="btn-djpro-primary px-8 py-3 text-sm">
+            <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="btn-djpro-primary px-8 py-3 text-sm">
                 BUSCAR DJS <i class="bi bi-search ml-2"></i>
             </a>
         </div>
@@ -31,7 +37,7 @@
                                 <i class="bi bi-calendar-x text-3xl text-djpro-muted"></i>
                             </div>
                             <p class="text-djpro-muted font-bold uppercase tracking-widest mb-6 text-sm">Aún no tienes reservas activas</p>
-                            <a href="<?php echo URL_ROOT; ?>/clientes/explorar" class="btn-djpro-primary px-8 py-3 text-xs inline-flex items-center gap-2">
+                            <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="btn-djpro-primary px-8 py-3 text-xs inline-flex items-center gap-2">
                                 ENCONTRAR UN DJ <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>
@@ -42,6 +48,8 @@
                                     $statusConfig = [
                                         'pendiente' => ['bg' => 'bg-yellow-500/10', 'text' => 'text-yellow-500', 'border' => 'border-yellow-500/20', 'icon' => 'bi-clock-history'],
                                         'aceptada' => ['bg' => 'bg-green-500/10', 'text' => 'text-green-500', 'border' => 'border-green-500/20', 'icon' => 'bi-check-circle-fill'],
+                                        'confirmada' => ['bg' => 'bg-green-500/10', 'text' => 'text-green-500', 'border' => 'border-green-500/20', 'icon' => 'bi-check-circle-fill'],
+                                        'confirmada_total' => ['bg' => 'bg-emerald-500/10', 'text' => 'text-emerald-500', 'border' => 'border-emerald-500/20', 'icon' => 'bi-patch-check-fill'],
                                         'rechazada' => ['bg' => 'bg-red-500/10', 'text' => 'text-red-500', 'border' => 'border-red-500/20', 'icon' => 'bi-x-circle-fill'],
                                         'cancelada' => ['bg' => 'bg-red-500/10', 'text' => 'text-red-500', 'border' => 'border-red-500/20', 'icon' => 'bi-slash-circle'],
                                         'terminada' => ['bg' => 'bg-djpro-purple/10', 'text' => 'text-djpro-purple', 'border' => 'border-djpro-purple/20', 'icon' => 'bi-flag-fill'],
@@ -51,12 +59,42 @@
                                 ?>
                                 <div class="bg-djpro-surface-2/30 border border-djpro-border rounded-3xl overflow-hidden hover:border-djpro-accent/30 transition-all duration-300 group">
                                     <div class="p-6">
+                                        <!-- Banner de Alerta para reservas Aceptadas (Falta Pagar) -->
+                                        <?php if($con->estado == 'aceptada'): ?>
+                                        <div class="mb-5 bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-2xl flex items-center gap-3">
+                                            <i class="bi bi-exclamation-circle-fill text-yellow-500 text-xl animate-pulse"></i>
+                                            <p class="text-xs text-djpro-text font-semibold">
+                                                <span class="text-yellow-500 font-bold uppercase tracking-wider block">¡Solicitud Aceptada por el DJ!</span>
+                                                Tienes 24 horas para realizar el depósito por Nequi, de lo contrario se cancelará.
+                                            </p>
+                                        </div>
+                                        <?php elseif($con->estado == 'confirmada' || $con->estado == 'confirmada_total'): ?>
+                                        <!-- Banner de Alerta para reservas Confirmadas (Pagadas) -->
+                                        <div class="mb-5 bg-[#05140A] border border-green-600/40 p-4 rounded-2xl flex items-center gap-4 shadow-lg">
+                                            <i class="bi <?php echo $con->estado == 'confirmada_total' ? 'bi-patch-check-fill text-emerald-500' : 'bi-check-circle-fill text-green-500'; ?> text-[28px]"></i>
+                                            <div class="flex flex-col gap-0.5">
+                                                <span class="<?php echo $con->estado == 'confirmada_total' ? 'text-emerald-500' : 'text-green-500'; ?> font-bold uppercase tracking-widest text-xs">
+                                                    <?php echo $con->estado == 'confirmada_total' ? '¡Pago Total Confirmado por el DJ!' : '¡Pago Confirmado por el DJ!'; ?>
+                                                </span>
+                                                <span class="text-xs text-white/90 font-medium">
+                                                    <?php echo $con->estado == 'confirmada_total' 
+                                                        ? 'Tu evento está pagado al 100%. No tienes saldo pendiente.' 
+                                                        : 'El resto del dinero se cancelará al momento de que el DJ llegue al evento.'; ?>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+
                                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                             <!-- DJ & Event Info -->
                                             <div class="flex items-center gap-5">
                                                 <div class="relative">
                                                     <div class="w-16 h-16 rounded-2xl bg-djpro-surface flex items-center justify-center border border-djpro-border overflow-hidden">
-                                                        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($con->dj_nombre); ?>&background=1c1c2e&color=f97316" class="w-full h-full object-cover">
+                                                        <?php if(!empty($con->dj_foto) && $con->dj_foto != 'default_dj.png'): ?>
+                                                            <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $con->dj_foto; ?>" class="w-full h-full object-cover">
+                                                        <?php else: ?>
+                                                            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($con->dj_nombre); ?>&background=1c1c2e&color=f97316" class="w-full h-full object-cover">
+                                                        <?php endif; ?>
                                                     </div>
                                                     <div class="absolute -bottom-1 -right-1 w-6 h-6 <?php echo $conf['bg']; ?> <?php echo $conf['text']; ?> border <?php echo $conf['border']; ?> rounded-lg flex items-center justify-center text-xs">
                                                         <i class="bi <?php echo $conf['icon']; ?>"></i>
@@ -84,7 +122,7 @@
                                             <div class="flex items-center gap-8 px-6 border-l border-djpro-border/50">
                                                 <div class="text-center">
                                                     <span class="block text-[9px] font-bold text-djpro-muted uppercase tracking-tighter mb-1">Estado actual</span>
-                                                    <span class="<?php echo $conf['bg']; ?> <?php echo $conf['text']; ?> <?php echo $conf['border']; ?> border px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest"><?php echo $con->estado; ?></span>
+                                                    <span class="<?php echo $conf['bg']; ?> <?php echo $conf['text']; ?> <?php echo $conf['border']; ?> border px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest whitespace-nowrap inline-block"><?php echo str_replace('_', ' ', $con->estado); ?></span>
                                                 </div>
                                                 <div class="text-right">
                                                     <span class="block text-[9px] font-bold text-djpro-muted uppercase tracking-tighter mb-1">Inversión</span>
@@ -99,11 +137,20 @@
                                                              class="px-6 py-3 bg-djpro-accent text-white text-[10px] font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 uppercase tracking-widest flex items-center gap-2">
                                                          <i class="bi bi-star-fill"></i> CALIFICAR DJ
                                                     </button>
-                                                <?php elseif(!empty($con->resena_id)): ?>
-                                                    <div class="px-6 py-3 bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-bold rounded-xl uppercase tracking-widest flex items-center gap-2">
-                                                        <i class="bi bi-patch-check-fill"></i> CALIFICADO
-                                                    </div>
-                                                <?php elseif($con->estado == 'pendiente' || $con->estado == 'aceptada'): ?>
+                                                <?php elseif($con->estado == 'aceptada'): ?>
+                                                    <a href="https://checkout.nequi.wompi.co/l/PYYtZx?amount-in-cents=<?php echo round($con->precio_total / 2) * 100; ?>" target="_blank" onclick="alertarPagoNequi('<?php echo number_format($con->precio_total / 2, 0); ?>')"
+                                                            class="w-full px-5 py-3 bg-djpro-purple text-white text-[10px] font-bold rounded-xl hover:bg-pink-600 transition-all shadow-lg shadow-djpro-purple/20 uppercase tracking-widest flex items-center justify-center gap-2">
+                                                        <i class="bi bi-phone-fill"></i> PAGAR 50% POR NEQUI ($<?php echo number_format($con->precio_total / 2, 0); ?>)
+                                                    </a>
+                                                    <a href="<?php echo URL_ROOT; ?>/chat/index/<?php echo $con->dj_id; ?>" class="w-12 h-12 bg-djpro-surface flex items-center justify-center rounded-xl text-djpro-muted hover:text-white hover:bg-djpro-accent transition-all border border-djpro-border" title="Enviar Mensaje">
+                                                        <i class="bi bi-chat-dots-fill text-lg"></i>
+                                                    </a>
+                                                    <a href="javascript:void(0)" onclick="confirmAction('<?php echo URL_ROOT; ?>/contrataciones/cancelar_cliente/<?php echo $con->id; ?>', '¿Cancelar Reserva?', 'Esta acción notificará al DJ y liberará la fecha.', 'warning', 'SÍ, CANCELAR')" 
+                                                       class="w-12 h-12 bg-red-500/10 text-red-500 flex items-center justify-center rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all"
+                                                       title="Cancelar">
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </a>
+                                                <?php elseif($con->estado == 'pendiente'): ?>
                                                     <a href="<?php echo URL_ROOT; ?>/chat/index/<?php echo $con->dj_id; ?>" class="w-12 h-12 bg-djpro-surface flex items-center justify-center rounded-xl text-djpro-muted hover:text-white hover:bg-djpro-accent transition-all border border-djpro-border" title="Enviar Mensaje">
                                                         <i class="bi bi-chat-dots-fill text-lg"></i>
                                                     </a>
@@ -119,27 +166,35 @@
                                         <!-- Counter Offer Section -->
                                         <?php if($con->contra_oferta > 0 && $con->estado == 'pendiente'): ?>
                                         <div class="mt-6 pt-6 border-t border-djpro-border/50">
-                                            <div class="bg-gradient-to-r from-djpro-accent/20 to-transparent p-5 rounded-2xl border border-djpro-accent/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                                            <div class="bg-gradient-to-r <?php echo $con->quien_contraoferto == 'dj' ? 'from-djpro-accent/20' : 'from-blue-500/10'; ?> to-transparent p-5 rounded-2xl border <?php echo $con->quien_contraoferto == 'dj' ? 'border-djpro-accent/20' : 'border-blue-500/20'; ?> flex flex-col md:flex-row items-center justify-between gap-4">
                                                 <div class="flex items-center gap-4">
-                                                    <div class="w-12 h-12 bg-djpro-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-500/30 animate-bounce">
-                                                        <i class="bi bi-lightning-charge-fill text-xl"></i>
+                                                    <div class="w-12 h-12 <?php echo $con->quien_contraoferto == 'dj' ? 'bg-djpro-accent shadow-orange-500/30' : 'bg-blue-500 shadow-blue-500/30'; ?> rounded-xl flex items-center justify-center text-white shadow-lg animate-bounce">
+                                                        <i class="bi <?php echo $con->quien_contraoferto == 'dj' ? 'bi-lightning-charge-fill' : 'bi-send-fill'; ?> text-xl"></i>
                                                     </div>
                                                     <div>
-                                                        <h6 class="text-sm font-bold text-white uppercase tracking-widest">¡Nueva Propuesta Negociada!</h6>
-                                                        <p class="text-[10px] text-djpro-muted font-medium uppercase tracking-wider">El DJ ha sugerido un nuevo presupuesto para tu evento.</p>
+                                                        <h6 class="text-sm font-bold text-white uppercase tracking-widest"><?php echo $con->quien_contraoferto == 'dj' ? '¡Propuesta del DJ!' : 'Tu Propuesta Enviada'; ?></h6>
+                                                        <p class="text-[10px] text-djpro-muted font-medium uppercase tracking-wider">
+                                                            <?php echo $con->quien_contraoferto == 'dj' ? 'El DJ ha sugerido un nuevo presupuesto para tu evento.' : 'Esperando respuesta del DJ a tu contra-propuesta.'; ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div class="flex items-center gap-6">
                                                     <div class="text-right">
-                                                        <span class="block text-[9px] font-bold text-djpro-muted uppercase tracking-tighter">Precio Sugerido</span>
+                                                        <span class="block text-[9px] font-bold text-djpro-muted uppercase tracking-tighter"><?php echo $con->quien_contraoferto == 'dj' ? 'Precio Sugerido' : 'Tu Oferta'; ?></span>
                                                         <span class="text-2xl font-bebas text-white">$<?php echo number_format($con->contra_oferta, 0); ?></span>
                                                     </div>
                                                     <div class="flex gap-2">
-                                                        <a href="<?php echo URL_ROOT; ?>/contrataciones/aceptar_contra_oferta/<?php echo $con->id; ?>" class="btn-djpro-primary px-6 py-3 text-[10px] shadow-orange-500/40">ACEPTAR</a>
-                                                        <button onclick="openClientContraOfertaModal('<?php echo $con->id; ?>', '<?php echo $con->contra_oferta; ?>')" class="px-6 py-3 bg-djpro-surface-2 text-white text-[10px] font-bold rounded-xl border border-djpro-border hover:bg-djpro-surface transition-all uppercase tracking-widest">CONTRAOFERTA</button>
-                                                        <a href="<?php echo URL_ROOT; ?>/contrataciones/rechazar_contra_oferta/<?php echo $con->id; ?>" class="w-11 h-11 bg-red-500/10 text-red-500 flex items-center justify-center rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all" title="Rechazar">
-                                                            <i class="bi bi-x-lg"></i>
-                                                        </a>
+                                                        <?php if($con->quien_contraoferto == 'dj'): ?>
+                                                            <a href="<?php echo URL_ROOT; ?>/contrataciones/aceptar_contra_oferta/<?php echo $con->id; ?>" class="btn-djpro-primary px-6 py-3 text-[10px] shadow-orange-500/40">ACEPTAR</a>
+                                                            <button onclick="openClientContraOfertaModal('<?php echo $con->id; ?>', '<?php echo $con->contra_oferta; ?>')" class="px-6 py-3 bg-djpro-surface-2 text-white text-[10px] font-bold rounded-xl border border-djpro-border hover:bg-djpro-surface transition-all uppercase tracking-widest">CONTRAOFERTA</button>
+                                                            <a href="<?php echo URL_ROOT; ?>/contrataciones/rechazar_contra_oferta/<?php echo $con->id; ?>" class="w-11 h-11 bg-red-500/10 text-red-500 flex items-center justify-center rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all" title="Rechazar">
+                                                                <i class="bi bi-x-lg"></i>
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <a href="<?php echo URL_ROOT; ?>/contrataciones/rechazar_contra_oferta/<?php echo $con->id; ?>" class="px-6 py-3 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest" title="Cancelar mi propuesta">
+                                                                CANCELAR MI OFERTA
+                                                            </a>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -205,8 +260,8 @@
 </div>
 
 <!-- Modal Reseñar DJ -->
-<div id="modalReview" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
-    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden">
+<div id="modalReview" class="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden overflow-y-auto py-10 custom-scrollbar">
+    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden my-auto">
         <div class="p-6 border-b border-djpro-border flex justify-between items-center bg-djpro-surface-2/50">
             <div>
                 <h5 class="text-xl font-bebas text-white tracking-widest uppercase">Calificar a <span id="review-dj-name" class="text-djpro-accent"></span></h5>
@@ -214,7 +269,7 @@
             </div>
             <button onclick="closeReviewModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
-        <form id="reviewForm" action="<?php echo URL_ROOT; ?>/resenas/publicar" method="POST" class="p-6 space-y-6">
+        <form id="reviewForm" action="<?php echo URL_ROOT; ?>/resenas/publicar" method="POST" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-thin">
             <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <input type="hidden" name="contratacion_id" id="review-contratacion-id">
             <input type="hidden" name="dj_id" id="review-dj-id">
@@ -232,20 +287,20 @@
 
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Comentario</label>
-                <textarea name="comentario" rows="4" placeholder="¿Cómo fue tu experiencia con el DJ? (Opcional)" class="input-djpro w-full resize-none"></textarea>
+                <textarea name="comentario" rows="4" placeholder="¿Cómo fue tu experiencia con el DJ? (Opcional)" class="input-djpro w-full resize-none border-djpro-accent/30"></textarea>
             </div>
 
-            <div class="flex gap-3 pt-4">
-                <button type="button" onclick="closeReviewModal()" class="flex-1 px-6 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all">CANCELAR</button>
-                <button type="submit" class="flex-1 btn-djpro-primary">PUBLICAR</button>
+            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <button type="button" onclick="closeReviewModal()" class="w-full sm:flex-1 px-6 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all order-2 sm:order-1">CANCELAR</button>
+                <button type="submit" class="w-full sm:flex-1 btn-djpro-primary order-1 sm:order-2">PUBLICAR</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Modal Contra-oferta Cliente -->
-<div id="modalClientContraOferta" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
-    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden">
+<div id="modalClientContraOferta" class="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden overflow-y-auto py-10 custom-scrollbar">
+    <div class="bg-djpro-surface w-full max-w-md rounded-3xl border border-djpro-border shadow-2xl overflow-hidden my-auto">
         <div class="p-6 border-b border-djpro-border flex justify-between items-center bg-djpro-surface-2/50">
             <div>
                 <h5 class="text-xl font-bebas text-white tracking-widest uppercase">Enviar <span class="text-djpro-accent">Contra-Propuesta</span></h5>
@@ -253,23 +308,25 @@
             </div>
             <button onclick="closeClientContraOfertaModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
-        <form action="<?php echo URL_ROOT; ?>/contrataciones/contra_oferta_cliente" method="POST" class="p-6 space-y-6">
+        <form action="<?php echo URL_ROOT; ?>/contrataciones/contra_oferta_cliente" method="POST" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-thin">
             <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
             <input type="hidden" name="contratacion_id" id="client-contra-id">
             
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Tu nueva oferta ($)</label>
-                <input type="number" name="monto_contra_oferta" id="client-contra-monto" class="input-djpro w-full" required>
+                <input type="number" name="monto_contra_oferta" id="client-contra-monto" class="input-djpro w-full border-djpro-accent/30" required>
                 <p class="text-[9px] text-djpro-muted font-medium italic mt-2">Se notificará al DJ sobre tu nueva propuesta de precio.</p>
             </div>
 
-            <div class="flex gap-3 pt-4">
-                <button type="button" onclick="closeClientContraOfertaModal()" class="flex-1 px-6 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all">CANCELAR</button>
-                <button type="submit" class="flex-1 btn-djpro-primary">ENVIAR</button>
+            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <button type="button" onclick="closeClientContraOfertaModal()" class="w-full sm:flex-1 px-6 py-3 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all order-2 sm:order-1">CANCELAR</button>
+                <button type="submit" class="w-full sm:flex-1 btn-djpro-primary order-1 sm:order-2">ENVIAR</button>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Nequi Payment Modal removed in favor of direct payment link -->
 
 <script>
     const modalReview = document.getElementById('modalReview');
@@ -350,7 +407,11 @@
             }
         });
     }
-</script>
 
+    function alertarPagoNequi(monto) {
+        djpro.toast("Recuerda que el pago debe ser de $" + monto + ". Luego notifica al DJ.", "info");
+    }
+    /* -------------------- */
+</script>
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>
 

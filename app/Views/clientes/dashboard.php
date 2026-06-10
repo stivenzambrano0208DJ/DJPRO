@@ -26,7 +26,7 @@
         <div class="flex flex-col md:row md:flex-row justify-between items-center gap-6 mb-8">
             <div class="w-full md:w-1/2 relative">
                 <i class="bi bi-search absolute left-5 top-1/2 -translate-y-1/2 text-djpro-accent"></i>
-                <input type="text" placeholder="Busca por nombre o palabra clave..." class="input-djpro w-full pl-14 py-4">
+                <input type="text" placeholder="Busca por nombre o palabra clave..." class="input-djpro w-full pl-14 py-4" maxlength="30">
             </div>
             <div class="text-sm text-djpro-muted font-bold tracking-widest">
                 MOSTRANDO <span class="text-white">12</span> DJS ENCONTRADOS

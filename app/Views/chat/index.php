@@ -16,7 +16,7 @@
             <h2 class="text-3xl font-bebas text-white tracking-widest mb-6">MENSAJES</h2>
             <div class="relative">
                 <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
-                <input type="text" placeholder="Buscar chat..." class="input-djpro w-full pl-10 text-xs py-3">
+                <input type="text" placeholder="Buscar chat..." class="input-djpro w-full pl-10 text-xs py-3" maxlength="30">
             </div>
         </div>
 
@@ -112,7 +112,7 @@
                     <i class="bi bi-plus-lg text-xl"></i>
                 </button>
                 <div class="flex-1 relative">
-                    <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí..." class="input-djpro w-full py-3 pl-6 pr-12" autocomplete="off">
+                    <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí..." class="input-djpro w-full py-3 pl-6 pr-12" autocomplete="off" maxlength="30">
                     <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-djpro-accent hover:scale-110 transition-transform">
                         <i class="bi bi-emoji-smile text-xl"></i>
                     </button>

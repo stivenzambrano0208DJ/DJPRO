@@ -1,5 +1,5 @@
 <!-- Sidebar Cliente -->
-<aside id="sidebar" class="fixed left-0 top-20 bottom-0 w-64 bg-djpro-surface border-r border-djpro-border z-40 transition-all duration-300 transform lg:translate-x-0 -translate-x-full">
+<aside id="sidebar" class="fixed left-0 top-20 bottom-0 w-64 bg-djpro-surface border-r border-djpro-border z-40 transition-all duration-300 transform lg:translate-x-0 -translate-x-full overflow-y-auto scrollbar-thin scrollbar-thumb-djpro-accent">
     <div class="p-6">
         <!-- User Profile Mini -->
         <div class="flex flex-col items-center mb-10 pb-10 border-b border-djpro-border">
@@ -24,24 +24,11 @@
                 <span class="font-bold">Explorar DJs</span>
             </a>
 
-            <a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=" class="flex items-center gap-4 px-4 py-3 rounded-xl text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all">
-                <i class="bi bi-music-note-beamed text-xl"></i>
-                <span class="font-bold">Géneros</span>
-            </a>
 
-            <a href="<?php echo URL_ROOT; ?>/djs/explorar?evento=" class="flex items-center gap-4 px-4 py-3 rounded-xl text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all">
-                <i class="bi bi-calendar-event text-xl"></i>
-                <span class="font-bold">Eventos</span>
-            </a>
             
             <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all <?php echo (strpos($_GET['url'] ?? '', 'chat') !== false) ? 'bg-djpro-accent/10 text-djpro-accent border-l-4 border-djpro-accent' : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text'; ?>">
                 <i class="bi bi-chat-dots-fill text-xl"></i>
                 <span class="font-bold">Mensajes</span>
-            </a>
-
-            <a href="<?php echo URL_ROOT; ?>/clientes/lineup" class="flex items-center gap-4 px-4 py-3 rounded-xl text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all">
-                <i class="bi bi-music-note-list text-xl"></i>
-                <span class="font-bold">Lineup Builder</span>
             </a>
 
             <div class="pt-10">

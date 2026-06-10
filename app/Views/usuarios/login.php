@@ -1,7 +1,7 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 
 <section class="min-h-[calc(100vh-80px)] flex items-center justify-center p-4">
-    <div class="max-w-5xl w-full bg-djpro-surface rounded-3xl border border-djpro-border overflow-hidden shadow-2xl flex flex-col md:row h-full md:h-[600px] md:flex-row">
+    <div class="max-w-5xl w-full bg-djpro-surface rounded-3xl border border-djpro-border overflow-hidden shadow-2xl flex flex-col md:row h-full md:min-h-[600px] md:flex-row">
         
         <!-- Lado Visual -->
         <div class="hidden md:flex w-1/2 relative bg-gradient-to-br from-djpro-accent/20 to-djpro-purple/20 items-center justify-center p-12">
@@ -33,21 +33,21 @@
                 <input type="hidden" name="redirect" value="<?php echo $data['redirect']; ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Correo Electrónico</label>
+                    <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1">Correo Electrónico</label>
                     <div class="relative">
                         <i class="bi bi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
-                        <input type="email" name="correo" value="<?php echo $data['correo']; ?>" placeholder="tu@ejemplo.com" class="input-djpro w-full pl-12" required>
+                        <input type="email" name="correo" value="<?php echo $data['correo']; ?>" maxlength="100" placeholder="tu@ejemplo.com" class="input-djpro w-full pl-12 border-djpro-accent/30" required>
                     </div>
                 </div>
 
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest">Contraseña</label>
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest">Contraseña</label>
                         <a href="<?php echo URL_ROOT; ?>/usuarios/recuperar" class="text-[9px] font-bold text-djpro-accent uppercase tracking-widest hover:underline">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="relative">
                         <i class="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted"></i>
-                        <input type="password" name="password" placeholder="••••••••" class="input-djpro w-full pl-12" required>
+                        <input type="password" name="password" placeholder="••••••••" class="input-djpro w-full pl-12 border-djpro-accent/30" required maxlength="30">
                     </div>
                 </div>
 

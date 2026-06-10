@@ -20,6 +20,13 @@
             </div>
         <?php endif; ?>
 
+        <?php if(!empty($data['error'])): ?>
+            <div class="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl mb-8 flex items-center gap-3">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span class="font-bold text-sm tracking-wide uppercase"><?php echo $data['error']; ?></span>
+            </div>
+        <?php endif; ?>
+
         <div class="bg-djpro-surface rounded-3xl border border-djpro-border p-8 md:p-12 shadow-2xl">
             <form action="<?php echo URL_ROOT; ?>/djs/editar" method="POST" enctype="multipart/form-data" class="space-y-10">
                 <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
@@ -41,12 +48,12 @@
                     </div>
 
                     <div class="max-w-xs w-full space-y-3">
-                        <label class="text-[10px] font-bold text-white uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                             <i class="bi bi-person-badge"></i> Nombre de Usuario (URL Pública)
                         </label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted font-bold">@</span>
-                            <input type="text" name="username" value="<?php echo $data['perfil']->username; ?>" 
+                            <input type="text" name="username" maxlength="30" value="<?php echo $data['perfil']->username; ?>" 
                                 placeholder="tu_nombre_dj" 
                                 class="input-djpro w-full pl-10 text-center border-djpro-accent/30 font-bold tracking-wider focus:border-djpro-accent" 
                                 required pattern="[a-zA-Z0-9_]+" 
@@ -63,33 +70,33 @@
                     <div class="lg:col-span-7 space-y-10">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                     <i class="bi bi-map text-djpro-accent"></i> Departamento
                                 </label>
-                                <select id="select-departamento" name="departamento" class="input-djpro w-full cursor-pointer outline-none">
+                                <select id="select-departamento" name="departamento" class="input-djpro w-full cursor-pointer outline-none border-djpro-accent/30">
                                     <option value="<?php echo $data['perfil']->departamento; ?>"><?php echo $data['perfil']->departamento ?: 'Seleccionar Departamento'; ?></option>
                                 </select>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                     <i class="bi bi-geo-alt text-djpro-accent"></i> Ciudad / Municipio
                                 </label>
-                                <select id="select-ciudad" name="ciudad" class="input-djpro w-full cursor-pointer outline-none">
+                                <select id="select-ciudad" name="ciudad" class="input-djpro w-full cursor-pointer outline-none border-djpro-accent/30">
                                     <option value="<?php echo $data['perfil']->ciudad; ?>"><?php echo $data['perfil']->ciudad ?: 'Seleccionar Ciudad'; ?></option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="space-y-3">
-                            <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                 <i class="bi bi-card-text text-djpro-accent"></i> Biografía Profesional
                             </label>
-                            <textarea name="biografia" rows="8" placeholder="Cuéntale a tus clientes sobre tu trayectoria..." class="input-djpro w-full resize-none leading-relaxed"><?php echo $data['perfil']->biografia; ?></textarea>
+                            <textarea name="biografia" rows="8" placeholder="Cuéntale a tus clientes sobre tu trayectoria..." class="input-djpro w-full resize-none leading-relaxed border-djpro-accent/30"><?php echo $data['perfil']->biografia; ?></textarea>
                             <p class="text-[10px] text-djpro-muted font-bold uppercase tracking-tighter opacity-60">Describe tu estilo, equipo y trayectoria musical.</p>
                         </div>
 
                         <div class="space-y-4">
-                            <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                 <i class="bi bi-geo-fill text-djpro-accent"></i> Cobertura de Trabajo
                             </label>
                             <div id="municipios-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-djpro-surface-2 p-6 rounded-2xl border border-djpro-border max-h-48 overflow-y-auto custom-scrollbar">
@@ -101,18 +108,18 @@
                     <!-- Columna Derecha: Precio, Géneros y Eventos -->
                     <div class="lg:col-span-5 space-y-10">
                         <div class="space-y-3">
-                            <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                 <i class="bi bi-currency-dollar text-djpro-accent"></i> Tarifa por Hora
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-djpro-muted font-bold">$</span>
-                                <input type="number" name="precio_hora" value="<?php echo $data['perfil']->precio_hora; ?>" placeholder="Ej: 150000" class="input-djpro w-full pl-8 font-bebas text-xl tracking-widest">
+                                <input type="number" name="precio_hora" value="<?php echo $data['perfil']->precio_hora; ?>" placeholder="Ej: 150000" class="input-djpro w-full pl-8 font-bebas text-xl tracking-widest border-djpro-accent/30">
                             </div>
                         </div>
 
                         <div class="space-y-6">
                             <div class="space-y-4">
-                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                     <i class="bi bi-music-note-beamed text-djpro-accent"></i> Géneros Musicales
                                 </label>
                                 <div class="grid grid-cols-2 gap-2 bg-djpro-surface-2 p-5 rounded-2xl border border-djpro-border">
@@ -133,7 +140,7 @@
                             </div>
 
                             <div class="space-y-4">
-                                <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <label class="text-[10px] font-bold text-djpro-accent uppercase tracking-widest ml-1 flex items-center gap-2">
                                     <i class="bi bi-calendar-event text-djpro-purple"></i> Tipos de Evento
                                 </label>
                                 <div class="grid grid-cols-2 gap-2 bg-djpro-surface-2 p-5 rounded-2xl border border-djpro-border">
@@ -176,7 +183,7 @@
 
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Mensaje de Auto-respuesta</label>
-                        <textarea name="auto_respuesta" rows="3" placeholder="Ej: Hola! Gracias por escribirme. En un momento te responderé..." class="input-djpro w-full resize-none"><?php echo $data['perfil']->auto_respuesta; ?></textarea>
+                        <textarea name="auto_respuesta" rows="3" placeholder="Ej: Hola! Gracias por escribirme. En un momento te responderé..." class="input-djpro w-full resize-none border-djpro-accent/30"><?php echo $data['perfil']->auto_respuesta; ?></textarea>
                         <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Este mensaje se enviará automáticamente cuando un cliente te escriba por primera vez.</p>
                     </div>
                 </div>
@@ -195,7 +202,7 @@
                         </button>
                     </div>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div id="galeria-videos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <?php if(empty($data['videos'])): ?>
                             <div class="col-span-full text-center py-10 border-2 border-dashed border-djpro-border rounded-2xl">
                                 <i class="bi bi-play-circle text-4xl text-djpro-muted mb-3 block"></i>
@@ -203,24 +210,24 @@
                             </div>
                         <?php else: ?>
                             <?php foreach($data['videos'] as $video): ?>
-                            <div class="group relative rounded-xl overflow-hidden border border-djpro-border bg-djpro-surface">
-                                <?php 
-                                    preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video->url_video, $match);
-                                    $youtube_id = $match[1] ?? '';
-                                ?>
+                            <?php 
+                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video->url_video, $match);
+                                $youtube_id = $match[1] ?? '';
+                            ?>
+                            <div class="group relative rounded-xl overflow-hidden border border-djpro-border bg-djpro-surface cursor-pointer" onclick="openVideoModal('<?php echo $youtube_id; ?>', '<?php echo htmlspecialchars($video->titulo, ENT_QUOTES); ?>')">
                                 <img src="https://img.youtube.com/vi/<?php echo $youtube_id; ?>/mqdefault.jpg" class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                    <i class="bi bi-play-fill text-4xl text-white"></i>
+                                    <div class="w-12 h-12 bg-djpro-accent/90 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/50">
+                                        <i class="bi bi-play-fill text-2xl text-white ml-1"></i>
+                                    </div>
                                 </div>
                                 <div class="absolute bottom-0 left-0 right-0 bg-djpro-surface/90 p-3 backdrop-blur-md border-t border-djpro-border flex justify-between items-center">
                                     <span class="text-[10px] font-bold text-white truncate w-4/5 uppercase tracking-widest"><?php echo $video->titulo; ?></span>
-                                    <form id="delete-video-form-<?php echo $video->id; ?>" action="<?php echo URL_ROOT; ?>/djs/eliminar_video/<?php echo $video->id; ?>" method="POST" class="inline">
-                                        <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
-                                        <input type="hidden" name="from" value="editar">
-                                        <button type="button" onclick="confirmDeleteForm('delete-video-form-<?php echo $video->id; ?>', '¿Eliminar video?')" class="text-red-400 hover:text-red-500 transition-colors">
+                                    <div onclick="event.stopPropagation()">
+                                        <button type="button" onclick="deleteVideoAjax(<?php echo $video->id; ?>)" class="text-red-400 hover:text-red-500 transition-colors">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -229,7 +236,7 @@
                 </div>
 
                 <div class="pt-6 border-t border-djpro-border flex justify-end">
-                    <button type="submit" class="btn-djpro-primary px-12 py-4 text-lg">
+                    <button type="submit" id="btnGuardarCambios" class="btn-djpro-primary px-12 py-4 text-lg">
                         GUARDAR CAMBIOS <i class="bi bi-save2 ml-2"></i>
                     </button>
                 </div>
@@ -327,14 +334,45 @@
         }, 1000);
     });
 
-    // Funciones del Modal de Video
+    // Funciones del Modal de Video (Agregar)
     function openModal() {
         document.getElementById('modalVideo').classList.remove('hidden');
     }
     function closeModal() {
         document.getElementById('modalVideo').classList.add('hidden');
     }
+
+    // Funciones del Player de Video
+    function openVideoModal(youtubeId, title) {
+        document.getElementById('playerVideoTitle').textContent = title;
+        document.getElementById('playerVideoFrame').src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1';
+        document.getElementById('modalPlayerVideo').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeVideoModal() {
+        document.getElementById('modalPlayerVideo').classList.add('hidden');
+        document.getElementById('playerVideoFrame').src = '';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('modalPlayerVideo').addEventListener('click', function(e) {
+            if (e.target === this) closeVideoModal();
+        });
+    });
 </script>
+
+<!-- Modal Reproductor de Video -->
+<div id="modalPlayerVideo" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
+    <div class="bg-djpro-surface w-full max-w-3xl rounded-3xl border border-djpro-border shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-djpro-border flex justify-between items-center bg-djpro-surface-2/50">
+            <h5 id="playerVideoTitle" class="text-lg font-bebas text-white tracking-widest uppercase"></h5>
+            <button onclick="closeVideoModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="aspect-video bg-black">
+            <iframe id="playerVideoFrame" src="" class="w-full h-full" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+    </div>
+</div>
 
 <!-- Modal Añadir Video -->
 <div id="modalVideo" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden">
@@ -343,15 +381,15 @@
             <h5 class="text-xl font-bebas text-white tracking-widest uppercase">Añadir Video</h5>
             <button onclick="closeModal()" class="text-djpro-muted hover:text-white transition-all text-xl"><i class="bi bi-x-lg"></i></button>
         </div>
-        <form action="<?php echo URL_ROOT; ?>/djs/agregar_video" method="POST" class="p-6 space-y-6">
+        <form id="formAgregarVideo" action="<?php echo URL_ROOT; ?>/djs/agregar_video" method="POST" class="p-6 space-y-6">
             <input type="hidden" name="from" value="editar">
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">Título del Video</label>
-                <input type="text" name="titulo" placeholder="Ej: Festival Electrónica 2024" class="input-djpro w-full" required>
+                <input type="text" name="titulo" placeholder="Ej: Festival Electrónica 2024" class="input-djpro w-full border-djpro-accent/30" required maxlength="60">
             </div>
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-djpro-text uppercase tracking-widest ml-1">URL de YouTube</label>
-                <input type="url" name="url_video" placeholder="https://www.youtube.com/watch?v=..." class="input-djpro w-full" required>
+                <input type="url" name="url_video" placeholder="https://www.youtube.com/watch?v=..." class="input-djpro w-full border-djpro-accent/30" required>
                 <p class="text-[9px] text-djpro-muted font-bold uppercase tracking-tighter">Copia el enlace completo del video.</p>
             </div>
             <div class="flex gap-3 pt-4">
@@ -364,3 +402,65 @@
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>
 
+<script>
+    function actualizarGaleria() {
+        fetch(window.location.href)
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newGallery = doc.getElementById('galeria-videos-container');
+                if (newGallery) {
+                    document.getElementById('galeria-videos-container').innerHTML = newGallery.innerHTML;
+                }
+            });
+    }
+
+    function deleteVideoAjax(id) {
+        if(confirm('¿Eliminar video? Esto se aplicará inmediatamente.')) {
+            const formData = new FormData();
+            formData.append('csrf_token', '<?php echo $data['csrf_token']; ?>');
+            formData.append('from', 'editar');
+            fetch('<?php echo URL_ROOT; ?>/djs/eliminar_video/' + id, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(() => {
+                actualizarGaleria();
+            });
+        }
+    }
+
+    document.getElementById('formAgregarVideo').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = 'AGREGANDO...';
+        btn.disabled = true;
+
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(resp => {
+            if(resp.success) {
+                closeModal();
+                this.reset();
+                actualizarGaleria();
+                btn.innerHTML = 'AGREGAR';
+                btn.disabled = false;
+            } else {
+                alert('Error al agregar el video.');
+                btn.innerHTML = 'AGREGAR';
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Ocurrió un error al procesar la solicitud.');
+            btn.innerHTML = 'AGREGAR';
+            btn.disabled = false;
+        });
+    });
+</script>

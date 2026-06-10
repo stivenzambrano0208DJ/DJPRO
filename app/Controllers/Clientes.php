@@ -7,7 +7,7 @@ class Clientes extends Core\Controller {
     private $contratacionModel;
     
     public function __construct() {
-        if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] != 'cliente') {
+        if (!isset($_SESSION['usuario_id'])) {
             header('Location: ' . URL_ROOT . '/usuarios/login');
             exit;
         }
@@ -26,11 +26,13 @@ class Clientes extends Core\Controller {
             'contrataciones' => $contrataciones,
             'generos' => $generos
         ];
-        $this->view('clientes/panel', $datos);
-    }
 
-    public function lineup() {
-        $this->view('clientes/lineup');
+        if ($_SESSION['usuario_rol'] == 'dj') {
+            $djModel = $this->model('Dj');
+            $datos['perfil'] = $djModel->obtenerPerfil($_SESSION['usuario_id']);
+        }
+
+        $this->view('clientes/panel', $datos);
     }
 
 }

@@ -184,7 +184,53 @@ class Admin extends Core\Controller {
         }
     }
 
+    public function registrar_dj() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->validateCsrf();
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $nombre   = trim($_POST['nombre']);
+            $correo   = trim($_POST['correo']);
+            $password = trim($_POST['password']);
+
+            if (empty($nombre) || empty($correo) || empty($password)) {
+                $_SESSION['flash_message'] = '⚠️ Todos los campos son obligatorios.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/admin/dashboard');
+                exit;
+            }
+
+            // Verificar si el correo ya existe
+            $existente = $this->usuarioModel->buscarUsuarioPorCorreo($correo);
+            if ($existente) {
+                $_SESSION['flash_message'] = '⚠️ Ya existe un usuario con ese correo.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/admin/dashboard');
+                exit;
+            }
+
+            $datos = [
+                'nombre'   => $nombre,
+                'username' => strtolower(str_replace(' ', '_', $nombre)),
+                'correo'   => $correo,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'rol'      => 'dj'
+            ];
+
+            if ($this->usuarioModel->registrar($datos)) {
+                $_SESSION['flash_message'] = '✅ DJ "' . $nombre . '" registrado exitosamente. Puede iniciar sesión con: ' . $correo;
+                header('Location: ' . URL_ROOT . '/admin/dashboard');
+            } else {
+                $_SESSION['flash_message'] = 'Error al registrar el DJ. Intenta nuevamente.';
+                $_SESSION['flash_type'] = 'error';
+                header('Location: ' . URL_ROOT . '/admin/dashboard');
+            }
+            exit;
+        }
+    }
+
     public function api_recent_users() {
+
         header('Content-Type: application/json');
         $usuariosRecientes = $this->usuarioModel->obtenerUsuariosRecientes(10);
         

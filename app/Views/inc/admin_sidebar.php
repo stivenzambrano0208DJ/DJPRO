@@ -1,5 +1,5 @@
 <!-- Sidebar Admin -->
-<aside class="w-64 bg-djpro-surface border-r border-djpro-border h-[calc(100vh-80px)] hidden lg:block">
+<aside class="w-64 bg-djpro-surface border-r border-djpro-border h-[calc(100vh-80px)] hidden lg:block overflow-y-auto scrollbar-thin scrollbar-thumb-djpro-accent">
     <div class="p-6">
         <h2 class="text-xl font-bebas text-djpro-accent tracking-widest mb-10 uppercase">Admin Panel</h2>
         <nav class="space-y-4">

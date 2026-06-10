@@ -62,6 +62,28 @@
             pointer-events: auto;
             min-width: 300px;
         }
+
+        /* Scrollbar Personalizado */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #12121a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ea580c;
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #f97316 #12121a;
+        }
     </style>
 </head>
 <body class="bg-djpro-bg text-djpro-text font-['Rajdhani']">
@@ -80,8 +102,7 @@
             <!-- Nav Desktop -->
             <nav class="hidden lg:flex items-center gap-8">
                 <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-text hover:text-djpro-accent transition-colors font-medium">Explorar DJs</a>
-                <a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=" class="text-djpro-text hover:text-djpro-accent transition-colors font-medium">Géneros</a>
-                <a href="<?php echo URL_ROOT; ?>/djs/explorar?evento=" class="text-djpro-text hover:text-djpro-accent transition-colors font-medium">Eventos</a>
+
                 
                 <div class="h-6 w-[1px] bg-djpro-border mx-2"></div>
                 
@@ -167,8 +188,7 @@
             </div>
             <div class="flex flex-col gap-6">
                 <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-2xl font-bebas text-djpro-text">Explorar DJs</a>
-                <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-2xl font-bebas text-djpro-text">Géneros</a>
-                <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-2xl font-bebas text-djpro-text">Eventos</a>
+
                 <hr class="border-djpro-border">
                 <?php if(!isset($_SESSION['usuario_id'])): ?>
                     <a href="<?php echo URL_ROOT; ?>/usuarios/login" class="text-xl font-semibold text-djpro-text">Iniciar Sesión</a>
@@ -182,7 +202,7 @@
     </div>
 
     <!-- Main Content Wrapper -->
-    <main class="pt-20 min-h-screen">
+    <main class="pt-20 min-h-[calc(100vh-80px)]">
         
         <!-- Flash Messages -->
         <?php if(isset($_SESSION['flash_message'])): ?>
