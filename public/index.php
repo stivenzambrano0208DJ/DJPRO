@@ -3,15 +3,21 @@
  * DJ Platform Entry Point
  */
 
-// Start Session with persistence
+// Start Session with secure defaults
 if (session_status() === PHP_SESSION_NONE) {
-    // 30 days in seconds
-    $lifetime = 30 * 24 * 60 * 60; 
+    $lifetime = 2 * 60 * 60;
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
     session_set_cookie_params([
         'lifetime' => $lifetime,
         'path' => '/',
         'domain' => '',
-        'secure' => false, // Cambiar a true si se usa HTTPS
+        'secure' => $isHttps,
         'httponly' => true,
         'samesite' => 'Lax'
     ]);
@@ -33,4 +39,3 @@ spl_autoload_register(function ($class) {
 
 // Initialize Router
 $router = new Core\Router();
-

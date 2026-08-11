@@ -109,7 +109,17 @@
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = url;
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.style.display = 'none';
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = 'csrf_token';
+                    csrf.value = '<?php echo $_SESSION['csrf_token'] ?? ''; ?>';
+                    form.appendChild(csrf);
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             })
         }
@@ -150,6 +160,38 @@
                 mobileMenu.classList.add('translate-x-full');
             });
         }
+
+        document.addEventListener('click', function (e) {
+            if (e.defaultPrevented) return;
+
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+
+            const protectedActions = [
+                '/contrataciones/responder/',
+                '/contrataciones/cancelar_cliente/',
+                '/contrataciones/aceptar_contra_oferta/',
+                '/contrataciones/rechazar_contra_oferta/',
+                '/contrataciones/aceptar_contra_oferta_dj/',
+                '/contrataciones/rechazar_contra_oferta_dj/',
+                '/contrataciones/cancelar_contra_oferta/'
+            ];
+
+            if (!protectedActions.some(action => link.href.includes(action))) return;
+
+            e.preventDefault();
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = link.href;
+            form.style.display = 'none';
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = 'csrf_token';
+            csrf.value = '<?php echo $_SESSION['csrf_token'] ?? ''; ?>';
+            form.appendChild(csrf);
+            document.body.appendChild(form);
+            form.submit();
+        });
 
         // =========================================================
         // PROTECCION GLOBAL ANTI-DOBLE-ENVIO

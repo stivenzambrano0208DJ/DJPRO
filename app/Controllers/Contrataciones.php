@@ -88,6 +88,9 @@ class Contrataciones extends Core\Controller {
 
     // El DJ acepta, rechaza o finaliza
     public function responder($id, $estado) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         
         if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
@@ -172,6 +175,9 @@ class Contrataciones extends Core\Controller {
 
     // El Cliente cancela su propia solicitud
     public function cancelar_cliente($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         
         if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
@@ -227,6 +233,9 @@ class Contrataciones extends Core\Controller {
 
     // El Cliente acepta la contra-oferta del DJ
     public function aceptar_contra_oferta($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         
         if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
@@ -257,6 +266,9 @@ class Contrataciones extends Core\Controller {
 
     // El Cliente rechaza la contra-oferta
     public function rechazar_contra_oferta($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         if (!$contratacion || $contratacion->cliente_id != $_SESSION['usuario_id']) {
             header('Location: ' . URL_ROOT . '/clientes/dashboard');
@@ -293,6 +305,9 @@ class Contrataciones extends Core\Controller {
 
     // El DJ acepta la contra-oferta del CLIENTE
     public function aceptar_contra_oferta_dj($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         
         if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
@@ -308,6 +323,9 @@ class Contrataciones extends Core\Controller {
 
     // El DJ rechaza la contra-oferta del CLIENTE
     public function rechazar_contra_oferta_dj($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
             header('Location: ' . URL_ROOT . '/djs/dashboard');
@@ -322,6 +340,9 @@ class Contrataciones extends Core\Controller {
 
     // El DJ cancela su propia contra-oferta
     public function cancelar_contra_oferta($id) {
+        $this->requirePost();
+        $this->validateCsrf();
+
         $contratacion = $this->contratacionModel->obtenerPorId($id);
         if (!$contratacion || $contratacion->dj_id != $_SESSION['usuario_id']) {
             header('Location: ' . URL_ROOT . '/djs/dashboard');

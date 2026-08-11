@@ -67,6 +67,7 @@ class Admin extends Core\Controller {
             $datos = [
                 'id' => $id,
                 'nombre' => trim($_POST['nombre']),
+                'username' => trim($_POST['username'] ?? ''),
                 'correo' => trim($_POST['correo']),
                 'rol' => trim($_POST['rol'])
             ];

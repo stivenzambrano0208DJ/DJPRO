@@ -44,6 +44,7 @@ class Chat extends Core\Controller {
 
     public function enviar() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->validateCsrf();
             $datos = [
                 'emisor_id' => $_SESSION['usuario_id'],
                 'receptor_id' => $_POST['receptor_id'],

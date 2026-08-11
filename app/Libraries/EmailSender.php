@@ -16,11 +16,13 @@ class EmailSender {
         try {
             $mail->isSMTP();
             $mail->Host       = SMTP_HOST;
-            $mail->SMTPAuth   = true;
+            $mail->SMTPAuth   = SMTP_USER !== '';
             $mail->Username   = SMTP_USER;
             $mail->Password   = SMTP_PASS;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            if (SMTP_SECURE !== '') {
+                $mail->SMTPSecure = SMTP_SECURE === 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : SMTP_SECURE;
+            }
+            $mail->Port       = SMTP_PORT;
             $mail->CharSet    = 'UTF-8';
             $mail->Timeout    = 5; // Timeout rápido de 5 segundos para no bloquear la aplicación
 

@@ -69,8 +69,23 @@ class Usuario extends Core\Model {
             if (password_verify($password, $hashed_password)) {
                 return $fila;
             }
+
+            // Compatibilidad temporal: migra contrasenas antiguas en texto claro al primer login correcto.
+            if (hash_equals((string)$hashed_password, (string)$password)) {
+                $nuevoHash = password_hash($password, PASSWORD_DEFAULT);
+                $this->actualizarPasswordPorId($fila->id, $nuevoHash);
+                $fila->password = $nuevoHash;
+                return $fila;
+            }
         }
         return false;
+    }
+
+    public function actualizarPasswordPorId($id, $password) {
+        $this->db->query('UPDATE usuarios SET password = :password WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':password', $password);
+        return $this->db->execute();
     }
 
     // Contar usuarios por rol

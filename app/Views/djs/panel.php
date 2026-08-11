@@ -472,7 +472,12 @@
                     didOpen: () => {
                         Swal.showLoading();
                         // Instead of full redirect, use fetch for seamless update
-                        fetch(url)
+                        const formData = new FormData();
+                        formData.append('csrf_token', '<?php echo $data['csrf_token']; ?>');
+                        fetch(url, {
+                            method: 'POST',
+                            body: formData
+                        })
                             .then(res => res.text())
                             .then(html => {
                                 const parser = new DOMParser();
@@ -504,7 +509,13 @@
             btn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i>';
             btn.style.pointerEvents = 'none';
 
-            fetch(btn.href)
+            const formData = new FormData();
+            formData.append('csrf_token', '<?php echo $data['csrf_token']; ?>');
+
+            fetch(btn.href, {
+                method: 'POST',
+                body: formData
+            })
                 .then(res => res.text())
                 .then(html => {
                     const parser = new DOMParser();
@@ -546,4 +557,3 @@
 </script>
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>
-

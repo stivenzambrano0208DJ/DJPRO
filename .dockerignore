@@ -1,0 +1,53 @@
+# --- Version control ---------------------------------------------------------
+.git
+.gitignore
+.gitattributes
+
+# --- Secrets / environment ---------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Dependencies that should never ship in the image ------------------------
+node_modules
+vendor
+bower_components
+
+# --- Editor / IDE ------------------------------------------------------------
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Logs / temp -------------------------------------------------------------
+logs
+*.log
+tmp
+temp
+*.cache
+
+# --- Tests -------------------------------------------------------------------
+tests
+test
+phpunit.xml
+phpunit.xml.dist
+.phpunit.result.cache
+
+# --- Documentation / project meta (not needed at runtime) --------------------
+README.md
+DOCUMENTO_CAMBIOS_SEGURIDAD.md
+*.md
+
+# --- Docker / CI files -------------------------------------------------------
+Dockerfile
+.dockerignore
+docker-compose*.yml
+.github
+
+# --- Root .htaccess (not used: DocumentRoot is public/) ----------------------
+/.htaccess
