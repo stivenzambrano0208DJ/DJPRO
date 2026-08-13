@@ -149,14 +149,15 @@ class Dj extends Core\Model {
 
     // Obtener proyección de servicios (últimos 6 meses) específicos para un DJ
     public function obtenerProyeccionMensual($dj_id) {
-        $this->db->query("SELECT 
+        $this->db->query("SELECT
                             DATE_FORMAT(fecha_creacion, '%b') as mes,
+                            DATE_FORMAT(fecha_creacion, '%Y-%m') as periodo,
                             COUNT(*) as total
-                          FROM contrataciones 
-                          WHERE dj_id = :dj_id 
+                          FROM contrataciones
+                          WHERE dj_id = :dj_id
                           AND fecha_creacion >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-                          GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m')
-                          ORDER BY fecha_creacion ASC");
+                          GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m'), DATE_FORMAT(fecha_creacion, '%b')
+                          ORDER BY periodo ASC");
         $this->db->bind(':dj_id', $dj_id);
         return $this->db->resultSet();
     }

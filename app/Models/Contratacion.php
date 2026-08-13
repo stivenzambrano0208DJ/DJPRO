@@ -186,13 +186,14 @@ class Contratacion extends Core\Model {
 
     // Obtener proyección de servicios (últimos 6 meses)
     public function obtenerProyeccionMensual() {
-        $this->db->query("SELECT 
+        $this->db->query("SELECT
                             DATE_FORMAT(fecha_creacion, '%M') as mes,
+                            DATE_FORMAT(fecha_creacion, '%Y-%m') as periodo,
                             COUNT(*) as total
-                          FROM contrataciones 
+                          FROM contrataciones
                           WHERE fecha_creacion >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-                          GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m')
-                          ORDER BY fecha_creacion ASC");
+                          GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m'), DATE_FORMAT(fecha_creacion, '%M')
+                          ORDER BY periodo ASC");
         return $this->db->resultSet();
     }
 }
