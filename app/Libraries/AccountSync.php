@@ -22,21 +22,31 @@ use Throwable;
  */
 class AccountSync
 {
+    /**
+     * Lee una variable de entorno de forma fiable: primero getenv() (lo que
+     * inyecta Docker/Dokploy) y si no, $_ENV como respaldo.
+     */
+    private static function env(string $clave, ?string $porDefecto = null): ?string
+    {
+        $v = getenv($clave);
+        if ($v !== false && $v !== '') {
+            return $v;
+        }
+        if (isset($_ENV[$clave]) && $_ENV[$clave] !== '') {
+            return (string) $_ENV[$clave];
+        }
+        return $porDefecto;
+    }
+
     private static function conexionNeivactiva(): PDO
     {
-        $host = getenv('NEIV_DB_HOST') ?: (getenv('DB_HOST') ?: 'localhost');
-        $name = getenv('NEIV_DB_NAME') ?: 'neivactiva_db';
-        $user = getenv('NEIV_DB_USER') ?: (getenv('DB_USER') ?: 'root');
+        $host = self::env('NEIV_DB_HOST', self::env('DB_HOST', 'localhost'));
+        $port = self::env('NEIV_DB_PORT', '3306');
+        $name = self::env('NEIV_DB_NAME', 'neivactiva_db');
+        $user = self::env('NEIV_DB_USER', self::env('DB_USER', 'root'));
+        $pass = self::env('NEIV_DB_PASS', self::env('DB_PASS', ''));
 
-        $pass = getenv('NEIV_DB_PASS');
-        if ($pass === false) {
-            $pass = getenv('DB_PASS');
-            if ($pass === false) {
-                $pass = '';
-            }
-        }
-
-        $dsn = "mysql:host={$host};dbname={$name};charset=utf8mb4";
+        $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
         return new PDO($dsn, $user, $pass, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
