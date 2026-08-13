@@ -62,10 +62,17 @@ class Usuarios extends Core\Controller {
             }
 
             if (empty($datos['error'])) {
+                // Guardamos la contrasena en texto plano ANTES de cifrarla, para
+                // poder sincronizar la cuenta con NeivActiva (misma clave en ambas).
+                $passwordPlano = $datos['password'];
+
                 // Hash Password
                 $datos['password'] = password_hash($datos['password'], PASSWORD_DEFAULT);
 
                 if ($this->usuarioModel->registrar($datos)) {
+                    // Sincronizar la cuenta con NeivActiva (no debe bloquear el registro).
+                    \Libraries\AccountSync::alRegistrar($datos['nombre'], $datos['correo'], $passwordPlano);
+
                     // Enviar correo de bienvenida
                     EmailSender::enviarBienvenida($datos['correo'], $datos['nombre']);
 
@@ -270,6 +277,9 @@ class Usuarios extends Core\Controller {
             } else {
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
                 if ($this->usuarioModel->actualizarPassword($reset->email, $hashed)) {
+                    // Propagar el cambio de contrasena a NeivActiva (misma clave en ambas).
+                    \Libraries\AccountSync::alCambiarPassword($reset->email, $password);
+
                     $_SESSION['flash_message'] = 'Contraseña actualizada con éxito. Ya puedes iniciar sesión.';
                     $_SESSION['flash_type'] = 'success';
                     header('Location: ' . URL_ROOT . '/usuarios/login');
