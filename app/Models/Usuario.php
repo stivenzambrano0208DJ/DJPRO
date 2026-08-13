@@ -88,6 +88,14 @@ class Usuario extends Core\Model {
         return $this->db->execute();
     }
 
+    // Invalida todas las sesiones abiertas de esta cuenta subiendo su token_version.
+    // Se llama tras cada cambio de contrasena (reset o edicion de credenciales).
+    public function incrementarTokenVersion($correo) {
+        $this->db->query('UPDATE usuarios SET token_version = token_version + 1 WHERE correo = :correo');
+        $this->db->bind(':correo', $correo);
+        return $this->db->execute();
+    }
+
     // Contar usuarios por rol
     public function contarPorRol($rol) {
         $this->db->query('SELECT COUNT(*) as total FROM usuarios WHERE rol = :rol');

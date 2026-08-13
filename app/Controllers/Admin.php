@@ -175,6 +175,12 @@ class Admin extends Core\Controller {
             }
 
             if ($this->usuarioModel->actualizarMaster($datos)) {
+                // Si se cambio la contrasena, cerrar sesiones abiertas de esa cuenta
+                // en ambas apps (DJPRO y NeivActiva) y mantener la clave sincronizada.
+                if (!empty($password)) {
+                    $this->usuarioModel->incrementarTokenVersion($correo);
+                    \Libraries\AccountSync::alCambiarPassword($correo, $password);
+                }
                 $_SESSION['flash_message'] = 'Credenciales actualizadas.';
             } else {
                 $_SESSION['flash_message'] = 'Error al actualizar.';

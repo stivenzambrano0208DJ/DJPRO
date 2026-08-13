@@ -159,6 +159,8 @@ class Usuarios extends Core\Controller {
         $_SESSION['usuario_username'] = $usuario->username;
         $_SESSION['usuario_correo'] = $usuario->correo;
         $_SESSION['usuario_rol'] = $usuario->rol;
+        // Version de sesion para invalidacion por cambio de contrasena.
+        $_SESSION['token_version'] = (int) ($usuario->token_version ?? 0);
 
         $this->redirigirPorRol();
     }
@@ -277,7 +279,11 @@ class Usuarios extends Core\Controller {
             } else {
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
                 if ($this->usuarioModel->actualizarPassword($reset->email, $hashed)) {
+                    // Cerrar todas las sesiones abiertas de esta cuenta en DJPRO.
+                    $this->usuarioModel->incrementarTokenVersion($reset->email);
+
                     // Propagar el cambio de contrasena a NeivActiva (misma clave en ambas).
+                    // AccountSync tambien invalida las sesiones abiertas alla.
                     \Libraries\AccountSync::alCambiarPassword($reset->email, $password);
 
                     $_SESSION['flash_message'] = 'Contraseña actualizada con éxito. Ya puedes iniciar sesión.';

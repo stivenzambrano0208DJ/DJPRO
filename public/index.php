@@ -37,5 +37,11 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// Invalidacion de sesiones por cambio de contrasena (token_version).
+// Se asegura de que exista la columna y cierra la sesion si la contrasena
+// cambio (en esta app o en NeivActiva) despues de abrirla.
+\Libraries\SessionGuard::ensureSchema();
+\Libraries\SessionGuard::enforce();
+
 // Initialize Router
 $router = new Core\Router();

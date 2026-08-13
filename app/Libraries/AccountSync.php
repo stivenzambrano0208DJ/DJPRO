@@ -105,6 +105,16 @@ class AccountSync
                 password_hash($passwordPlano, PASSWORD_DEFAULT),
                 $correo,
             ]);
+
+            // Invalidar las sesiones abiertas de esa cuenta en NeivActiva. Va en su
+            // propio try/catch porque la columna token_version podria no existir aun
+            // (si NeivActiva todavia no se ha desplegado con el cambio de esquema).
+            try {
+                $pdo->prepare('UPDATE usuarios SET token_version = token_version + 1 WHERE correo = ?')
+                    ->execute([$correo]);
+            } catch (Throwable $e) {
+                error_log('[AccountSync->NeivActiva] token_version: ' . $e->getMessage());
+            }
         } catch (Throwable $e) {
             error_log('[AccountSync->NeivActiva] alCambiarPassword: ' . $e->getMessage());
         }
