@@ -8,6 +8,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,6 +48,18 @@
                 text-shadow: 0 0 14px rgba(46, 91, 255, 0.55);
             }
         }
+
+        /* ── Header / Nav mejorado ── */
+        .dj-logo{font-family:'Unbounded',sans-serif;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1}
+        .grad-txt{background:linear-gradient(105deg,#2E5BFF,#00C2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+        .dj-navlink{font-family:'Sora',sans-serif;font-weight:600;color:#cbd5e1;position:relative;transition:color .2s}
+        .dj-navlink:hover{color:#fff}
+        .dj-navlink::after{content:"";position:absolute;left:0;bottom:-7px;height:2px;width:0;background:linear-gradient(90deg,#2E5BFF,#00C2FF);border-radius:2px;transition:width .28s cubic-bezier(.16,1,.3,1)}
+        .dj-navlink:hover::after{width:100%}
+        header.dj-header{transition:background .3s, box-shadow .3s, border-color .3s}
+        header.dj-header.scrolled{background:rgba(10,10,15,.92)!important;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+        .dj-btn-reg{background:linear-gradient(135deg,#2E5BFF,#00C2FF);transition:transform .2s, filter .2s, box-shadow .25s}
+        .dj-btn-reg:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 12px 28px rgba(46,91,255,.4)}
 
         /* Scroll Reveal Animation */
         .reveal {
@@ -90,23 +103,23 @@
 <body class="bg-djpro-bg text-djpro-text font-['Rajdhani']">
     
     <!-- Header Fijo -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-djpro-bg/80 backdrop-blur-lg border-b border-djpro-border">
+    <header id="dj-header" class="dj-header fixed top-0 left-0 right-0 z-50 bg-djpro-bg/80 backdrop-blur-lg border-b border-djpro-border">
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
             <!-- Logo -->
-            <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-2 group">
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(46,91,255,0.45)] group-hover:scale-110 transition-transform" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
+            <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-2.5 group">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-[0_0_18px_rgba(46,91,255,0.5)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
                     <i class="bi bi-headphones text-white text-2xl"></i>
                 </div>
-                <span class="text-3xl font-bebas text-djpro-accent tracking-wider">DJPRO</span>
+                <span class="dj-logo text-2xl">DJ<span class="grad-txt">PRO</span></span>
             </a>
 
             <!-- Nav Desktop -->
-            <nav class="hidden lg:flex items-center gap-8">
-                <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-text hover:text-djpro-accent transition-colors font-medium">Explorar DJs</a>
+            <nav class="hidden lg:flex items-center gap-7">
+                <a href="<?php echo URL_ROOT; ?>" class="dj-navlink">Inicio</a>
+                <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="dj-navlink">Explorar DJs</a>
 
-                
-                <div class="h-6 w-[1px] bg-djpro-border mx-2"></div>
-                
+                <div class="h-6 w-[1px] bg-djpro-border mx-1"></div>
+
                 <?php if(isset($_SESSION['usuario_id'])): ?>
                     <div class="flex items-center gap-4">
                         <a href="<?php echo URL_ROOT; ?>/chat" class="relative text-xl hover:text-djpro-accent transition-colors">
@@ -164,9 +177,9 @@
                         });
                     </script>
                 <?php else: ?>
-                    <a href="<?php echo URL_ROOT; ?>/usuarios/login" class="text-djpro-text hover:text-djpro-accent transition-colors font-semibold">Iniciar sesión</a>
-                    <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/25 hover:brightness-110" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
-                        Registrarse
+                    <a href="<?php echo URL_ROOT; ?>/usuarios/login" class="dj-navlink">Iniciar sesión</a>
+                    <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="dj-btn-reg inline-flex items-center gap-2 text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/25">
+                        <i class="bi bi-person-plus-fill"></i> Registrarse
                     </a>
                 <?php endif; ?>
             </nav>
@@ -177,12 +190,20 @@
             </button>
         </div>
     </header>
+    <script>
+        (function(){
+            var h = document.getElementById('dj-header');
+            if(!h) return;
+            var onScroll = function(){ h.classList.toggle('scrolled', window.scrollY > 16); };
+            onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+        })();
+    </script>
 
     <!-- Mobile Menu Drawer (Hidden by default) -->
     <div id="mobile-menu" class="fixed inset-0 z-[60] bg-djpro-bg translate-x-full transition-transform duration-300 lg:hidden">
         <div class="p-6">
             <div class="flex items-center justify-between mb-10">
-                <span class="text-3xl font-bebas text-djpro-accent tracking-wider">DJPRO</span>
+                <span class="dj-logo text-2xl">DJ<span class="grad-txt">PRO</span></span>
                 <button class="text-3xl text-djpro-text" onclick="toggleMenu()">
                     <i class="bi bi-x-lg"></i>
                 </button>
