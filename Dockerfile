@@ -18,7 +18,7 @@ RUN set -eux; \
         libicu-dev \
         libonig-dev \
         ca-certificates; \
-    docker-php-ext-install -j"$(nproc)" \
+    docker-php-ext-install -j1 \
         intl \
         mbstring \
         pdo_mysql; \
