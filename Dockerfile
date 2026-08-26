@@ -9,17 +9,21 @@ FROM php:8.2-apache
 # --- System deps + PHP extensions (production only, cleaned afterwards) -------
 # Required by the app:
 # - pdo_mysql: database layer uses PDO with MySQL/MariaDB.
-# - mbstring + intl: PHPMailer handles UTF-8 addresses/names better with them.
+# - mbstring: PHPMailer handles UTF-8 addresses/names better with it.
+# NOTE: the `intl` extension was removed on purpose. The app does not use any
+# PHP intl feature (Collator/IntlDateFormatter/idn_to_ascii/etc.); the only
+# `Intl.NumberFormat` usages are client-side JavaScript. Compiling intl pulls in
+# libicu-dev and is the single heaviest, most CPU-intensive step of the build,
+# which was pegging the VPS CPU at ~100% and stalling deploys. Dropping it makes
+# the image build in a fraction of the time with no functional change.
 # PHP's json, session, openssl, fileinfo and filter extensions are bundled in
 # this official image and remain enabled by default.
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        libicu-dev \
         libonig-dev \
         ca-certificates; \
-    docker-php-ext-install -j1 \
-        intl \
+    docker-php-ext-install -j"$(nproc)" \
         mbstring \
         pdo_mysql; \
     a2enmod rewrite; \
