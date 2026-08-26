@@ -12,48 +12,76 @@
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-djpro-accent to-transparent opacity-50"></div>
         
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12 mb-16">
+            <div class="grid grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 mb-14">
                 <!-- Brand Section -->
-                <div class="col-span-1">
-                    <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-3 mb-6 group">
-                        <div class="w-12 h-12 bg-djpro-accent rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.3)] group-hover:scale-110 transition-transform duration-500">
+                <div class="col-span-2 lg:col-span-4">
+                    <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-3 mb-5 group w-fit">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(46,91,255,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-500" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
                             <i class="bi bi-headphones text-white text-2xl"></i>
                         </div>
-                        <span class="text-3xl font-bebas text-djpro-accent tracking-widest">DJPRO</span>
+                        <span class="dj-logo text-3xl">DJ<span class="grad-txt">PRO</span></span>
                     </a>
-                    <p class="text-djpro-muted text-sm leading-relaxed max-w-xs">
-                        La plataforma definitiva en el Caquetá para conectar con el mejor talento musical. Elevamos tus eventos a una experiencia sensorial única.
+                    <p class="text-djpro-muted text-sm leading-relaxed max-w-xs mb-6" style="font-family:'Sora',sans-serif">
+                        La plataforma de DJs del Caquetá. Conecta con el mejor talento local y lleva tu evento a otro nivel.
                     </p>
+                    <!-- Redes -->
+                    <div class="flex items-center gap-3">
+                        <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-muted hover:text-white hover:border-djpro-accent hover:-translate-y-1 transition-all"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="Facebook" class="w-10 h-10 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-muted hover:text-white hover:border-djpro-accent hover:-translate-y-1 transition-all"><i class="bi bi-facebook"></i></a>
+                        <a href="#" aria-label="TikTok" class="w-10 h-10 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-muted hover:text-white hover:border-djpro-accent hover:-translate-y-1 transition-all"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" aria-label="WhatsApp" class="w-10 h-10 rounded-xl bg-djpro-surface-2 border border-djpro-border flex items-center justify-center text-djpro-muted hover:text-white hover:border-djpro-accent hover:-translate-y-1 transition-all"><i class="bi bi-whatsapp"></i></a>
+                    </div>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="lg:pl-8">
-                    <h4 class="text-white font-bebas text-xl mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 bg-djpro-accent rounded-full"></span>
-                        Explorar
+                <!-- Explorar -->
+                <div class="lg:col-span-2">
+                    <h4 class="text-white text-xs mb-5 uppercase tracking-[0.2em] flex items-center gap-2" style="font-family:'Unbounded',sans-serif;font-weight:600">
+                        <span class="w-1.5 h-1.5 bg-djpro-accent rounded-full"></span> Explorar
                     </h4>
-                    <ul class="space-y-4">
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Todos los DJs</a></li>
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Electrónica" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Electrónica</a></li>
-                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Urbano" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-xs font-bold uppercase tracking-widest">Urbano / Reggaetón</a></li>
+                    <ul class="space-y-3" style="font-family:'Sora',sans-serif">
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Todos los DJs</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Electrónica" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Electrónica</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Guaracha" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Guaracha</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/djs/explorar?genero=Urbano" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Urbano / Reggaetón</a></li>
                     </ul>
                 </div>
 
+                <!-- Plataforma -->
+                <div class="lg:col-span-2">
+                    <h4 class="text-white text-xs mb-5 uppercase tracking-[0.2em] flex items-center gap-2" style="font-family:'Unbounded',sans-serif;font-weight:600">
+                        <span class="w-1.5 h-1.5 bg-djpro-accent rounded-full"></span> Plataforma
+                    </h4>
+                    <ul class="space-y-3" style="font-family:'Sora',sans-serif">
+                        <li><a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Ser DJ</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/usuarios/login" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Iniciar sesión</a></li>
+                        <li><a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="text-djpro-muted hover:text-djpro-accent hover:translate-x-1 inline-block transition-all text-sm font-semibold">Crear cuenta</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-span-2 lg:col-span-4">
+                    <h4 class="text-white text-xs mb-3 uppercase tracking-[0.2em] flex items-center gap-2" style="font-family:'Unbounded',sans-serif;font-weight:600">
+                        <span class="w-1.5 h-1.5 bg-djpro-accent rounded-full"></span> Novedades
+                    </h4>
+                    <p class="text-djpro-muted text-sm mb-4" style="font-family:'Sora',sans-serif">Recibe los mejores DJs y eventos del Caquetá en tu correo.</p>
+                    <form class="flex gap-2" onsubmit="event.preventDefault(); this.reset(); Swal.fire({icon:'success',title:'¡Gracias por suscribirte!',confirmButtonColor:'#2E5BFF',background:'#12121a',color:'#fff'});">
+                        <input type="email" required placeholder="Tu correo" class="flex-1 min-w-0 bg-djpro-surface-2 border border-djpro-border rounded-xl px-4 py-3 text-sm text-djpro-text outline-none focus:border-djpro-accent transition-colors" style="font-family:'Sora',sans-serif">
+                        <button type="submit" class="text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 hover:brightness-110 transition-all whitespace-nowrap" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF);font-family:'Sora',sans-serif">Unirme</button>
+                    </form>
+                </div>
             </div>
 
             <!-- Bottom Line -->
-            <div class="border-t border-djpro-border pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-8">
-                    <p class="text-djpro-muted text-[9px] font-bold uppercase tracking-[0.2em]">&copy; <?php echo date('Y'); ?> DJPRO PLATFORM. ALL RIGHTS RESERVED.</p>
+            <div class="border-t border-djpro-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4" style="font-family:'Sora',sans-serif">
+                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-6">
+                    <p class="text-djpro-muted text-[11px] font-semibold">&copy; <?php echo date('Y'); ?> DJPRO Platform. Todos los derechos reservados.</p>
                     <div class="h-4 w-[1px] bg-djpro-border hidden md:block"></div>
-                    <span class="text-[9px] font-bold text-djpro-muted uppercase tracking-[0.2em]">Coded with ❤️ in Caquetá</span>
+                    <span class="text-[11px] font-semibold text-djpro-muted">Hecho con <span class="text-djpro-accent">♪</span> en el Caquetá</span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="flex items-center gap-2 text-[9px] font-bold text-djpro-accent uppercase tracking-[0.2em]">
-                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        Sistemas Operativos
-                    </span>
-                </div>
+                <span class="flex items-center gap-2 text-[11px] font-bold text-green-500 uppercase tracking-[0.15em]">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    Sistemas operativos
+                </span>
             </div>
         </div>
     </footer>
