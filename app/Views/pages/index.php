@@ -46,10 +46,15 @@
   .lpx .ssub{color:#8b8ba3;margin-top:.7rem;max-width:46ch}
   .lpx .shead.center .ssub{margin-left:auto;margin-right:auto}
 
-  /* DJ rail */
-  .lpx .rail{display:flex;gap:1.4rem;overflow-x:auto;padding:1rem 0 2rem;scroll-snap-type:x mandatory}
-  .lpx .rail::-webkit-scrollbar{height:6px}.lpx .rail::-webkit-scrollbar-thumb{background:#2b2b45;border-radius:10px}
-  .lpx .djc{flex:0 0 290px;scroll-snap-align:start;background:#101018;border:1px solid #232338;border-radius:24px;overflow:hidden;transition:.3s;position:relative}
+  /* DJ slider automático */
+  .lpx .dj-marquee{overflow:hidden;padding:1.5rem 0 2rem;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .lpx .dj-marquee-track{display:flex;gap:1.4rem;width:max-content;padding:0 .7rem;animation:djscroll 36s linear infinite}
+  .lpx .dj-marquee:hover .dj-marquee-track{animation-play-state:paused}
+  @keyframes djscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.lpx .dj-marquee-track{animation:none}}
+  .lpx .djc{flex:0 0 290px;background:#101018;border:1px solid #232338;border-radius:24px;overflow:hidden;transition:.3s;position:relative}
   .lpx .djc:hover{border-color:#2E5BFF;transform:translateY(-6px)}
   .lpx .djc .top{height:150px;position:relative;background:linear-gradient(140deg,#2E5BFF,#0b1836);overflow:hidden}
   .lpx .djc .top img{width:100%;height:100%;object-fit:cover;opacity:.55}
@@ -153,9 +158,10 @@
     <?php if(empty($data['djs'])): ?>
       <div style="text-align:center;padding:3rem 0;color:#8b8ba3;border:2px dashed #232338;border-radius:24px">No hay DJs registrados todavía.</div>
     <?php else: ?>
-    <div class="rail">
-      <?php foreach(array_slice($data['djs'], 0, 8) as $dj): ?>
-      <div class="djc rv">
+    <div class="dj-marquee">
+      <div class="dj-marquee-track">
+      <?php for($__rep = 0; $__rep < 2; $__rep++): foreach(array_slice($data['djs'], 0, 8) as $dj): ?>
+      <div class="djc">
         <div class="top">
           <?php if($dj->foto_perfil != 'default_dj.png'): ?><img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" alt="<?php echo $dj->nombre; ?>" loading="lazy"><?php endif; ?>
           <div class="eqm"><i style="height:60%"></i><i style="height:90%;animation-delay:-.2s"></i><i style="height:45%;animation-delay:-.4s"></i><i style="height:100%;animation-delay:-.1s"></i><i style="height:70%;animation-delay:-.5s"></i></div>
@@ -172,7 +178,8 @@
           </div>
         </div>
       </div>
-      <?php endforeach; ?>
+      <?php endforeach; endfor; ?>
+      </div>
     </div>
     <?php endif; ?>
   </div>
