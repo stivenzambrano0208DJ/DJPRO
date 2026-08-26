@@ -5,8 +5,9 @@
     --color-bg:          #0a0a0f;
     --color-surface:     #12121a;
     --color-surface-2:   #1c1c2e;
-    --color-accent:      #f97316;
-    --color-accent-glow: rgba(249, 115, 22, 0.18);
+    --color-accent:      #2E5BFF;
+    --color-accent-2:    #00C2FF;
+    --color-accent-glow: rgba(46, 91, 255, 0.22);
     --color-purple:      #7c3aed;
     --color-text:        #f1f5f9;
     --color-muted:       #64748b;
@@ -17,7 +18,7 @@
 
     /* Gradientes */
     --grad-dark: linear-gradient(180deg, rgba(10, 10, 15, 0) 0%, rgba(10, 10, 15, 1) 100%);
-    --grad-accent: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    --grad-accent: linear-gradient(135deg, #2E5BFF 0%, #00C2FF 100%);
 }
 
 /* Base Styles */

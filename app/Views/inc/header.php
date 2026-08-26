@@ -19,7 +19,8 @@
                         'djpro-bg': '#0a0a0f',
                         'djpro-surface': '#12121a',
                         'djpro-surface-2': '#1c1c2e',
-                        'djpro-accent': '#f97316',
+                        'djpro-accent': '#2E5BFF',
+                        'djpro-accent-2': '#00C2FF',
                         'djpro-purple': '#7c3aed',
                         'djpro-text': '#f1f5f9',
                         'djpro-muted': '#64748b',
@@ -43,7 +44,7 @@
     <style>
         @layer utilities {
             .text-glow-orange {
-                text-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+                text-shadow: 0 0 14px rgba(46, 91, 255, 0.55);
             }
         }
 
@@ -72,17 +73,17 @@
             background: #12121a;
         }
         ::-webkit-scrollbar-thumb {
-            background: #f97316;
+            background: #2E5BFF;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
+            background: #00C2FF;
         }
 
         /* Firefox */
         * {
             scrollbar-width: thin;
-            scrollbar-color: #f97316 #12121a;
+            scrollbar-color: #2E5BFF #12121a;
         }
     </style>
 </head>
@@ -93,7 +94,7 @@
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
             <!-- Logo -->
             <a href="<?php echo URL_ROOT; ?>" class="flex items-center gap-2 group">
-                <div class="w-10 h-10 bg-djpro-accent rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.4)] group-hover:scale-110 transition-transform">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(46,91,255,0.45)] group-hover:scale-110 transition-transform" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
                     <i class="bi bi-headphones text-white text-2xl"></i>
                 </div>
                 <span class="text-3xl font-bebas text-djpro-accent tracking-wider">DJPRO</span>
@@ -164,7 +165,7 @@
                     </script>
                 <?php else: ?>
                     <a href="<?php echo URL_ROOT; ?>/usuarios/login" class="text-djpro-text hover:text-djpro-accent transition-colors font-semibold">Iniciar sesión</a>
-                    <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="bg-djpro-accent hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-orange-500/20">
+                    <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/25 hover:brightness-110" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
                         Registrarse
                     </a>
                 <?php endif; ?>
