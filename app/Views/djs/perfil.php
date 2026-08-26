@@ -55,7 +55,7 @@
   .pf-tab:hover{color:#fff}
   .pf-tab.active{background:linear-gradient(135deg,#2E5BFF,#00C2FF);color:#fff;box-shadow:0 8px 18px rgba(46,91,255,.3)}
 
-  .pf-videos{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+  .pf-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
   .pf-video .frame{aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid #232338;background:#171724}
   .pf-video .frame iframe{width:100%;height:100%}
   .pf-video h4{font-family:'Unbounded';font-weight:700;font-size:1rem;color:#fff;margin:.8rem 0 0;transition:color .2s}
