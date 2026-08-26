@@ -1,6 +1,6 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 <?php if(isset($_SESSION['usuario_id'])): ?>
-    <?php 
+    <?php
         if($_SESSION['usuario_rol'] == 'dj') {
             require APPROOT . '/app/Views/inc/sidebar_dj.php';
         } elseif($_SESSION['usuario_rol'] == 'admin') {
@@ -11,140 +11,165 @@
     ?>
 <?php endif; ?>
 
-<div class="<?php echo isset($_SESSION['usuario_id']) ? 'lg:ml-64' : ''; ?> p-8">
+<style>
+  .expx{font-family:'Sora',system-ui,sans-serif}
+  .expx .grad{background:linear-gradient(105deg,#2E5BFF,#00C2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+  /* Header */
+  .expx-head{text-align:center;margin-bottom:2.5rem}
+  .expx-kick{display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Mono','JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#00C2FF;background:rgba(0,194,255,.08);border:1px solid rgba(0,194,255,.2);padding:.4rem 1rem;border-radius:100px;margin-bottom:1.2rem}
+  .expx-kick .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;animation:expulse 1.6s infinite}
+  @keyframes expulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .expx-title{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(2.2rem,5vw,3.6rem);letter-spacing:-.02em;color:#fff;margin:0}
+  .expx-sub{color:#8b95b5;margin-top:.7rem;font-size:1.02rem}
+
+  /* Filtros glass */
+  .expx-filters{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.7rem;background:rgba(16,16,24,.7);backdrop-filter:blur(12px);border:1px solid #232338;border-radius:22px;padding:.7rem;margin-bottom:3rem;box-shadow:0 24px 50px -24px rgba(0,0,0,.7)}
+  .ef{position:relative;background:#171724;border:1px solid #262636;border-radius:15px;padding:.55rem 1rem;transition:border-color .2s}
+  .ef:focus-within{border-color:#2E5BFF}
+  .ef label{display:block;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#5b657f;margin-bottom:.1rem}
+  .ef select{width:100%;background:none;border:none;color:#f4f5fb;font-family:'Sora';font-weight:600;font-size:.95rem;outline:none;cursor:pointer;appearance:none}
+  .ef select option{background:#171724;color:#f4f5fb}
+  .ef::after{content:"⌄";position:absolute;right:1rem;top:50%;transform:translateY(-40%);color:#5b657f;pointer-events:none;font-size:1rem}
+  .ef-btn{background:linear-gradient(135deg,#2E5BFF,#00C2FF);color:#fff;border:none;border-radius:15px;padding:0 1.8rem;font-family:'Sora';font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;box-shadow:0 10px 24px rgba(46,91,255,.3);transition:transform .2s,filter .2s}
+  .ef-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+
+  /* Grid de posters */
+  .expx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.6rem;perspective:1400px}
+  .djx{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:3/4.05;background:#101018;border:1px solid #232338;
+    transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s,border-color .3s;will-change:transform;transform-style:preserve-3d;cursor:pointer}
+  .djx:hover{border-color:#2E5BFF;box-shadow:0 30px 60px -24px rgba(46,91,255,.55)}
+  .djx .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+  .djx:hover .photo{transform:scale(1.08)}
+  .djx .fallback{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,rgba(46,91,255,.4),transparent 60%),linear-gradient(160deg,#152046,#0a0a12)}
+  .djx .fallback span{font-family:'Unbounded';font-weight:900;font-size:4rem;color:rgba(255,255,255,.9)}
+  .djx .scrim{position:absolute;inset:0;background:linear-gradient(to top,#07070c 10%,rgba(7,7,12,.2) 45%,transparent 65%)}
+  .djx .chips-top{position:absolute;top:1rem;left:1rem;right:1rem;display:flex;justify-content:space-between;z-index:2}
+  .djx .chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(7,7,12,.6);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:.72rem;font-weight:700;padding:.35rem .7rem;border-radius:100px}
+  .djx .chip.rt i{color:#fbbf24}
+  .djx .chip.st{color:#4ade80}.djx .chip.st .d{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80}
+  .djx .eqm{position:absolute;left:1.1rem;bottom:6.6rem;display:flex;gap:3px;align-items:flex-end;height:26px;z-index:2;opacity:.85}
+  .djx .eqm i{width:4px;background:linear-gradient(to top,#2E5BFF,#00C2FF);border-radius:2px;animation:expeq 1s ease-in-out infinite}
+  @keyframes expeq{0%,100%{height:25%}50%{height:100%}}
+  .djx .meta{position:absolute;left:0;right:0;bottom:0;padding:1.4rem;z-index:2}
+  .djx .name{font-family:'Unbounded';font-weight:800;font-size:1.35rem;letter-spacing:-.01em;color:#fff;line-height:1.05;margin:0}
+  .djx .loc{display:flex;align-items:center;gap:.4rem;color:#b9c2db;font-size:.82rem;font-weight:600;margin-top:.35rem}
+  .djx .loc i{color:#00C2FF}
+  /* panel de acciones (hover) */
+  .djx .actions{position:absolute;inset:0;z-index:5;background:linear-gradient(to top,rgba(7,7,12,.96),rgba(10,12,26,.9));backdrop-filter:blur(10px);
+    display:flex;flex-direction:column;justify-content:center;gap:.8rem;padding:1.6rem;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s;pointer-events:none}
+  .djx:hover .actions{opacity:1;transform:none;pointer-events:auto}
+  .djx .actions .bio{color:#cbd5e1;font-size:.82rem;line-height:1.5;text-align:center;margin:0 0 .4rem;font-style:italic}
+  .djx .abtn{width:100%;padding:.85rem;border-radius:13px;font-family:'Sora';font-weight:700;font-size:.9rem;text-align:center;cursor:pointer;border:none;transition:.2s;display:block}
+  .djx .abtn.primary{background:linear-gradient(135deg,#2E5BFF,#00C2FF);color:#fff;box-shadow:0 10px 24px rgba(46,91,255,.35)}
+  .djx .abtn.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+  .djx .abtn.ghost{background:transparent;border:1.5px solid #7c4dff;color:#a78bfa}
+  .djx .abtn.ghost:hover{background:#7c4dff;color:#fff}
+  .djx .alink{color:#8b95b5;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-align:center;text-decoration:none}
+  .djx .alink:hover{color:#fff}
+  .djx .own{font-family:'Unbounded';font-weight:800;color:#00C2FF;text-align:center;font-size:1.1rem;margin-bottom:.3rem}
+
+  .expx-empty{grid-column:1/-1;text-align:center;padding:5rem 0}
+  .expx-empty .circle{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;margin:0 auto 1.5rem;background:#171724;border:1px solid #262636;font-size:2.4rem;color:#5b657f}
+  .expx-empty h3{font-family:'Unbounded';font-weight:700;color:#fff;font-size:1.5rem;margin:0 0 .5rem}
+  .expx-empty p{color:#8b95b5}
+
+  @media(max-width:720px){.expx-filters{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){.djx,.djx .photo,.djx .eqm i{transition:none;animation:none}}
+</style>
+
+<div class="expx <?php echo isset($_SESSION['usuario_id']) ? 'lg:ml-64' : ''; ?> p-6 md:p-8">
     <div class="container mx-auto">
         <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-bebas text-white tracking-widest mb-4">EXPLORAR <span class="text-djpro-accent">TALENTOS</span></h1>
-            <p class="text-djpro-muted font-medium tracking-wide">Encuentra al artista perfecto para tu próximo evento en el Caquetá.</p>
+        <div class="expx-head">
+            <span class="expx-kick"><span class="dot"></span> En vivo · <?php echo count($data['djs'] ?? []); ?> talentos disponibles</span>
+            <h1 class="expx-title">Explorar <span class="grad">Talentos</span></h1>
+            <p class="expx-sub">Encuentra al artista perfecto para tu próximo evento en el Caquetá.</p>
         </div>
 
-        <!-- Filtros de Búsqueda -->
-        <div class="bg-djpro-surface p-8 rounded-3xl border border-djpro-border shadow-2xl mb-12">
-            <form action="<?php echo URL_ROOT; ?>/djs/explorar" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Ciudad / Municipio</label>
-                    <select name="ciudad" class="input-djpro w-full outline-none appearance-none cursor-pointer">
-                        <option value="">Todas las ciudades</option>
-                        <option value="Florencia" <?php echo ($data['filtros']['ciudad'] == 'Florencia') ? 'selected' : ''; ?>>Florencia</option>
-                        <option value="Morelia" <?php echo ($data['filtros']['ciudad'] == 'Morelia') ? 'selected' : ''; ?>>Morelia</option>
-                        <option value="Belén" <?php echo ($data['filtros']['ciudad'] == 'Belén') ? 'selected' : ''; ?>>Belén</option>
-                        <option value="Curillo" <?php echo ($data['filtros']['ciudad'] == 'Curillo') ? 'selected' : ''; ?>>Curillo</option>
-                        <option value="San Vicente" <?php echo ($data['filtros']['ciudad'] == 'San Vicente') ? 'selected' : ''; ?>>San Vicente</option>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Género Musical</label>
-                    <select name="genero" class="input-djpro w-full outline-none appearance-none cursor-pointer">
-                        <option value="">Todos los géneros</option>
-                        <?php foreach($data['generos'] as $gen): ?>
-                            <option value="<?php echo $gen->nombre; ?>" <?php echo ($data['filtros']['genero'] == $gen->nombre) ? 'selected' : ''; ?>><?php echo $gen->nombre; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-djpro-muted uppercase tracking-widest ml-1">Tipo de Evento</label>
-                    <select name="evento" class="input-djpro w-full outline-none appearance-none cursor-pointer">
-                        <option value="">Todos los eventos</option>
-                        <?php foreach($data['tipos_evento'] as $ev): ?>
-                            <option value="<?php echo $ev->nombre; ?>" <?php echo ($data['filtros']['evento'] == $ev->nombre) ? 'selected' : ''; ?>><?php echo $ev->nombre; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button type="submit" class="btn-djpro-primary w-full py-3.5 flex items-center justify-center gap-2">
-                    <i class="bi bi-search"></i> FILTRAR
-                </button>
-            </form>
-        </div>
+        <!-- Filtros -->
+        <form action="<?php echo URL_ROOT; ?>/djs/explorar" method="GET" class="expx-filters">
+            <div class="ef">
+                <label>Ciudad / Municipio</label>
+                <select name="ciudad">
+                    <option value="">Todas las ciudades</option>
+                    <option value="Florencia" <?php echo ($data['filtros']['ciudad'] == 'Florencia') ? 'selected' : ''; ?>>Florencia</option>
+                    <option value="Morelia" <?php echo ($data['filtros']['ciudad'] == 'Morelia') ? 'selected' : ''; ?>>Morelia</option>
+                    <option value="Belén" <?php echo ($data['filtros']['ciudad'] == 'Belén') ? 'selected' : ''; ?>>Belén</option>
+                    <option value="Curillo" <?php echo ($data['filtros']['ciudad'] == 'Curillo') ? 'selected' : ''; ?>>Curillo</option>
+                    <option value="San Vicente" <?php echo ($data['filtros']['ciudad'] == 'San Vicente') ? 'selected' : ''; ?>>San Vicente</option>
+                </select>
+            </div>
+            <div class="ef">
+                <label>Género musical</label>
+                <select name="genero">
+                    <option value="">Todos los géneros</option>
+                    <?php foreach($data['generos'] as $gen): ?>
+                        <option value="<?php echo $gen->nombre; ?>" <?php echo ($data['filtros']['genero'] == $gen->nombre) ? 'selected' : ''; ?>><?php echo $gen->nombre; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="ef">
+                <label>Tipo de evento</label>
+                <select name="evento">
+                    <option value="">Todos los eventos</option>
+                    <?php foreach($data['tipos_evento'] as $ev): ?>
+                        <option value="<?php echo $ev->nombre; ?>" <?php echo ($data['filtros']['evento'] == $ev->nombre) ? 'selected' : ''; ?>><?php echo $ev->nombre; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="ef-btn"><i class="bi bi-search"></i> Filtrar</button>
+        </form>
 
-        <!-- Lista de DJs -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Grid -->
+        <div class="expx-grid">
             <?php if(empty($data['djs'])): ?>
-                <div class="col-span-full text-center py-20">
-                    <div class="w-24 h-24 bg-djpro-surface-2 rounded-full flex items-center justify-center mx-auto mb-6 border border-djpro-border">
-                        <i class="bi bi-person-x text-4xl text-djpro-muted"></i>
-                    </div>
-                    <h3 class="text-2xl font-bebas text-white tracking-widest mb-2">No se encontraron DJs</h3>
-                    <p class="text-djpro-muted">Intenta ajustar tus filtros de búsqueda.</p>
+                <div class="expx-empty">
+                    <div class="circle"><i class="bi bi-person-x"></i></div>
+                    <h3>No se encontraron DJs</h3>
+                    <p>Intenta ajustar tus filtros de búsqueda.</p>
                 </div>
             <?php else: ?>
                 <?php foreach($data['djs'] as $dj): ?>
-                <div class="dj-card group rounded-2xl overflow-hidden relative">
-                    <div class="h-40 bg-djpro-surface-2 relative overflow-hidden">
-                        <!-- Nombre de fondo estilizado -->
-                        <div class="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none">
-                            <span class="text-6xl font-bebas uppercase whitespace-nowrap"><?php echo $dj->nombre; ?></span>
-                        </div>
-                        <?php if($dj->foto_perfil != 'default_dj.png'): ?>
-                            <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700">
-                        <?php endif; ?>
-                        <div class="absolute inset-0 bg-gradient-to-t from-djpro-surface to-transparent"></div>
+                <article class="djx tilt">
+                    <?php if($dj->foto_perfil != 'default_dj.png'): ?>
+                        <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" class="photo" alt="<?php echo $dj->nombre; ?>" loading="lazy">
+                    <?php else: ?>
+                        <div class="fallback"><span><?php echo strtoupper(substr($dj->nombre,0,2)); ?></span></div>
+                    <?php endif; ?>
+                    <div class="scrim"></div>
+
+                    <div class="chips-top">
+                        <span class="chip st"><span class="d"></span> Disponible</span>
+                        <span class="chip rt"><i class="bi bi-star-fill"></i> <?php echo number_format($dj->calificacion_promedio, 1); ?></span>
                     </div>
 
-                    <!-- Perfil y Datos -->
-                    <div class="p-6 pt-0 relative -mt-12 text-center">
-                        <div class="w-20 h-20 rounded-2xl border-4 border-djpro-surface bg-djpro-surface-2 mx-auto overflow-hidden shadow-2xl group-hover:border-djpro-accent transition-all duration-300">
-                            <?php if($dj->foto_perfil != 'default_dj.png'): ?>
-                                <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" class="w-full h-full object-cover">
-                            <?php else: ?>
-                                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($dj->nombre); ?>&background=12121a&color=f97316" class="w-full h-full object-cover">
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="mt-4">
-                            <h3 class="text-2xl font-bebas text-white group-hover:text-djpro-accent transition-colors tracking-widest"><?php echo $dj->nombre; ?></h3>
-                            <div class="flex items-center justify-center gap-1 text-djpro-muted text-[10px] uppercase font-bold tracking-widest mb-4">
-                                <i class="bi bi-geo-alt-fill text-djpro-accent"></i>
-                                <span><?php echo $dj->ciudad ? $dj->ciudad : 'Caquetá'; ?></span>
-                            </div>
-                            
-                            <p class="text-[11px] text-djpro-muted font-medium italic mb-6 line-clamp-2 px-2">
-                                <?php echo $dj->biografia ? $dj->biografia : 'Este DJ aún no ha completado su biografía profesional.'; ?>
-                            </p>
+                    <div class="eqm"><i style="height:60%"></i><i style="height:100%;animation-delay:-.2s"></i><i style="height:45%;animation-delay:-.4s"></i><i style="height:80%;animation-delay:-.1s"></i><i style="height:35%;animation-delay:-.5s"></i></div>
 
-                            <div class="flex items-center justify-between pt-4 border-t border-djpro-border">
-                                <div class="text-left">
-                                    <span class="block text-[10px] text-djpro-muted uppercase font-bold tracking-tighter">Rating</span>
-                                    <div class="flex text-yellow-500 text-[10px]">
-                                        <i class="bi bi-star-fill"></i>
-                                        <span class="ml-1 text-white"><?php echo number_format($dj->calificacion_promedio, 1); ?></span>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-[10px] text-djpro-muted uppercase font-bold tracking-tighter">Status</span>
-                                    <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest">Disponible</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="meta">
+                        <h3 class="name"><?php echo $dj->nombre; ?></h3>
+                        <div class="loc"><i class="bi bi-geo-alt-fill"></i> <?php echo $dj->ciudad ? $dj->ciudad : 'Caquetá'; ?></div>
                     </div>
 
-                    <!-- Action Hover Layer -->
-                    <div class="absolute inset-0 bg-djpro-bg/90 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-4 p-8">
+                    <!-- Panel de acciones -->
+                    <div class="actions">
                         <?php if(isset($_SESSION['usuario_id']) && $_SESSION['usuario_id'] == $dj->id): ?>
-                            <div class="text-djpro-accent font-bebas text-2xl tracking-widest mb-2">ES TU PERFIL</div>
-                            <a href="<?php echo URL_ROOT; ?>/djs/editar" class="btn-djpro-primary w-full text-center py-3.5 shadow-xl shadow-orange-500/20">
-                                EDITAR PERFIL
-                            </a>
-                            <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="text-[10px] text-djpro-muted hover:text-white font-bold uppercase tracking-widest mt-4">Ver Perfil Público</a>
+                            <div class="own">Es tu perfil</div>
+                            <a href="<?php echo URL_ROOT; ?>/djs/editar" class="abtn primary">Editar perfil</a>
+                            <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="alink">Ver perfil público</a>
                         <?php else: ?>
+                            <p class="bio">"<?php echo $dj->biografia ? htmlspecialchars($dj->biografia) : 'Talento local listo para encender tu evento.'; ?>"</p>
                             <?php if(isset($_SESSION['usuario_id'])): ?>
-                                <button onclick="openModal('<?php echo $dj->id; ?>')" class="btn-djpro-primary w-full text-center py-3.5 shadow-xl shadow-orange-500/20">
-                                    CONTRATAR AHORA
-                                </button>
+                                <button onclick="openModal('<?php echo $dj->id; ?>')" class="abtn primary">Contratar ahora</button>
                             <?php else: ?>
-                                <a href="<?php echo URL_ROOT; ?>/usuarios/login?redirect=djs/perfil/<?php echo $dj->id; ?>&reservar=1" class="btn-djpro-primary w-full text-center py-3.5 shadow-xl shadow-orange-500/20">
-                                    CONTRATAR AHORA
-                                </a>
+                                <a href="<?php echo URL_ROOT; ?>/usuarios/login?redirect=djs/perfil/<?php echo $dj->id; ?>&reservar=1" class="abtn primary">Contratar ahora</a>
                             <?php endif; ?>
-                            <a href="<?php echo URL_ROOT; ?>/chat/index/<?php echo $dj->id; ?>" class="w-full py-3.5 border border-djpro-purple text-djpro-purple font-bold rounded-xl hover:bg-djpro-purple hover:text-white transition-all text-center">
-                                CHATEAR CON DJ
-                            </a>
-                            <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="text-[10px] text-djpro-muted hover:text-white font-bold uppercase tracking-widest">Ver Perfil Completo</a>
+                            <a href="<?php echo URL_ROOT; ?>/chat/index/<?php echo $dj->id; ?>" class="abtn ghost">Chatear con DJ</a>
+                            <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="alink">Ver perfil completo</a>
                         <?php endif; ?>
                     </div>
-                </div>
+                </article>
 
-                <!-- Modal Contratar -->
+                <!-- Modal Contratar (funcionalidad intacta) -->
                 <div id="modal-<?php echo $dj->id; ?>" class="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 bg-djpro-bg/80 backdrop-blur-sm hidden overflow-y-auto py-10 custom-scrollbar">
                     <div class="bg-djpro-surface w-full max-w-lg rounded-3xl border border-djpro-border shadow-2xl overflow-hidden my-auto">
                         <div class="p-8 border-b border-djpro-border flex justify-between items-center bg-djpro-surface-2/50">
@@ -157,7 +182,7 @@
                         <form action="<?php echo URL_ROOT; ?>/contrataciones/solicitar" method="POST" class="p-8 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-thin">
                             <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token']; ?>">
                             <input type="hidden" name="dj_id" value="<?php echo $dj->id; ?>">
-                            
+
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Fecha</label>
@@ -213,7 +238,7 @@
 
                             <div class="flex flex-col sm:flex-row gap-4 pt-4">
                                 <button type="button" onclick="closeModal('<?php echo $dj->id; ?>')" class="w-full sm:flex-1 px-8 py-4 border border-djpro-border text-djpro-muted font-bold rounded-xl hover:text-white transition-all order-2 sm:order-1">CANCELAR</button>
-                                <button type="submit" class="w-full sm:flex-1 btn-djpro-primary py-4 order-1 sm:order-2 shadow-lg shadow-orange-500/20">ENVIAR SOLICITUD</button>
+                                <button type="submit" class="w-full sm:flex-1 btn-djpro-primary py-4 order-1 sm:order-2 shadow-lg shadow-blue-500/20">ENVIAR SOLICITUD</button>
                             </div>
                         </form>
                     </div>
@@ -239,13 +264,13 @@
         const horaFin = document.getElementById(`fin-${id}`).value;
         const horasInput = document.getElementById(`horas-${id}`);
         const estimadoInput = document.getElementById(`estimado-${id}`);
-        
+
         if (horaInicio && horaFin) {
             const start = new Date(`2000-01-01T${horaInicio}:00`);
             let end = new Date(`2000-01-01T${horaFin}:00`);
             if (end <= start) end = new Date(`2000-01-02T${horaFin}:00`);
             const diffHrs = (end - start) / (1000 * 60 * 60);
-            horasInput.value = Math.max(1, Math.round(diffHrs * 2) / 2); // Redondear a 0.5 más cercano
+            horasInput.value = Math.max(1, Math.round(diffHrs * 2) / 2);
         }
 
         const horas = horasInput.value;
@@ -254,7 +279,22 @@
         }
     }
 
-    // --- Validación hora pasada y anti-doble-envío ---
+    /* Tilt 3D en las tarjetas */
+    (function(){
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.querySelectorAll('.djx.tilt').forEach(function(card){
+            card.addEventListener('pointermove', function(e){
+                if (card.querySelector('.actions:hover')) { card.style.transform=''; return; }
+                var r = card.getBoundingClientRect();
+                var px = (e.clientX - r.left)/r.width - .5;
+                var py = (e.clientY - r.top)/r.height - .5;
+                card.style.transform = 'rotateX('+(-py*6)+'deg) rotateY('+(px*6)+'deg) translateY(-6px)';
+            });
+            card.addEventListener('pointerleave', function(){ card.style.transform=''; });
+        });
+    })();
+
+    /* Validación hora pasada y anti-doble-envío (intacto) */
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('form[action$="/contrataciones/solicitar"]').forEach(function (form) {
             const djId = form.querySelector('input[name="dj_id"]').value;
@@ -289,17 +329,15 @@
             if (horaInicioInput) horaInicioInput.addEventListener('change', validarHoraPasada);
             if (fechaInput) fechaInput.addEventListener('change', validarHoraPasada);
 
-            // Manejo AJAX y Anti-doble-envío
-            form.setAttribute('data-no-protect', 'true'); // Prevenir que footer.php intercepte
+            form.setAttribute('data-no-protect', 'true');
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                
                 if (!validarHoraPasada()) { return false; }
                 if (form.dataset.submitting === 'true') { return false; }
-                
+
                 form.dataset.submitting = 'true';
                 const originalText = submitBtn.innerHTML;
-                
+
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="bi bi-hourglass-split mr-2"></i> ENVIANDO...';
@@ -308,24 +346,21 @@
                 }
 
                 const formData = new FormData(form);
-                
+
                 try {
                     const response = await fetch(form.action, {
                         method: 'POST',
                         body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
-                    
                     const result = await response.json();
-                    
+
                     if (result.success) {
-                        Swal.fire({ title: '¡Solicitud Enviada!', text: result.message, icon: 'success', confirmButtonColor: '#f97316', background: '#12121a', color: '#fff' });
+                        Swal.fire({ title: '¡Solicitud Enviada!', text: result.message, icon: 'success', confirmButtonColor: '#2E5BFF', background: '#12121a', color: '#fff' });
                         closeModal(djId);
                         form.reset();
                     } else {
-                        Swal.fire({ title: 'No disponible', text: result.error || 'Error al enviar solicitud', icon: 'warning', confirmButtonColor: '#f97316', background: '#12121a', color: '#fff' });
+                        Swal.fire({ title: 'No disponible', text: result.error || 'Error al enviar solicitud', icon: 'warning', confirmButtonColor: '#2E5BFF', background: '#12121a', color: '#fff' });
                     }
                 } catch (error) {
                     console.error(error);
