@@ -1,323 +1,366 @@
 <?php require APPROOT . '/app/Views/inc/header.php'; ?>
 
 <style>
-    /* ── Landing "DJ Blue" ── */
-    .hero-mesh{
-        background:
-            radial-gradient(600px circle at 15% 15%, rgba(46,91,255,.22), transparent 60%),
-            radial-gradient(560px circle at 85% 25%, rgba(0,194,255,.16), transparent 60%),
-            radial-gradient(700px circle at 50% 110%, rgba(124,77,255,.14), transparent 60%);
-    }
-    #heroViz{position:absolute;left:0;right:0;bottom:0;width:100%;height:42%;z-index:0;opacity:.55;pointer-events:none}
-    .grad-text{background:linear-gradient(105deg,#2E5BFF,#00C2FF 70%,#9ad8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .kin{display:block;overflow:hidden}
-    .kin>span{display:block;transform:translateY(105%);animation:kinUp .9s cubic-bezier(.16,1,.3,1) forwards}
-    .kin:nth-child(2)>span{animation-delay:.12s}
-    .kin:nth-child(3)>span{animation-delay:.24s}
-    @keyframes kinUp{to{transform:translateY(0)}}
+    /* ═══════════ Landing DJPRO (estructura NeivActiva · colores DJPRO azul) ═══════════ */
+    .lp{--a:#2E5BFF;--a2:#00C2FF}
+    .lp .kicker{font-family:'JetBrains Mono','Rajdhani',monospace;font-size:.72rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--a)}
+    .lp h2.title{font-family:'Bebas Neue',cursive;font-size:clamp(2.4rem,5vw,4rem);line-height:.95;color:#fff;margin:.6rem 0 0;letter-spacing:.02em}
+    .lp h2.title em{font-style:normal;background:linear-gradient(105deg,var(--a),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lp .subtitle{color:#64748b;max-width:44ch;margin:1rem auto 0;font-size:1.05rem}
+    .grad-b{background:linear-gradient(105deg,#2E5BFF,#00C2FF 70%,#9ad8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .btn-glow{background:linear-gradient(135deg,#2E5BFF,#00C2FF);color:#fff;font-weight:700;padding:.85rem 1.6rem;border-radius:.85rem;display:inline-flex;align-items:center;gap:.55rem;box-shadow:0 10px 26px rgba(46,91,255,.3);transition:transform .2s,box-shadow .25s}
+    .btn-glow:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(46,91,255,.42)}
+    .btn-ghost{background:rgba(255,255,255,.04);border:1px solid #26304a;color:#e2e8f0;font-weight:700;padding:.85rem 1.6rem;border-radius:.85rem;display:inline-flex;align-items:center;gap:.55rem;transition:all .2s}
+    .btn-ghost:hover{border-color:#2E5BFF;color:#fff}
 
-    .mq{overflow:hidden;position:relative}
-    .mq-track{display:flex;width:max-content;gap:0;animation:mqScroll 30s linear infinite}
-    .mq:hover .mq-track{animation-play-state:paused}
-    @keyframes mqScroll{to{transform:translateX(-50%)}}
-    .mq-item{font-family:'Bebas Neue',cursive;font-size:2rem;letter-spacing:.05em;color:#3a4a6b;padding:0 2rem;white-space:nowrap;display:flex;align-items:center;gap:2rem;transition:color .2s}
-    .mq-item::after{content:"◆";font-size:.7rem;color:#2E5BFF}
-    .mq-item:hover{color:#fff}
+    /* Reveal */
+    .rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+    .rv.vis{opacity:1;transform:none}
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes discspin{to{transform:rotate(360deg)}}
+    @keyframes eqb{0%,100%{height:22%}50%{height:100%}}
+    @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}.floaty,.disc,.eqbar{animation:none!important}}
 
-    .step-num{font-family:'Bebas Neue',cursive;font-size:9rem;line-height:1;color:#141b30;position:absolute;right:-.5rem;bottom:-2rem;z-index:0}
+    /* Hero */
+    .lp-hero{position:relative;overflow:hidden;padding:2rem 0 5rem}
+    .lp-hero .mesh{position:absolute;inset:0;z-index:0;background:
+        radial-gradient(620px circle at 12% 20%,rgba(46,91,255,.18),transparent 60%),
+        radial-gradient(560px circle at 88% 30%,rgba(0,194,255,.12),transparent 60%)}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:#12121a;border:1px solid #1e293b;border-radius:100px;padding:.5rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#94a3b8}
+    .hero-badge i{color:var(--a)}
+    .hero-h1{font-family:'Bebas Neue',cursive;font-size:clamp(3rem,6.5vw,5.5rem);line-height:.9;color:#fff;margin:1.4rem 0 1rem;letter-spacing:.02em}
+    .hero-p{color:#94a3b8;font-size:1.15rem;max-width:34ch;margin-bottom:2rem;line-height:1.55}
+    .hero-visual{position:relative;height:420px;display:grid;place-items:center}
+    .disc{width:270px;height:270px;border-radius:50%;background:repeating-radial-gradient(circle at center,#0d0d14 0 4px,#191922 4px 8px);box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 0 10px #0b0b12,0 0 0 11px #1e293b;animation:discspin 10s linear infinite;position:relative}
+    .disc::after{content:"";position:absolute;inset:0;margin:auto;width:82px;height:82px;border-radius:50%;background:linear-gradient(135deg,#2E5BFF,#00C2FF);border:7px solid #0a0a0f;box-shadow:0 0 24px rgba(46,91,255,.6)}
+    .disc::before{content:"";position:absolute;inset:0;margin:auto;width:12px;height:12px;border-radius:50%;background:#0a0a0f;z-index:2}
+    .float-pill{position:absolute;background:rgba(18,18,26,.9);backdrop-filter:blur(8px);border:1px solid #26304a;border-radius:1rem;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.65rem;font-weight:700;color:#fff;font-size:.9rem;box-shadow:0 16px 40px rgba(0,0,0,.5);animation:floaty 4s ease-in-out infinite}
+    .float-pill i{width:34px;height:34px;border-radius:.6rem;display:grid;place-items:center;background:linear-gradient(135deg,#2E5BFF,#00C2FF);color:#fff;font-size:1rem}
+    .fp-1{top:24px;left:-6px;animation-delay:0s}
+    .fp-2{bottom:34px;right:-10px;animation-delay:1.5s}
+    .fp-3{bottom:120px;left:-26px;animation-delay:.8s}
 
-    @media (prefers-reduced-motion: reduce){
-        .kin>span{transform:none;animation:none}
-        .mq-track{animation:none}
+    /* Categorías */
+    .cats{border-top:1px solid #1e293b;border-bottom:1px solid #1e293b;background:rgba(18,18,26,.4);padding:2rem 0}
+    .cats-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem}
+    .cat-item{display:flex;flex-direction:column;align-items:center;gap:.7rem;color:#94a3b8;transition:color .2s}
+    .cat-item:hover{color:#fff}
+    .cat-circle{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;color:var(--a);background:#12121a;border:1px solid #1e293b;transition:all .25s}
+    .cat-item:hover .cat-circle{border-color:var(--a);box-shadow:0 0 22px rgba(46,91,255,.25);transform:translateY(-4px)}
+    .cat-item span{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+
+    /* Secciones */
+    .lp-section{padding:6rem 0}
+    .section-alt{background:rgba(18,18,26,.4);border-top:1px solid #1e293b;border-bottom:1px solid #1e293b}
+    .sec-head{text-align:center;margin-bottom:3.5rem}
+
+    /* Showcase cards */
+    .showcase{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem}
+    .sc-card{background:#12121a;border:1px solid #1e293b;border-radius:1.25rem;overflow:hidden;transition:all .3s;display:flex;flex-direction:column}
+    .sc-card:hover{border-color:var(--a);transform:translateY(-6px);box-shadow:0 24px 50px -20px rgba(46,91,255,.4)}
+    .sc-img{height:180px;position:relative;overflow:hidden;background:linear-gradient(140deg,#2E5BFF,#0b1836)}
+    .sc-img img{width:100%;height:100%;object-fit:cover;opacity:.85;transition:transform .6s}
+    .sc-card:hover .sc-img img{transform:scale(1.08)}
+    .sc-badge{position:absolute;top:12px;left:12px;background:rgba(10,10,15,.7);backdrop-filter:blur(6px);border:1px solid #26304a;color:#fff;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.35rem .7rem;border-radius:100px}
+    .sc-avatar{position:absolute;bottom:-26px;left:20px;width:64px;height:64px;border-radius:1rem;border:4px solid #12121a;display:grid;place-items:center;font-family:'Bebas Neue',cursive;font-size:1.5rem;color:#fff;background:linear-gradient(135deg,#2E5BFF,#00C2FF);overflow:hidden}
+    .sc-avatar img{width:100%;height:100%;object-fit:cover}
+    .sc-body{padding:2.2rem 1.4rem 1.2rem;flex:1}
+    .sc-body h3{font-family:'Bebas Neue',cursive;font-size:1.5rem;color:#fff;letter-spacing:.06em;margin:0 0 .5rem}
+    .sc-meta{display:flex;flex-direction:column;gap:.45rem}
+    .sc-meta span{display:flex;align-items:center;gap:.5rem;color:#94a3b8;font-size:.85rem;font-weight:500}
+    .sc-meta i{color:var(--a)}
+    .sc-foot{border-top:1px solid #1e293b;padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between}
+    .sc-rating{display:flex;align-items:center;gap:.35rem;color:#fff;font-weight:700;font-size:.9rem}
+    .sc-rating i{color:#fbbf24}
+    .sc-link{color:var(--a);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.35rem;transition:gap .2s}
+    .sc-card:hover .sc-link{gap:.6rem}
+
+    /* How it works */
+    .how{display:grid;grid-template-columns:.9fr 1.1fr;gap:4rem;align-items:center}
+    .how-visual{position:relative;border-radius:1.5rem;overflow:hidden;aspect-ratio:4/5;background:radial-gradient(circle at 60% 30%,rgba(46,91,255,.3),transparent 60%),linear-gradient(160deg,#12121a,#0a0a0f);border:1px solid #1e293b;display:grid;place-items:center}
+    .how-visual .disc{width:180px;height:180px;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 8px #0b0b12,0 0 0 9px #1e293b}
+    .how-visual .waves{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:flex-end;gap:5px;height:80px;padding:0 24px;opacity:.5}
+    .how-visual .waves i{flex:1;background:linear-gradient(to top,#2E5BFF,#00C2FF);border-radius:4px 4px 0 0}
+    .how-steps{display:flex;flex-direction:column;gap:1.4rem;margin-top:1.8rem}
+    .how-step{display:flex;gap:1.1rem;align-items:flex-start}
+    .how-num{width:44px;height:44px;flex:none;border-radius:.85rem;display:grid;place-items:center;font-family:'Bebas Neue',cursive;font-size:1.4rem;color:#fff;background:linear-gradient(135deg,#2E5BFF,#00C2FF);box-shadow:0 8px 18px rgba(46,91,255,.3)}
+    .how-step strong{display:block;color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:.2rem}
+    .how-step p{color:#94a3b8;font-size:.92rem;margin:0;line-height:1.5}
+
+    /* Feature cards (por qué) */
+    .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem}
+    .feat-card{background:#12121a;border:1px solid #1e293b;border-radius:1.25rem;padding:2.2rem;transition:all .3s}
+    .feat-card:hover{border-color:var(--a);transform:translateY(-5px)}
+    .feat-ic{width:56px;height:56px;border-radius:1rem;display:grid;place-items:center;font-size:1.6rem;color:#fff;background:linear-gradient(135deg,#2E5BFF,#00C2FF);margin-bottom:1.3rem}
+    .feat-card h3{font-family:'Bebas Neue',cursive;font-size:1.5rem;color:#fff;letter-spacing:.05em;margin:0 0 .6rem}
+    .feat-card p{color:#94a3b8;margin:0;line-height:1.55}
+
+    /* About + stats */
+    .about{display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center}
+    .about h2{font-family:'Bebas Neue',cursive;font-size:clamp(2.2rem,4.5vw,3.4rem);color:#fff;line-height:1;margin:.7rem 0 1.2rem}
+    .about h2 em{font-style:normal}
+    .about p{color:#94a3b8;line-height:1.7;margin-bottom:1rem}
+    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.8rem 0}
+    .stat-card{background:#12121a;border:1px solid #1e293b;border-radius:1rem;padding:1.4rem}
+    .stat-card .n{font-family:'Bebas Neue',cursive;font-size:2.6rem;line-height:1;background:linear-gradient(105deg,#2E5BFF,#00C2FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .stat-card .l{color:#94a3b8;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem}
+    .about-visual{position:relative;border-radius:1.5rem;overflow:hidden;aspect-ratio:1;background:radial-gradient(circle at 40% 30%,rgba(0,194,255,.25),transparent 55%),linear-gradient(150deg,#141b30,#0a0a0f);border:1px solid #1e293b;display:grid;place-items:center}
+
+    /* CTA banner */
+    .cta-band{position:relative;overflow:hidden;border-radius:2rem;padding:5rem 2rem;text-align:center;background:linear-gradient(135deg,#0a1228,#0e0a1e);border:1px solid #1e293b}
+    .cta-band::before{content:"";position:absolute;inset:0;opacity:.6;background:radial-gradient(600px circle at 20% 10%,rgba(46,91,255,.3),transparent 55%),radial-gradient(600px circle at 85% 90%,rgba(0,194,255,.22),transparent 55%)}
+    .cta-band>*{position:relative;z-index:1}
+    .cta-band h2{font-family:'Bebas Neue',cursive;font-size:clamp(2.4rem,5vw,4rem);color:#fff;line-height:.95;margin:0 0 1rem}
+
+    /* Testimonials */
+    .tst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem}
+    .tst-card{background:#12121a;border:1px solid #1e293b;border-radius:1.25rem;padding:2rem;transition:all .3s}
+    .tst-card:hover{border-color:var(--a)}
+    .tst-stars{color:#fbbf24;margin-bottom:1rem;font-size:.9rem}
+    .tst-card blockquote{color:#cbd5e1;font-size:.95rem;line-height:1.7;margin:0 0 1.5rem;font-style:italic}
+    .tst-author{display:flex;align-items:center;gap:.8rem}
+    .tst-avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:linear-gradient(135deg,#2E5BFF,#00C2FF)}
+    .tst-author h4{margin:0;color:#fff;font-size:.95rem;font-weight:700}
+    .tst-author p{margin:0;color:#64748b;font-size:.8rem}
+
+    @media(max-width:900px){
+        .hero-grid,.how,.about{grid-template-columns:1fr}
+        .hero-visual{height:340px;order:-1}
+        .showcase,.feat-grid,.tst-grid{grid-template-columns:1fr}
+        .stat-grid{grid-template-columns:repeat(2,1fr)}
     }
 </style>
 
-<!-- ══════════════ HERO ══════════════ -->
-<section class="hero-mesh relative min-h-[92vh] flex items-center justify-center overflow-hidden">
-    <canvas id="heroViz" aria-hidden="true"></canvas>
-    <div class="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] z-0"></div>
-
-    <div class="container mx-auto px-4 relative z-10 text-center">
-        <span class="inline-flex items-center gap-2 bg-djpro-surface border border-djpro-border rounded-full px-4 py-2 mb-8 text-[11px] font-bold uppercase tracking-[0.2em] text-djpro-muted">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            La red #1 de DJs del Caquetá
-        </span>
-
-        <h1 class="text-6xl md:text-8xl font-bebas text-white mb-6 tracking-tight leading-[0.86]">
-            <span class="kin"><span>ENCUENTRA TU</span></span>
-            <span class="kin"><span class="grad-text">DJ PERFECTO</span></span>
-            <span class="kin"><span>EN EL CAQUETÁ</span></span>
-        </h1>
-        <p class="text-xl md:text-2xl text-djpro-muted font-light mb-12 max-w-2xl mx-auto tracking-wide">
-            La red profesional de DJs más grande de la región. <span class="text-white font-medium">Calidad, energía y profesionalismo</span> para tu próximo evento.
-        </p>
-
-        <!-- Barra de Búsqueda -->
-        <div class="max-w-4xl mx-auto bg-djpro-surface/90 backdrop-blur p-2 rounded-3xl border border-djpro-border shadow-2xl shadow-blue-900/30">
-            <form action="<?php echo URL_ROOT; ?>/djs/explorar" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                <div class="flex items-center px-4 py-3 bg-djpro-surface-2 rounded-2xl">
-                    <i class="bi bi-calendar-event text-djpro-accent mr-3"></i>
-                    <select name="evento" class="bg-transparent border-none text-djpro-text focus:ring-0 w-full cursor-pointer font-semibold outline-none">
-                        <option value="" class="bg-djpro-surface-2">Tipo de Evento</option>
-                        <?php foreach(($data['tipos_evento'] ?? []) as $ev): ?>
-                            <option value="<?php echo $ev->nombre; ?>" class="bg-djpro-surface-2"><?php echo $ev->nombre; ?></option>
-                        <?php endforeach; ?>
-                    </select>
+<div class="lp">
+<!-- ═══════════ HERO ═══════════ -->
+<section class="lp-hero">
+    <div class="mesh"></div>
+    <div class="container mx-auto px-4">
+        <div class="hero-grid">
+            <div class="hero-text">
+                <span class="hero-badge"><i class="bi bi-lightning-charge-fill"></i> La red #1 de DJs del Caquetá</span>
+                <h1 class="hero-h1">Encuentra el DJ<br><span class="grad-b">perfecto</span> para tu evento.</h1>
+                <p class="hero-p">Una plataforma moderna para descubrir, escuchar y reservar a los mejores DJs del Caquetá. Coordina todo por chat interno y asegura tu fecha en minutos.</p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="btn-glow"><i class="bi bi-search"></i> Explorar DJs</a>
+                    <?php if(isset($_SESSION['usuario_id'])): ?>
+                        <a href="<?php echo URL_ROOT; ?>/clientes/dashboard" class="btn-ghost"><i class="bi bi-grid-1x2"></i> Mi panel</a>
+                    <?php else: ?>
+                        <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="btn-ghost"><i class="bi bi-person-plus"></i> Crear cuenta gratis</a>
+                    <?php endif; ?>
                 </div>
-                <div class="flex items-center px-4 py-3 bg-djpro-surface-2 rounded-2xl">
-                    <i class="bi bi-music-note-beamed text-djpro-accent mr-3"></i>
-                    <select name="genero" class="bg-transparent border-none text-djpro-text focus:ring-0 w-full cursor-pointer font-semibold outline-none">
-                        <option value="" class="bg-djpro-surface-2">Género Musical</option>
-                        <?php foreach(($data['generos'] ?? []) as $gen): ?>
-                            <option value="<?php echo $gen->nombre; ?>" class="bg-djpro-surface-2"><?php echo $gen->nombre; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="flex items-center px-4 py-3 bg-djpro-surface-2 rounded-2xl">
-                    <i class="bi bi-geo-alt text-djpro-accent mr-3"></i>
-                    <select name="ciudad" class="bg-transparent border-none text-djpro-text focus:ring-0 w-full cursor-pointer font-semibold outline-none">
-                        <option value="" class="bg-djpro-surface-2">Toda la región</option>
-                        <option value="Florencia" class="bg-djpro-surface-2">Florencia</option>
-                        <option value="Morelia" class="bg-djpro-surface-2">Morelia</option>
-                        <option value="Belén de los Andaquíes" class="bg-djpro-surface-2">Belén</option>
-                        <option value="San Vicente del Caguán" class="bg-djpro-surface-2">San Vicente</option>
-                        <option value="Puerto Rico" class="bg-djpro-surface-2">Puerto Rico</option>
-                        <option value="El Doncello" class="bg-djpro-surface-2">El Doncello</option>
-                        <option value="El Paujil" class="bg-djpro-surface-2">El Paujil</option>
-                        <option value="Cartagena del Chairá" class="bg-djpro-surface-2">Cartagena del Chairá</option>
-                        <option value="Curillo" class="bg-djpro-surface-2">Curillo</option>
-                        <option value="Albania" class="bg-djpro-surface-2">Albania</option>
-                        <option value="San José del Fragua" class="bg-djpro-surface-2">San José del Fragua</option>
-                        <option value="Valparaíso" class="bg-djpro-surface-2">Valparaíso</option>
-                        <option value="Solita" class="bg-djpro-surface-2">Solita</option>
-                        <option value="Solano" class="bg-djpro-surface-2">Solano</option>
-                        <option value="La Montañita" class="bg-djpro-surface-2">La Montañita</option>
-                        <option value="Milan" class="bg-djpro-surface-2">Milán</option>
-                    </select>
-                </div>
-                <button type="submit" class="text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 group hover:brightness-110 shadow-lg shadow-blue-500/25" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)">
-                    <i class="bi bi-search group-hover:scale-110 transition-transform"></i>
-                    BUSCAR DJ
-                </button>
-            </form>
-        </div>
-
-        <!-- Stats -->
-        <div class="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 relative">
-            <div class="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span class="text-[9px] font-bold text-green-500 uppercase tracking-widest">Live Updates</span>
             </div>
-            <div class="text-center">
-                <span id="stat-djs" class="block text-4xl font-bebas text-white"><?php echo $data['total_djs'] ?? '25'; ?>+</span>
-                <span class="text-sm text-djpro-muted uppercase tracking-widest font-bold">DJs Registrados</span>
-            </div>
-            <div class="text-center">
-                <span id="stat-eventos" class="block text-4xl font-bebas text-white"><?php echo $data['total_eventos'] ?? '150'; ?>+</span>
-                <span class="text-sm text-djpro-muted uppercase tracking-widest font-bold">Eventos Realizados</span>
-            </div>
-            <div class="text-center">
-                <span class="block text-4xl font-bebas text-white">12</span>
-                <span class="text-sm text-djpro-muted uppercase tracking-widest font-bold">Ciudades Cubiertas</span>
+            <div class="hero-visual">
+                <div class="float-pill fp-1"><i class="bi bi-people-fill"></i> +<?php echo $data['total_djs'] ?? '25'; ?> DJs activos</div>
+                <div class="disc"></div>
+                <div class="float-pill fp-2"><i class="bi bi-chat-dots-fill"></i> Reserva con chat</div>
+                <div class="float-pill fp-3"><i class="bi bi-star-fill"></i> DJs verificados</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══════════════ MARQUEE GÉNEROS ══════════════ -->
-<div class="mq border-y border-djpro-border py-5 bg-djpro-surface/40">
-    <div class="mq-track">
-        <?php
-            $gens = array_map(fn($g) => $g->nombre, $data['generos'] ?? []);
-            if(empty($gens)) $gens = ['Guaracha','Reggaetón','Techno','Salsa','Crossover','Champeta','House','Cumbia','Afrobeat','Electrónica'];
-            $loop = array_merge($gens, $gens);
-            foreach($loop as $g): ?>
-            <span class="mq-item"><?php echo strtoupper($g); ?></span>
-        <?php endforeach; ?>
+<!-- ═══════════ CATEGORÍAS ═══════════ -->
+<div class="cats">
+    <div class="container mx-auto px-4">
+        <div class="cats-grid">
+            <?php
+                $catIconos = ['bi-disc','bi-music-note-beamed','bi-heart-fill','bi-mortarboard-fill','bi-building','bi-stars'];
+                $tipos = $data['tipos_evento'] ?? [];
+                if(!empty($tipos)):
+                    foreach(array_slice($tipos, 0, 6) as $i => $ev): ?>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar?evento=<?php echo urlencode($ev->nombre); ?>" class="cat-item">
+                        <div class="cat-circle"><i class="bi <?php echo $catIconos[$i % count($catIconos)]; ?>"></i></div>
+                        <span><?php echo $ev->nombre; ?></span>
+                    </a>
+                <?php endforeach; else: ?>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="cat-item"><div class="cat-circle"><i class="bi bi-disc"></i></div><span>Fiestas</span></a>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="cat-item"><div class="cat-circle"><i class="bi bi-heart-fill"></i></div><span>Bodas</span></a>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="cat-item"><div class="cat-circle"><i class="bi bi-music-note-beamed"></i></div><span>Clubs</span></a>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="cat-item"><div class="cat-circle"><i class="bi bi-mortarboard-fill"></i></div><span>Grados</span></a>
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="cat-item"><div class="cat-circle"><i class="bi bi-building"></i></div><span>Corporativo</span></a>
+                <?php endif; ?>
+        </div>
     </div>
 </div>
 
-<!-- ══════════════ CÓMO FUNCIONA ══════════════ -->
-<section class="py-24 bg-djpro-bg">
+<!-- ═══════════ DJs DESTACADOS ═══════════ -->
+<section class="lp-section">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-            <span class="text-djpro-accent font-mono text-xs font-bold uppercase tracking-[0.3em]">Tres pasos, cero enredos</span>
-            <h2 class="text-5xl font-bebas text-white mt-3">CÓMO <span class="grad-text">FUNCIONA</span></h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="relative overflow-hidden bg-djpro-surface border border-djpro-border rounded-3xl p-8 hover:border-djpro-accent transition-all">
-                <span class="step-num">1</span>
-                <div class="relative z-10">
-                    <div class="w-14 h-14 rounded-2xl grid place-items-center text-white mb-5" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)"><i class="bi bi-search text-2xl"></i></div>
-                    <h3 class="text-2xl font-bebas text-white tracking-widest mb-2">BUSCA</h3>
-                    <p class="text-djpro-muted text-sm leading-relaxed">Filtra por tipo de evento, género y ciudad. Escucha sus mezclas y mira sus calificaciones reales.</p>
-                </div>
-            </div>
-            <div class="relative overflow-hidden bg-djpro-surface border border-djpro-border rounded-3xl p-8 hover:border-djpro-accent transition-all">
-                <span class="step-num">2</span>
-                <div class="relative z-10">
-                    <div class="w-14 h-14 rounded-2xl grid place-items-center text-white mb-5" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)"><i class="bi bi-calendar2-check text-2xl"></i></div>
-                    <h3 class="text-2xl font-bebas text-white tracking-widest mb-2">RESERVA</h3>
-                    <p class="text-djpro-muted text-sm leading-relaxed">Envía tu solicitud con fecha y horario. El DJ la acepta y coordinan todo por el chat interno.</p>
-                </div>
-            </div>
-            <div class="relative overflow-hidden bg-djpro-surface border border-djpro-border rounded-3xl p-8 hover:border-djpro-accent transition-all">
-                <span class="step-num">3</span>
-                <div class="relative z-10">
-                    <div class="w-14 h-14 rounded-2xl grid place-items-center text-white mb-5" style="background:linear-gradient(135deg,#2E5BFF,#00C2FF)"><i class="bi bi-music-note-list text-2xl"></i></div>
-                    <h3 class="text-2xl font-bebas text-white tracking-widest mb-2">VIVE LA FIESTA</h3>
-                    <p class="text-djpro-muted text-sm leading-relaxed">Disfruta tu evento. Al terminar, calificas al DJ y ayudas a que la comunidad siga creciendo.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════ DJs DESTACADOS ══════════════ -->
-<section class="py-24 bg-djpro-bg">
-    <div class="container mx-auto px-4">
-        <div class="flex items-end justify-between mb-12">
-            <div>
-                <span class="text-djpro-accent font-mono text-xs font-bold uppercase tracking-[0.3em]">En cabina esta semana</span>
-                <h2 class="text-5xl font-bebas text-white mt-3">DJs <span class="grad-text">DESTACADOS</span></h2>
-                <p class="text-djpro-muted tracking-wide mt-2">Los perfiles más solicitados y mejor calificados de la semana.</p>
-            </div>
-            <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="hidden md:flex items-center gap-2 text-djpro-accent font-bold hover:gap-3 transition-all">
-                Ver todos los DJs <i class="bi bi-arrow-right"></i>
-            </a>
+        <div class="sec-head rv">
+            <span class="kicker">Destacados</span>
+            <h2 class="title">DJs top en <em>el Caquetá</em></h2>
+            <p class="subtitle">Descubre el mejor talento local, escucha sus mezclas y reserva tu fecha.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php if(empty($data['djs'])): ?>
-                <div class="col-span-full text-center py-12 border-2 border-dashed border-djpro-border rounded-3xl">
-                    <p class="text-djpro-muted uppercase font-bold tracking-widest">No hay DJs registrados todavía.</p>
-                </div>
-            <?php else: ?>
-                <?php foreach($data['djs'] as $dj): ?>
-                <div class="dj-card group rounded-2xl overflow-hidden relative">
-                    <div class="h-32 overflow-hidden" style="background:linear-gradient(140deg,#2E5BFF,#0b1836)">
+        <?php if(empty($data['djs'])): ?>
+            <div class="text-center py-12 border-2 border-dashed border-djpro-border rounded-3xl">
+                <p class="text-djpro-muted uppercase font-bold tracking-widest">No hay DJs registrados todavía.</p>
+            </div>
+        <?php else: ?>
+            <div class="showcase">
+                <?php foreach(array_slice($data['djs'], 0, 6) as $dj): ?>
+                <div class="sc-card rv">
+                    <div class="sc-img">
                         <?php if($dj->foto_perfil != 'default_dj.png'): ?>
-                            <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" class="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700">
+                            <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" alt="<?php echo $dj->nombre; ?>" loading="lazy">
                         <?php endif; ?>
-                    </div>
-                    <div class="p-6 pt-0 relative">
-                        <div class="w-20 h-20 rounded-2xl border-4 border-djpro-surface bg-djpro-surface-2 mx-auto -mt-10 overflow-hidden shadow-2xl group-hover:border-djpro-accent transition-all duration-300">
+                        <span class="sc-badge"><i class="bi bi-geo-alt-fill"></i> <?php echo $dj->ciudad ? $dj->ciudad : 'Caquetá'; ?></span>
+                        <div class="sc-avatar">
                             <?php if($dj->foto_perfil != 'default_dj.png'): ?>
-                                <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>" class="w-full h-full object-cover">
+                                <img src="<?php echo URL_ROOT; ?>/assets/uploads/<?php echo $dj->foto_perfil; ?>">
                             <?php else: ?>
-                                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($dj->nombre); ?>&background=0b1836&color=2E5BFF" class="w-full h-full object-cover">
+                                <?php echo strtoupper(substr($dj->nombre,0,2)); ?>
                             <?php endif; ?>
                         </div>
-                        <div class="text-center mt-4">
-                            <h3 class="text-2xl font-bebas text-white group-hover:text-djpro-accent transition-colors tracking-widest uppercase truncate"><?php echo $dj->nombre; ?></h3>
-                            <div class="flex items-center justify-center gap-1 text-djpro-muted text-[10px] uppercase font-bold tracking-widest mb-4">
-                                <i class="bi bi-geo-alt-fill text-djpro-accent"></i>
-                                <span><?php echo $dj->ciudad ? $dj->ciudad : 'Caquetá'; ?></span>
-                            </div>
-                            <div class="flex flex-wrap justify-center gap-1 mb-6">
-                                <?php
-                                $generos = explode(',', $dj->generos);
-                                foreach(array_slice($generos, 0, 2) as $gen): if(!empty($gen)):
-                                ?>
-                                <span class="bg-djpro-surface-2 text-djpro-muted text-[8px] font-bold px-2 py-1 rounded-md border border-djpro-border uppercase tracking-tighter"><?php echo $gen; ?></span>
-                                <?php endif; endforeach; ?>
-                            </div>
-                            <div class="flex items-center justify-between pt-4 border-t border-djpro-border">
-                                <div class="text-left">
-                                    <span class="block text-[10px] text-djpro-muted uppercase font-bold tracking-tighter">Status</span>
-                                    <span class="text-[10px] font-bold text-green-500 uppercase">Disponible</span>
-                                </div>
-                                <div class="text-right">
-                                    <div class="flex items-center justify-end text-yellow-500 text-[10px] mb-1">
-                                        <i class="bi bi-star-fill"></i>
-                                        <span class="ml-1 text-white"><?php echo number_format($dj->calificacion_promedio, 1); ?></span>
-                                    </div>
-                                    <span class="text-[9px] text-djpro-muted uppercase font-bold">PRO DJ</span>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="sc-body">
+                        <h3><?php echo $dj->nombre; ?></h3>
+                        <div class="sc-meta">
+                            <?php $gs = array_filter(array_map('trim', explode(',', (string)$dj->generos))); ?>
+                            <span><i class="bi bi-music-note-list"></i> <?php echo !empty($gs) ? implode(' · ', array_slice($gs,0,3)) : 'Multigénero'; ?></span>
+                            <span><i class="bi bi-broadcast"></i> Disponible para eventos</span>
                         </div>
                     </div>
-                    <!-- Hover Layer -->
-                    <div class="absolute inset-0 bg-djpro-bg/90 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-4 p-6">
-                        <p class="text-white text-xs font-medium text-center line-clamp-3">
-                            <?php echo $dj->biografia ?: 'Experimenta lo mejor del talento local con '.$dj->nombre.'.'; ?>
-                        </p>
-                        <?php if(isset($_SESSION['usuario_id'])): ?>
-                            <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>?reservar=1" class="btn-djpro-primary w-full text-center py-2.5">RESERVAR AHORA</a>
-                        <?php else: ?>
-                            <a href="<?php echo URL_ROOT; ?>/usuarios/login?redirect=djs/perfil/<?php echo $dj->id; ?>" class="btn-djpro-primary w-full text-center py-2.5">RESERVAR AHORA</a>
-                        <?php endif; ?>
-                        <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="text-[10px] text-djpro-muted hover:text-white font-bold uppercase tracking-widest">Ver Perfil</a>
+                    <div class="sc-foot">
+                        <span class="sc-rating"><i class="bi bi-star-fill"></i> <?php echo number_format($dj->calificacion_promedio, 1); ?></span>
+                        <a href="<?php echo URL_ROOT; ?>/djs/perfil/<?php echo $dj->id; ?>" class="sc-link">Ver perfil <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+            </div>
+            <div class="text-center mt-10">
+                <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="btn-ghost"><i class="bi bi-grid-3x3-gap"></i> Ver todos los DJs</a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
-<!-- ══════════════ CTA DJs ══════════════ -->
-<section class="py-24 bg-djpro-bg">
+<!-- ═══════════ CÓMO FUNCIONA ═══════════ -->
+<section class="lp-section section-alt">
     <div class="container mx-auto px-4">
-        <div class="relative overflow-hidden rounded-[2rem] border border-djpro-border p-12 md:p-16 text-center" style="background:linear-gradient(135deg,#0a1228,#0e0a1e)">
-            <div class="absolute inset-0 opacity-60" style="background:radial-gradient(600px circle at 20% 10%,rgba(46,91,255,.3),transparent 55%),radial-gradient(600px circle at 85% 90%,rgba(0,194,255,.22),transparent 55%)"></div>
-            <div class="relative z-10">
-                <span class="text-djpro-accent-2 font-mono text-xs font-bold uppercase tracking-[0.3em]" style="color:#00C2FF">¿Tienes las manos en el mezclador?</span>
-                <h2 class="text-5xl md:text-7xl font-bebas text-white mt-4 mb-4 leading-none">PON TU NOMBRE<br>EN LA <span class="grad-text">CABINA</span></h2>
-                <p class="text-djpro-muted max-w-xl mx-auto mb-8 text-lg">Únete a la red de DJs más grande del Caquetá. Crea tu perfil, recibe reservas y cobra por hacer lo que amas.</p>
-                <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="btn-djpro-primary inline-flex items-center gap-2 text-base px-8 py-4">
-                    <i class="bi bi-headphones"></i> CREAR MI PERFIL DE DJ
-                </a>
+        <div class="how">
+            <div class="how-visual rv">
+                <div class="disc"></div>
+                <div class="waves">
+                    <?php for($i=0;$i<16;$i++): ?><i class="eqbar" style="height:<?php echo rand(20,90); ?>%;animation:eqb <?php echo (8+rand(0,8))/10; ?>s ease-in-out infinite;animation-delay:-<?php echo $i*0.1; ?>s"></i><?php endfor; ?>
+                </div>
+            </div>
+            <div class="how-text-side rv">
+                <span class="kicker">Así funciona</span>
+                <h2 class="title" style="text-align:left">Reservar tu DJ es <em>así de simple</em></h2>
+                <div class="how-steps">
+                    <div class="how-step"><div class="how-num">1</div><div><strong>Regístrate gratis</strong><p>Crea tu cuenta en segundos y accede a todo el catálogo de DJs del Caquetá.</p></div></div>
+                    <div class="how-step"><div class="how-num">2</div><div><strong>Explora y elige tu DJ</strong><p>Filtra por evento, género y ciudad. Escucha sus mezclas y mira sus calificaciones reales.</p></div></div>
+                    <div class="how-step"><div class="how-num">3</div><div><strong>Envía tu solicitud</strong><p>Propón fecha, horario y presupuesto. Negocian por el chat interno hasta cerrar el trato.</p></div></div>
+                    <div class="how-step"><div class="how-num">4</div><div><strong>Vive la fiesta</strong><p>El DJ confirma, llega y enciende tu evento. Al final lo calificas y ayudas a la comunidad.</p></div></div>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-8">
+                    <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="btn-glow"><i class="bi bi-search"></i> Empezar ahora</a>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<script>
-    // Stats en tiempo real
-    function updateStats() {
-        fetch('<?php echo URL_ROOT; ?>/pages/api_stats')
-            .then(r => r.json())
-            .then(d => {
-                const dj = document.getElementById('stat-djs');
-                const ev = document.getElementById('stat-eventos');
-                if (dj) dj.innerText = d.total_djs + '+';
-                if (ev) ev.innerText = d.total_eventos + '+';
-            })
-            .catch(() => {});
-    }
-    setInterval(updateStats, 10000);
+<!-- ═══════════ POR QUÉ DJPRO ═══════════ -->
+<section class="lp-section">
+    <div class="container mx-auto px-4">
+        <div class="sec-head rv">
+            <span class="kicker">Ventajas</span>
+            <h2 class="title">¿Por qué <em>DJPRO</em>?</h2>
+            <p class="subtitle">La forma más profesional de contratar un DJ en la región.</p>
+        </div>
+        <div class="feat-grid">
+            <div class="feat-card rv"><div class="feat-ic"><i class="bi bi-shield-check"></i></div><h3>DJs Verificados</h3><p>Perfiles con portafolio, géneros y calificaciones reales de otros clientes. Sabes exactamente a quién contratas.</p></div>
+            <div class="feat-card rv"><div class="feat-ic"><i class="bi bi-chat-dots-fill"></i></div><h3>Chat Interno</h3><p>Coordina cada detalle del evento directamente con el DJ, negocia el precio y confirma sin salir de la plataforma.</p></div>
+            <div class="feat-card rv"><div class="feat-ic"><i class="bi bi-calendar2-check-fill"></i></div><h3>Reservas Seguras</h3><p>Sistema de solicitudes con estados claros, contra-ofertas y confirmación de pago. Tu fecha queda asegurada.</p></div>
+        </div>
+    </div>
+</section>
 
-    // Ecualizador ambiental del hero
+<!-- ═══════════ SOBRE LA PLATAFORMA ═══════════ -->
+<section class="lp-section section-alt">
+    <div class="container mx-auto px-4">
+        <div class="about">
+            <div class="about-text rv">
+                <span class="kicker">Sobre DJPRO</span>
+                <h2>La plataforma de <span class="grad-b">DJs</span> del Caquetá</h2>
+                <p>Creemos en el poder de la música para transformar cualquier evento. DJPRO nació para conectar al mejor talento local con quienes quieren una fiesta inolvidable, con herramientas modernas para DJs y clientes por igual.</p>
+                <p>Gestiona tus reservas, negocia por chat, recibe calificaciones y haz crecer tu marca como DJ — todo en un solo lugar.</p>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="n"><?php echo $data['total_djs'] ?? '25'; ?>+</div><div class="l">DJs registrados</div></div>
+                    <div class="stat-card"><div class="n"><?php echo $data['total_eventos'] ?? '150'; ?>+</div><div class="l">Eventos realizados</div></div>
+                    <div class="stat-card"><div class="n">12</div><div class="l">Ciudades cubiertas</div></div>
+                    <div class="stat-card"><div class="n">100%</div><div class="l">Registro gratis</div></div>
+                </div>
+                <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="btn-glow"><i class="bi bi-rocket-takeoff"></i> Comenzar ahora</a>
+            </div>
+            <div class="about-visual rv">
+                <div class="disc" style="width:200px;height:200px"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CTA BANNER ═══════════ -->
+<section class="lp-section" style="padding-top:0">
+    <div class="container mx-auto px-4">
+        <div class="cta-band rv">
+            <span class="kicker" style="color:#00C2FF">¿Tienes las manos en el mezclador?</span>
+            <h2>Pon tu nombre en la <span class="grad-b">cabina</span></h2>
+            <p class="subtitle" style="margin-bottom:2rem">Únete a la red de DJs más grande del Caquetá. Crea tu perfil, recibe reservas y cobra por hacer lo que amas.</p>
+            <a href="<?php echo URL_ROOT; ?>/usuarios/registro" class="btn-glow" style="font-size:1.05rem;padding:1rem 2rem"><i class="bi bi-headphones"></i> Crear mi perfil de DJ</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ TESTIMONIOS ═══════════ -->
+<section class="lp-section section-alt">
+    <div class="container mx-auto px-4">
+        <div class="sec-head rv">
+            <span class="kicker">Opiniones</span>
+            <h2 class="title">Lo que dicen nuestros <em>clientes</em></h2>
+            <p class="subtitle">Personas reales que vivieron su fiesta con un DJ de DJPRO.</p>
+        </div>
+        <div class="tst-grid">
+            <article class="tst-card rv">
+                <div class="tst-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                <blockquote>"Reservé al DJ para mi matrimonio en Florencia y fue increíble. El chat interno me dejó coordinar cada canción. Todo clarísimo desde el primer momento."</blockquote>
+                <div class="tst-author"><div class="tst-avatar">LG</div><div><h4>Laura Gómez</h4><p>Matrimonio · Florencia</p></div></div>
+            </article>
+            <article class="tst-card rv">
+                <div class="tst-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                <blockquote>"Como DJ, DJPRO me cambió el juego. Recibo solicitudes de toda la región y gestiono mis reservas sin enredos. Mi agenda no para."</blockquote>
+                <div class="tst-author"><div class="tst-avatar">EM</div><div><h4>Edwar Mix</h4><p>DJ Profesional</p></div></div>
+            </article>
+            <article class="tst-card rv">
+                <div class="tst-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                <blockquote>"Buscaba un DJ para los XV de mi hija y en minutos comparé varios, vi sus videos y reservé. La fiesta quedó espectacular. 10/10."</blockquote>
+                <div class="tst-author"><div class="tst-avatar">CR</div><div><h4>Carlos Ríos</h4><p>XV Años · San Vicente</p></div></div>
+            </article>
+        </div>
+    </div>
+</section>
+</div>
+
+<script>
+    // Scroll reveal
     (function(){
-        const cv = document.getElementById('heroViz');
-        if (!cv) return;
-        const ctx = cv.getContext('2d');
-        const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let W, H, DPR = Math.min(window.devicePixelRatio || 1, 2), N = 56, ph = [];
-        for (let i=0;i<N;i++) ph[i] = Math.random()*Math.PI*2;
-        function size(){ W = cv.clientWidth; H = cv.clientHeight; cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
-        size(); window.addEventListener('resize', size);
-        function draw(t){
-            ctx.clearRect(0,0,W,H);
-            const bw = W/N, base = H;
-            for (let i=0;i<N;i++){
-                const m = Math.sin(t/620 + ph[i])*.5 + .5;
-                const m2 = Math.sin(t/300 + i*.35)*.5 + .5;
-                const h = (m*.6 + m2*.4) * H * .8 + 6;
-                const g = ctx.createLinearGradient(0, base-h, 0, base);
-                g.addColorStop(0, 'rgba(0,194,255,.9)');
-                g.addColorStop(1, 'rgba(46,91,255,.1)');
-                ctx.fillStyle = g;
-                const x = i*bw + bw*.2, w = bw*.6;
-                if (ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x, base-h, w, h, 3); ctx.fill(); }
-                else ctx.fillRect(x, base-h, w, h);
-            }
-            raf = requestAnimationFrame(draw);
-        }
-        let raf;
-        if (reduce) draw(1000); else raf = requestAnimationFrame(draw);
+        var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var els = document.querySelectorAll('.rv');
+        if (reduce || !('IntersectionObserver' in window)){ els.forEach(function(e){e.classList.add('vis')}); return; }
+        var io = new IntersectionObserver(function(ent){
+            ent.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); } });
+        }, { threshold:.12, rootMargin:'0px 0px -8% 0px' });
+        els.forEach(function(e){ io.observe(e); });
     })();
+
+    // Stats en vivo
+    function updateStats(){
+        fetch('<?php echo URL_ROOT; ?>/pages/api_stats').then(r=>r.json()).then(d=>{}).catch(()=>{});
+    }
 </script>
 
 <?php require APPROOT . '/app/Views/inc/footer.php'; ?>
