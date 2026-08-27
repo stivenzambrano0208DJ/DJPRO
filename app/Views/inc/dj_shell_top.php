@@ -7,12 +7,47 @@
  */
 $__cur = $_GET['url'] ?? '';
 $__nombreCorto = explode(' ', $_SESSION['usuario_nombre'] ?? 'DJ')[0];
+$__rol = $_SESSION['usuario_rol'] ?? 'cliente';
+$__rolLabel = $__rol === 'dj' ? 'DJ Profesional' : ($__rol === 'admin' ? 'Administrador' : 'Cliente');
 $__act = function($needle) use ($__cur){
     return strpos($__cur, $needle) !== false
         ? 'bg-djpro-accent/15 text-djpro-accent'
         : 'text-djpro-muted hover:bg-djpro-surface-2 hover:text-djpro-text transition-all';
 };
-$__pageTitle = $__pageTitle ?? 'DJPRO | Panel del DJ';
+// Menú por rol: cada item = [url, icono, etiqueta, needle-activo]
+if ($__rol === 'dj') {
+    $__sections = [
+        'Explorar' => [
+            ['djs/dashboard', 'bi-grid-1x2-fill', 'Panel Control', 'djs/dashboard'],
+            ['djs/explorar', 'bi-search', 'Explorar DJs', 'djs/explorar'],
+        ],
+        'Mi Actividad' => [
+            ['clientes/dashboard', 'bi-calendar2-check-fill', 'Mis Reservas', 'clientes/dashboard'],
+            ['chat', 'bi-chat-dots-fill', 'Mensajería', 'chat'],
+            ['djs/estadisticas', 'bi-graph-up-arrow', 'Estadísticas', 'djs/estadisticas'],
+            ['djs/editar', 'bi-person-fill-gear', 'Editar Perfil', 'djs/editar'],
+        ],
+    ];
+} elseif ($__rol === 'admin') {
+    $__sections = [
+        'Administración' => [
+            ['admin/dashboard', 'bi-speedometer2', 'Global KPI', 'admin/dashboard'],
+            ['admin/usuarios', 'bi-people', 'Usuarios', 'admin/usuarios'],
+            ['admin/reservas', 'bi-calendar-check', 'Reservas', 'admin/reservas'],
+            ['admin/resenas', 'bi-star', 'Moderar Reseñas', 'admin/resenas'],
+            ['admin/seguridad', 'bi-shield-lock', 'Seguridad', 'admin/seguridad'],
+        ],
+    ];
+} else {
+    $__sections = [
+        'Menú' => [
+            ['clientes/dashboard', 'bi-speedometer2', 'Mi Panel', 'clientes/dashboard'],
+            ['djs/explorar', 'bi-search', 'Explorar DJs', 'djs/explorar'],
+            ['chat', 'bi-chat-dots-fill', 'Mensajes', 'chat'],
+        ],
+    ];
+}
+$__pageTitle = $__pageTitle ?? 'DJPRO | Panel';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -97,19 +132,17 @@ if(isset($_SESSION['flash_message'])):
         </div>
         <div class="min-w-0">
             <h4 class="font-bold text-sm truncate"><?php echo htmlspecialchars($_SESSION['usuario_nombre'] ?? 'DJ'); ?></h4>
-            <p class="text-xs text-djpro-muted font-semibold">DJ Profesional</p>
+            <p class="text-xs text-djpro-muted font-semibold"><?php echo $__rolLabel; ?></p>
         </div>
     </div>
 
     <nav class="flex flex-col gap-1 flex-1">
-        <div class="text-[11px] font-bold uppercase tracking-widest text-djpro-muted px-3 pt-3 pb-2">Explorar</div>
-        <a href="<?php echo URL_ROOT; ?>/djs/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('djs/dashboard'); ?>"><i class="bi bi-grid-1x2-fill text-lg"></i> Panel Control</a>
-        <a href="<?php echo URL_ROOT; ?>/djs/explorar" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('djs/explorar'); ?>"><i class="bi bi-search text-lg"></i> Explorar DJs</a>
-        <div class="text-[11px] font-bold uppercase tracking-widest text-djpro-muted px-3 pt-4 pb-2">Mi Actividad</div>
-        <a href="<?php echo URL_ROOT; ?>/clientes/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('clientes/dashboard'); ?>"><i class="bi bi-calendar2-check-fill text-lg"></i> Mis Reservas</a>
-        <a href="<?php echo URL_ROOT; ?>/chat" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('chat'); ?>"><i class="bi bi-chat-dots-fill text-lg"></i> Mensajería</a>
-        <a href="<?php echo URL_ROOT; ?>/djs/estadisticas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('djs/estadisticas'); ?>"><i class="bi bi-graph-up-arrow text-lg"></i> Estadísticas</a>
-        <a href="<?php echo URL_ROOT; ?>/djs/editar" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act('djs/editar'); ?>"><i class="bi bi-person-fill-gear text-lg"></i> Editar Perfil</a>
+        <?php foreach($__sections as $__secTitle => $__items): ?>
+            <div class="text-[11px] font-bold uppercase tracking-widest text-djpro-muted px-3 pt-3 pb-2"><?php echo $__secTitle; ?></div>
+            <?php foreach($__items as $__it): ?>
+                <a href="<?php echo URL_ROOT; ?>/<?php echo $__it[0]; ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm <?php echo $__act($__it[3]); ?>"><i class="bi <?php echo $__it[1]; ?> text-lg"></i> <?php echo $__it[2]; ?></a>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
     </nav>
 
     <div class="pt-3 mt-3 border-t border-djpro-border">

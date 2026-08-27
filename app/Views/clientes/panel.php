@@ -1,14 +1,7 @@
-<?php require APPROOT . '/app/Views/inc/header.php'; ?>
-<?php 
-if(isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] == 'dj') {
-    require APPROOT . '/app/Views/inc/sidebar_dj.php';
-} else {
-    require APPROOT . '/app/Views/inc/sidebar_cliente.php';
-}
-?>
+<?php $__pageTitle = 'DJPRO | Mi Centro de Eventos'; require APPROOT . '/app/Views/inc/dj_shell_top.php'; ?>
 
-<div class="lg:ml-64 p-8">
-    <div class="container mx-auto">
+<div>
+    <div>
         <!-- Header -->
         <div class="flex flex-col md:row md:flex-row justify-between items-start md:items-center gap-4 mb-10">
             <div>
@@ -412,6 +405,16 @@ if(isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] == 'dj') {
         djpro.toast("Recuerda que el pago debe ser de $" + monto + ". Luego notifica al DJ.", "info");
     }
     /* -------------------- */
+    // Confirmación genérica (antes en footer.php global)
+    function confirmAction(url, title, text, icon = 'question', confirmText = 'SÍ, CONTINUAR') {
+        Swal.fire({ title: title, text: text, icon: icon, showCancelButton: true, confirmButtonColor: '#2E5BFF', cancelButtonColor: '#334155', confirmButtonText: confirmText, cancelButtonText: 'CANCELAR', background: '#101018', color: '#f4f5fb' }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form'); form.method = 'POST'; form.action = url; form.style.display = 'none';
+                const csrf = document.createElement('input'); csrf.type = 'hidden'; csrf.name = 'csrf_token'; csrf.value = '<?php echo $_SESSION['csrf_token'] ?? ''; ?>';
+                form.appendChild(csrf); document.body.appendChild(form); form.submit();
+            }
+        });
+    }
 </script>
-<?php require APPROOT . '/app/Views/inc/footer.php'; ?>
+<?php require APPROOT . '/app/Views/inc/dj_shell_bottom.php'; ?>
 
