@@ -152,5 +152,7 @@ if(isset($_SESSION['flash_message'])):
 
 <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')" class="lg:hidden fixed top-4 left-4 z-50 w-11 h-11 rounded-xl bg-djpro-surface border border-djpro-border grid place-items-center text-djpro-text"><i class="bi bi-list text-2xl"></i></button>
 
+<?php if(empty($__bare)): ?>
 <main class="lg:ml-64 p-4 md:p-8">
     <div class="max-w-[1300px] mx-auto">
+<?php endif; ?>

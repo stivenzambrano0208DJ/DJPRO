@@ -1,15 +1,12 @@
-<?php require APPROOT . '/app/Views/inc/header.php'; ?>
-<?php if(isset($_SESSION['usuario_id'])): ?>
-    <?php
-        if($_SESSION['usuario_rol'] == 'dj') {
-            require APPROOT . '/app/Views/inc/sidebar_dj.php';
-        } elseif($_SESSION['usuario_rol'] == 'admin') {
-            require APPROOT . '/app/Views/inc/admin_sidebar.php';
-        } else {
-            require APPROOT . '/app/Views/inc/sidebar_cliente.php';
-        }
-    ?>
-<?php endif; ?>
+<?php
+// Logueado → shell oscuro (sidebar por rol, sin barra superior). Invitado → header público.
+if(isset($_SESSION['usuario_id'])) {
+    $__pageTitle = 'DJPRO | Explorar DJs'; $__bare = true;
+    require APPROOT . '/app/Views/inc/dj_shell_top.php';
+} else {
+    require APPROOT . '/app/Views/inc/header.php';
+}
+?>
 
 <?php
     $fCiudad = $data['filtros']['ciudad'] ?? '';
@@ -396,4 +393,7 @@
     });
 </script>
 
-<?php require APPROOT . '/app/Views/inc/footer.php'; ?>
+<?php
+if(isset($_SESSION['usuario_id'])) { require APPROOT . '/app/Views/inc/dj_shell_bottom.php'; }
+else { require APPROOT . '/app/Views/inc/footer.php'; }
+?>

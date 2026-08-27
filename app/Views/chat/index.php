@@ -1,13 +1,6 @@
-<?php require APPROOT . '/app/Views/inc/header.php'; ?>
-<?php 
-    if($_SESSION['usuario_rol'] == 'dj') {
-        require APPROOT . '/app/Views/inc/sidebar_dj.php';
-    } else if($_SESSION['usuario_rol'] == 'cliente') {
-        require APPROOT . '/app/Views/inc/sidebar_cliente.php';
-    }
-?>
+<?php $__pageTitle = 'DJPRO | Mensajería'; $__bare = true; require APPROOT . '/app/Views/inc/dj_shell_top.php'; ?>
 
-<section class="lg:ml-64 h-[calc(100vh-80px)] flex overflow-hidden">
+<section class="lg:ml-64 h-screen flex overflow-hidden">
     
     <!-- Sidebar de Conversaciones -->
     <div class="w-full md:w-80 lg:w-96 bg-djpro-surface border-r border-djpro-border flex flex-col">
@@ -234,4 +227,4 @@
     }
 </script>
 
-<?php require APPROOT . '/app/Views/inc/footer.php'; ?>
+<?php require APPROOT . '/app/Views/inc/dj_shell_bottom.php'; ?>
